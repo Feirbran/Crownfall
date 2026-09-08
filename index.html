@@ -502,9 +502,13 @@
     #card-summon-overlay.active { display: flex; opacity: 1; }
 
     /* MERCATO BOX */
-    .pack-shop-container { max-width: 600px; width: 100%; margin: 32px auto; display: flex; flex-direction: column; gap: 20px; padding: 0 16px; text-align: center; }
+    .pack-shop-container { max-width: 1200px; width: 100%; margin: 24px auto 40px auto; display: flex; flex-direction: column; gap: 20px; padding: 0 16px; text-align: center; }
     .pack-shop-container h2 { font-size: 2rem; color: var(--gold-primary); }
-    .shop-box-card { background: var(--bg-card); border: 2px solid var(--border-gold); border-radius: 12px; padding: 30px; display: flex; flex-direction: column; align-items: center; gap: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
+    .shop-box-card { background: var(--bg-card); border: 2px solid var(--border-gold); border-radius: 12px; padding: 26px; display: flex; flex-direction: column; align-items: center; gap: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); max-width: 520px; margin: 0 auto; width: 100%; }
+    @keyframes packCardReveal {
+      0% { opacity: 0; transform: translateY(22px) scale(0.92); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
 
     #app-toast {
       position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px);
@@ -807,17 +811,21 @@
     <div id="pane-packs" class="pane">
       <div class="pack-shop-container">
         <h2>Mercato Skirmish Box</h2>
-        <p style="font-size: 0.88rem; color: var(--text-muted);">Spendi l'Oro guadagnato vincendo le battaglie per acquistare i Blind Pack dell'Espansione 1 e sbloccare nuovi Comandanti e miniature!</p>
+        <p style="font-size: 0.88rem; color: var(--text-muted);">Spendi l'Oro guadagnato vincendo le battaglie per acquistare i Blind Pack dell'Espansione 1 e sbloccare nuovi Comandanti e carte!</p>
         
         <div class="shop-box-card">
           <span style="font-size: 0.78rem; color: var(--gold-primary); font-weight: 900;">ESPANSIONE 1 — EREDI DELLA SECESSIONE</span>
           <div style="font-size: 3.8rem;">📦</div>
-          <p style="font-size: 0.82rem; color: var(--text-muted);">Contiene carte e miniature per il Grimorio del Set 1.</p>
+          <p style="font-size: 0.84rem; color: var(--text-muted); line-height: 1.4;">
+            Contiene <strong>5 Carte Garantite</strong>:<br>
+            <span style="color: var(--gold-primary); font-weight: 700;">⚔️ 2 Miniature</span> • <span style="color: var(--mana-cyan); font-weight: 700;">🏛️ 1 Altare</span> • <span style="color: #ffd32a; font-weight: 700;">✨ 2 Incantesimi</span><br>
+            <span style="font-size: 0.78rem; color: #a55eea;">+ Possibilità di risvegliare un Comandante Set 1!</span>
+          </p>
           <div style="font-size: 1.2rem; font-weight: 900; color: #ffd700;">Costo: 100 🪙</div>
           <button class="btn-arena-done" onclick="buyExpansion1Pack()">ACQUISTA BOX (100 🪙)</button>
         </div>
 
-        <div id="pack-results" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; width: 100%;"></div>
+        <div id="pack-results" style="display: flex; flex-direction: column; align-items: center; gap: 14px; width: 100%;"></div>
       </div>
     </div>
 
@@ -1657,34 +1665,159 @@
       if ((userState.gold || 0) < 100) return showToast("Oro insufficiente! Vinci altre partite (serve 100 🪙).");
       userState.gold -= 100;
       
-      const set1Cards = Object.keys(CARDS_DB).filter(k => CARDS_DB[k].set === 1);
-      const set1Commanders = ['garek', 'morbida', 'kaelen', 'justiciar_kael', 'ignis'];
-      
-      const wonCardId = set1Cards[Math.floor(Math.random() * set1Cards.length)];
-      userState.collection[wonCardId] = (userState.collection[wonCardId] || 0) + 1;
+      // Separazione categorie dal database carte
+      const set1Units = Object.keys(CARDS_DB).filter(k => CARDS_DB[k].type === 'unit' && CARDS_DB[k].set === 1);
+      const set0Units = Object.keys(CARDS_DB).filter(k => CARDS_DB[k].type === 'unit' && CARDS_DB[k].set === 0);
+      const allAltars = Object.keys(CARDS_DB).filter(k => CARDS_DB[k].type === 'altar');
+      const set1Spells = Object.keys(CARDS_DB).filter(k => CARDS_DB[k].type === 'spell' && CARDS_DB[k].set === 1);
+      const set0Spells = Object.keys(CARDS_DB).filter(k => CARDS_DB[k].type === 'spell' && CARDS_DB[k].set === 0);
 
-      let wonCommMsg = '';
-      if (Math.random() < 0.45) {
-        const commId = set1Commanders[Math.floor(Math.random() * set1Commanders.length)];
-        if (!userState.unlockedCommanders.includes(commId)) {
-          userState.unlockedCommanders.push(commId);
-          wonCommMsg = ` e hai sbloccato il Comandante ${COMMANDERS[commId].name}!`;
+      // Helper estrazione distinta con priorità Set 1
+      function pickWeightedDistinct(set1List, set0List, count) {
+        let weightedPool = [...set1List, ...set1List, ...set1List, ...set0List];
+        const drawn = [];
+        for (let i = 0; i < count; i++) {
+          const available = weightedPool.filter(id => !drawn.includes(id));
+          const poolToUse = available.length > 0 ? available : weightedPool;
+          const picked = poolToUse[Math.floor(Math.random() * poolToUse.length)];
+          drawn.push(picked);
         }
+        return drawn;
+      }
+
+      // 1. Esattamente 2 Miniature (unit)
+      const wonUnits = pickWeightedDistinct(set1Units, set0Units, 2);
+
+      // 2. Esattamente 1 Altare (altar)
+      const wonAltar = allAltars[Math.floor(Math.random() * allAltars.length)];
+
+      // 3. Esattamente 2 Carte Magia / Incantesimo (spell)
+      const wonSpells = pickWeightedDistinct(set1Spells, set0Spells, 2);
+
+      // Le 5 carte garantite nell'ordine esatto concordato
+      const packCards = [
+        { id: wonUnits[0], slotName: '⚔️ Miniatura 1' },
+        { id: wonUnits[1], slotName: '⚔️ Miniatura 2' },
+        { id: wonAltar, slotName: '🏛️ Altare' },
+        { id: wonSpells[0], slotName: '✨ Magia 1' },
+        { id: wonSpells[1], slotName: '✨ Magia 2' }
+      ];
+
+      // Aggiunge tutte e 5 le carte alla collezione
+      packCards.forEach(item => {
+        userState.collection[item.id] = (userState.collection[item.id] || 0) + 1;
+      });
+
+      // Possibilità di sbloccare un Comandante del Set 1 (45% probabilità)
+      const set1Commanders = ['garek', 'morbida', 'kaelen', 'justiciar_kael', 'ignis'];
+      const lockedCommanders = set1Commanders.filter(c => !userState.unlockedCommanders.includes(c));
+      let wonComm = null;
+
+      if (lockedCommanders.length > 0 && Math.random() < 0.45) {
+        const commId = lockedCommanders[Math.floor(Math.random() * lockedCommanders.length)];
+        userState.unlockedCommanders.push(commId);
+        wonComm = COMMANDERS[commId];
       }
 
       saveCloudState();
       updateNavGold();
-      showToast(`Box aperto! Trovata: ${CARDS_DB[wonCardId].name} (${RARITY_NAMES[CARDS_DB[wonCardId].rarity]})${wonCommMsg}`);
-      
+
+      let toastMsg = `Box aperto! Ottenute 5 carte (2 Miniature, 1 Altare, 2 Magie)`;
+      if (wonComm) toastMsg += ` e sbloccato il Comandante ${wonComm.name}!`;
+      showToast(toastMsg);
+
+      // Renderizzazione nel Mercato
       const resContainer = document.getElementById('pack-results');
-      const r = CARDS_DB[wonCardId].rarity || 'common';
       resContainer.innerHTML = `
-        <div style="background:var(--bg-card); border:2px solid var(--rarity-${r}); border-radius:6px; padding:12px; text-align:center;">
-          <div style="font-size:2rem;">📦</div>
-          <div style="font-size:0.75rem; font-weight:bold; color:var(--gold-primary);">${CARDS_DB[wonCardId].name}</div>
-          <div class="rarity-badge ${r}" style="display:inline-block; margin-top:4px;">${RARITY_NAMES[r]}</div>
+        <div style="width: 100%; text-align: center; margin-top: 10px; margin-bottom: 6px;">
+          <h3 style="color: var(--gold-primary); font-size: 1.25rem; font-weight: 900; letter-spacing: 1px; margin-bottom: 4px;">
+            🎉 BUSTA APERTA — 5 CARTE TROVATE!
+          </h3>
+          <p style="font-size: 0.82rem; color: var(--text-muted);">
+            2 Miniature, 1 Altare e 2 Magie sono state aggiunte alla tua Collezione. Passa sopra per i dettagli.
+          </p>
         </div>
       `;
+
+      if (wonComm) {
+        const commBanner = document.createElement('div');
+        commBanner.style.cssText = 'width: 100%; background: linear-gradient(90deg, rgba(229,185,88,0.2) 0%, rgba(229,185,88,0.05) 100%); border: 2px solid var(--gold-primary); border-radius: 8px; padding: 12px; margin-bottom: 8px; text-align: center;';
+        commBanner.innerHTML = `
+          <div style="font-size: 1.1rem; font-weight: 900; color: var(--gold-primary);">👑 COMANDANTE RISVEGLIATO: ${wonComm.name}!</div>
+          <div style="font-size: 0.78rem; color: #f1f2f6; margin-top: 2px;">Ora puoi selezionarlo nel Grimorio o nella Lobby per guidare il tuo esercito!</div>
+        `;
+        resContainer.appendChild(commBanner);
+      }
+
+      const gridEl = document.createElement('div');
+      gridEl.style.cssText = 'display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; width: 100%;';
+
+      // Se è stato sbloccato un comandante, mostralo in evidenza
+      if (wonComm) {
+        const r = wonComm.rarity || 'legendary';
+        const cEl = document.createElement('div');
+        cEl.className = `mtg-card rarity-${r}`;
+        cEl.style.cssText = 'animation: packCardReveal 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.2) forwards; box-shadow: 0 0 22px var(--gold-primary); border-color: var(--gold-primary);';
+        cEl.onmouseenter = (e) => showHoverCard(wonComm, e);
+        cEl.onmousemove = (e) => updateHoverCardPos(e);
+        cEl.onmouseleave = () => hideHoverCard();
+        cEl.innerHTML = `
+          <div style="background: rgba(229,185,88,0.25); color: var(--gold-primary); font-size: 0.6rem; font-weight: 900; padding: 2px; text-align: center; border-bottom: 1px solid var(--border-gold);">
+            👑 COMANDANTE SBLOCCATO
+          </div>
+          <div class="mtg-card-header">
+            <span class="mtg-card-title">${wonComm.name}</span>
+            <span class="mtg-cost-pip gold">👑</span>
+          </div>
+          <div class="mtg-card-art"><div class="mtg-card-art-glyph">${wonComm.glyph}</div></div>
+          <div class="mtg-type-banner">
+            <span>CAMPIONE [Set ${wonComm.set}]</span>
+            <span class="rarity-badge ${r}">${RARITY_NAMES[r]}</span>
+          </div>
+          <div class="mtg-text-box">${wonComm.riteDesc}</div>
+          <div class="mtg-pt-box">${wonComm.att}/${wonComm.hp}</div>
+        `;
+        gridEl.appendChild(cEl);
+      }
+
+      // Mostra le 5 carte garantite
+      packCards.forEach((item, idx) => {
+        const card = CARDS_DB[item.id];
+        const r = card.rarity || 'common';
+        const cardEl = document.createElement('div');
+        cardEl.className = `mtg-card rarity-${r}`;
+        const delay = (idx + (wonComm ? 1 : 0)) * 0.08;
+        cardEl.style.cssText = `animation: packCardReveal 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.2) forwards; animation-delay: ${delay}s; opacity: 0;`;
+        
+        cardEl.onmouseenter = (e) => showHoverCard(card, e);
+        cardEl.onmousemove = (e) => updateHoverCardPos(e);
+        cardEl.onmouseleave = () => hideHoverCard();
+
+        const typeLabel = card.type === 'unit' ? 'TRUPPA' : (card.type === 'altar' ? 'ALTARE' : 'INCANTESIMO');
+        const ptBox = card.type === 'unit'
+          ? `<div class="mtg-pt-box">${card.att}/${card.hp}</div>`
+          : (card.type === 'altar' ? `<div class="mtg-pt-box">0/${card.hp}</div>` : '');
+
+        cardEl.innerHTML = `
+          <div style="background: rgba(0,0,0,0.6); color: var(--gold-primary); font-size: 0.6rem; font-weight: 800; padding: 2px; text-align: center; border-bottom: 1px solid var(--border-frame);">
+            ${item.slotName}
+          </div>
+          <div class="mtg-card-header">
+            <span class="mtg-card-title">${card.name}</span>
+            <span class="mtg-cost-pip">${card.cost}</span>
+          </div>
+          <div class="mtg-card-art"><div class="mtg-card-art-glyph">${card.glyph}</div></div>
+          <div class="mtg-type-banner">
+            <span>${typeLabel} [Set ${card.set}]</span>
+            <span class="rarity-badge ${r}">${RARITY_NAMES[r]}</span>
+          </div>
+          <div class="mtg-text-box">${card.desc}</div>
+          ${ptBox}
+        `;
+        gridEl.appendChild(cardEl);
+      });
+
+      resContainer.appendChild(gridEl);
     }
 
     /* PIAZZAMENTO IA E LOBBY */
