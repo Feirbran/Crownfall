@@ -524,6 +524,7 @@
     <div class="nav-actions">
       <span class="gold-pill" id="nav-gold-label">🪙 0 Oro</span>
       <span class="user-pill" id="nav-user-label"></span>
+      <span class="cloud-pill" id="nav-cloud-status" style="display: none; font-size: 0.72rem; padding: 4px 8px; border-radius: 4px; border: 1px solid var(--border-gold); background: rgba(229,185,88,0.1); color: var(--gold-primary); cursor: pointer; font-weight: 700;" onclick="testDBConnection()" title="Clicca per testare la connessione al Database">☁️ Sincronizzato</span>
       <button class="btn-nav" onclick="showPaneDirect('lore')">Lore</button>
       <button class="btn-nav" onclick="showPaneDirect('tutorial')">Tutorial</button>
       <button class="btn-nav" onclick="showPane('home')">Menu</button>
@@ -958,45 +959,57 @@
 
     function normalizeUserState(state) {
       if (!state) state = {};
-      state.gold = state.gold || 100;
-      state.unlockedCommanders = state.unlockedCommanders || ['valeria', 'malakor', 'vespera', 'aurelius', 'vulkan'];
-      state.collection = state.collection || {};
-      state.decks = state.decks || {};
+      state.gold = (typeof state.gold === 'number') ? state.gold : 100;
+      state.unlockedCommanders = Array.isArray(state.unlockedCommanders) ? state.unlockedCommanders : ['valeria', 'malakor', 'vespera', 'aurelius', 'vulkan'];
+      state.collection = (state.collection && typeof state.collection === 'object') ? state.collection : {};
+      state.decks = (state.decks && typeof state.decks === 'object') ? state.decks : {};
       state.activeDeckName = state.activeDeckName || 'Mazzo Base';
       if (!state.decks['Mazzo Base']) {
         state.decks['Mazzo Base'] = { commanderId: 'valeria', cards: [...defaultBaseDeck] };
       }
       Object.keys(CARDS_DB).forEach(id => {
-        if (CARDS_DB[id].set === 0) state.collection[id] = 4;
+        if (CARDS_DB[id].set === 0) {
+          if (typeof state.collection[id] !== 'number') state.collection[id] = 4;
+        }
       });
       return state;
+    }
+
+    function updateNavGold() {
+      const el = document.getElementById('nav-gold-label');
+      if (el) {
+        el.textContent = `🪙 ${userState.gold || 0} Oro`;
+        el.style.display = 'inline-block';
+      }
     }
 
     // BYPASS DIRETTO OFFLINE
     function playOffline() {
       currentUser = { id: 'local_dev', email: 'offline@veridia.com', username: 'Condottiero Offline' };
+      localStorage.setItem('crownfall_last_login_type', 'offline');
       
       let parsed = null;
-      const raw = localStorage.getItem('crownfall_offline_save');
+      const raw = localStorage.getItem('crownfall_active_save') || localStorage.getItem('crownfall_offline_save');
       if (raw) {
         try {
           parsed = JSON.parse(raw);
         } catch (e) {
-          console.warn(e);
+          console.warn("Parsing salvataggio offline fallito:", e);
         }
       }
       userState = normalizeUserState(parsed);
+      saveCloudState();
       onLoginSuccess("Modalità Offline Attiva. Benvenuto!");
     }
 
-    // AUTENTICAZIONE CON ALERT ESPLICITI
+    // AUTENTICAZIONE CON ALERT ESPLICITI & SALVATAGGIO CLOUD ROBUSTO
     async function handleAuthSubmit() {
       const email = document.getElementById('auth-email').value.trim();
       const pass = document.getElementById('auth-password').value.trim();
       const user = document.getElementById('auth-username').value.trim() || email.split('@')[0];
 
       if (!email || !pass) {
-        return alert("ATTENZIONE: Inserisci Email e Password prima di cliccare!");
+        return alert("ATTENZIONE: Inserisci Email e Password prima di continuare!");
       }
 
       if (!sbClient) {
@@ -1005,7 +1018,11 @@
       }
 
       if (authMode === 'register') {
-        const { data, error } = await sbClient.auth.signUp({ email, password: pass });
+        const { data, error } = await sbClient.auth.signUp({
+          email,
+          password: pass,
+          options: { data: { username: user } }
+        });
         
         if (error) {
           return alert(`ERRORE DI REGISTRAZIONE:\n${error.message}`);
@@ -1015,22 +1032,27 @@
           return alert("Registrazione non riuscita. Riprova.");
         }
         
+        const initialDecks = { 'Mazzo Iniziale': { commanderId: 'valeria', cards: [...defaultBaseDeck] } };
         const initialProfile = {
           id: data.user.id,
           username: user,
           gold: 100,
-          collection: { ...CARDS_DB },
-          decks: { 'Mazzo Iniziale': { commanderId: 'valeria', cards: [...defaultBaseDeck] } },
-          active_deck_name: 'Mazzo Iniziale'
+          collection: {},
+          decks: initialDecks,
+          active_deck_name: 'Mazzo Iniziale',
+          updated_at: new Date().toISOString()
         };
         
-        const { error: dbError } = await sbClient.from('profiles').insert([initialProfile]);
+        const { error: dbError } = await sbClient.from('profiles').upsert([initialProfile]);
         if (dbError) {
-          alert(`AVVISO DATABASE:\n${dbError.message}\n(Se compare l'errore sulla tabella 'profiles', ricordati di eseguire lo script SQL su Supabase!)`);
+          console.error("Errore profilo DB:", dbError);
+          alert(`AVVISO DATABASE:\n${dbError.message}\nI dati sono stati comunque salvati in locale nel tuo browser.`);
         }
 
         currentUser = { id: data.user.id, email, username: user };
-        userState = normalizeUserState({ gold: 100, collection: initialProfile.collection, decks: initialProfile.decks, activeDeckName: 'Mazzo Iniziale' });
+        userState = normalizeUserState({ gold: 100, collection: {}, decks: initialDecks, activeDeckName: 'Mazzo Iniziale' });
+        localStorage.setItem('crownfall_last_login_type', 'cloud');
+        saveCloudState();
         onLoginSuccess(`Registrato con successo, Condottiero ${user}!`);
         
       } else {
@@ -1040,59 +1062,168 @@
           return alert(`ERRORE DI ACCESSO:\n${error.message}\n\n(Se non hai ancora un account, clicca prima sul pulsante 'Registrati' in alto!)`);
         }
         
-        const { data: profile, error: pError } = await sbClient.from('profiles').select('*').eq('id', data.user.id).single();
+        let { data: profile, error: pError } = await sbClient.from('profiles').select('*').eq('id', data.user.id).maybeSingle();
         if (pError) {
-          console.warn(pError);
+          console.warn("Errore fetch profilo:", pError);
         }
 
-        currentUser = { id: data.user.id, email, username: profile ? profile.username : user };
-        if (profile) {
-          userState = normalizeUserState({ gold: profile.gold, collection: profile.collection, decks: profile.decks, activeDeckName: profile.active_deck_name });
-        } else {
-          userState = normalizeUserState(null);
+        if (!profile) {
+          console.log("Profilo mancante sul Cloud, creazione iniziale...");
+          const initialDecks = { 'Mazzo Iniziale': { commanderId: 'valeria', cards: [...defaultBaseDeck] } };
+          profile = {
+            id: data.user.id,
+            username: user,
+            gold: 100,
+            collection: {},
+            decks: initialDecks,
+            active_deck_name: 'Mazzo Iniziale',
+            updated_at: new Date().toISOString()
+          };
+          await sbClient.from('profiles').upsert([profile]);
         }
+
+        currentUser = { id: data.user.id, email, username: profile.username || user };
+        
+        let stateData = {
+          gold: profile.gold,
+          collection: profile.collection,
+          decks: profile.decks,
+          activeDeckName: profile.active_deck_name
+        };
+
+        const localBackupRaw = localStorage.getItem('crownfall_user_state_' + currentUser.id);
+        if (localBackupRaw) {
+          try {
+            const lb = JSON.parse(localBackupRaw);
+            if (lb && typeof lb.gold === 'number' && lb.gold > (profile.gold || 0)) {
+              stateData.gold = lb.gold;
+            }
+            if (lb && lb.decks && Object.keys(lb.decks).length > Object.keys(stateData.decks || {}).length) {
+              stateData.decks = lb.decks;
+            }
+          } catch (e) {}
+        }
+
+        userState = normalizeUserState(stateData);
+        localStorage.setItem('crownfall_last_login_type', 'cloud');
+        saveCloudState();
         onLoginSuccess(`Bentornato sul Cloud, ${currentUser.username}!`);
       }
     }
 
+    // SALVATAGGIO A DOPPIA RIDONDANZA (LOCALSTORAGE IMMEDIATO + SUPABASE CLOUD)
     async function saveCloudState() {
+      if (!userState) return;
+
+      const savePayload = {
+        gold: userState.gold,
+        decks: userState.decks,
+        collection: userState.collection,
+        activeDeckName: userState.activeDeckName,
+        unlockedCommanders: userState.unlockedCommanders,
+        _savedAt: new Date().toISOString()
+      };
+
+      // 1. Salva SEMPRE localmente
+      try {
+        localStorage.setItem('crownfall_active_save', JSON.stringify(savePayload));
+        if (currentUser) {
+          localStorage.setItem('crownfall_user_state_' + currentUser.id, JSON.stringify(savePayload));
+        }
+      } catch (e) {
+        console.warn("Salvataggio locale fallito:", e);
+      }
+
       if (currentUser && currentUser.id === 'local_dev') {
-        localStorage.setItem('crownfall_offline_save', JSON.stringify(userState));
-        showToast("Salvataggio locale completato.");
+        localStorage.setItem('crownfall_offline_save', JSON.stringify(savePayload));
         return;
       }
 
-      if (sbClient && currentUser) {
-        const { error } = await sbClient.from('profiles').update({
-          gold: userState.gold,
-          decks: userState.decks,
-          collection: userState.collection,
-          active_deck_name: userState.activeDeckName
-        }).eq('id', currentUser.id);
-        if (error) {
-          showToast(`Errore salvataggio: ${error.message}`);
-        } else {
-          showToast("Grimorio sincronizzato nel Cloud!");
+      // 2. Sincronizzazione con il database Supabase
+      if (sbClient && currentUser && currentUser.id !== 'local_dev') {
+        try {
+          const { error } = await sbClient.from('profiles').upsert({
+            id: currentUser.id,
+            username: currentUser.username,
+            gold: userState.gold,
+            decks: userState.decks,
+            collection: userState.collection,
+            active_deck_name: userState.activeDeckName,
+            updated_at: new Date().toISOString()
+          });
+          if (error) {
+            console.error("Errore salvataggio Supabase:", error);
+            showToast(`⚠️ Cloud DB: ${error.message}`);
+          } else {
+            console.log("DB Cloud sincronizzato con successo!");
+            showToast("☁️ Dati salvati nel Cloud DB!");
+          }
+        } catch (err) {
+          console.error("Eccezione salvataggio Cloud:", err);
         }
+      }
+    }
+
+    // TEST DIRETTO CONNESSIONE AL DATABASE
+    async function testDBConnection() {
+      if (!currentUser || currentUser.id === 'local_dev') {
+        return alert("ℹ️ STATO: MODALITÀ OFFLINE\n\nI tuoi dati (oro, mazzi, collezione) vengono memorizzati localmente nel tuo browser (localStorage).\n\nPer sincronizzare i tuoi progressi nel Cloud su tutti i dispositivi, effettua il Logout e Accedi/Registrati con Email e Password.");
+      }
+      if (!sbClient) {
+        return alert("⚠️ Supabase JS non è caricato. Controlla la connessione internet.");
+      }
+      showToast("Verifica connessione al Cloud DB in corso...");
+      try {
+        const { data, error } = await sbClient.from('profiles').select('*').eq('id', currentUser.id).maybeSingle();
+        if (error) {
+          alert(`❌ ERRORE DATABASE SUPABASE:\n${error.message}\n(Dettagli: ${error.details || error.hint || error.code})`);
+        } else if (data) {
+          alert(`✅ CONNESSIONE DATABASE RIUSCITA!\n\nI tuoi dati sono sincronizzati sul Cloud Supabase:\n- Condottiero: ${data.username}\n- Oro nel Cloud: ${data.gold} 🪙\n- Mazzi salvati: ${Object.keys(data.decks || {}).length}\n- Mazzo attivo: ${data.active_deck_name}\n- Ultimo aggiornamento: ${new Date(data.updated_at).toLocaleString()}`);
+        } else {
+          alert("⚠️ Nessun profilo trovato sul Cloud per questo utente. Provvedo a salvarlo adesso...");
+          await saveCloudState();
+          alert("✅ Profilo creato e salvato con successo nel Cloud!");
+        }
+      } catch (err) {
+        alert(`❌ ERRORE DI RETE:\n${err.message}`);
       }
     }
 
     function onLoginSuccess(msg) {
       document.getElementById('nav-user-label').textContent = `👤 ${currentUser.username}`;
       document.getElementById('nav-user-label').style.display = 'inline-block';
-      document.getElementById('nav-gold-label').textContent = `🪙 ${userState.gold || 0} Oro`;
-      document.getElementById('nav-gold-label').style.display = 'inline-block';
+      updateNavGold();
       document.getElementById('btn-nav-logout').style.display = 'inline-block';
+      
+      const cloudStatusEl = document.getElementById('nav-cloud-status');
+      if (cloudStatusEl) {
+        cloudStatusEl.style.display = 'inline-block';
+        if (currentUser.id === 'local_dev') {
+          cloudStatusEl.textContent = '💾 Locale (Offline)';
+          cloudStatusEl.style.borderColor = 'var(--border-frame)';
+          cloudStatusEl.style.color = 'var(--text-muted)';
+        } else {
+          cloudStatusEl.textContent = '☁️ Cloud Attivo';
+          cloudStatusEl.style.borderColor = 'var(--border-gold)';
+          cloudStatusEl.style.color = 'var(--gold-primary)';
+        }
+      }
+      
       showToast(msg);
       showPaneDirect('home');
     }
 
     async function handleLogout() {
-      if (sbClient) await sbClient.auth.signOut();
+      if (sbClient) {
+        try { await sbClient.auth.signOut(); } catch (e) {}
+      }
+      localStorage.removeItem('crownfall_last_login_type');
       currentUser = null;
       document.getElementById('nav-user-label').style.display = 'none';
       document.getElementById('nav-gold-label').style.display = 'none';
       document.getElementById('btn-nav-logout').style.display = 'none';
+      const cloudStatusEl = document.getElementById('nav-cloud-status');
+      if (cloudStatusEl) cloudStatusEl.style.display = 'none';
       showPaneDirect('auth');
       showToast("Disconnesso.");
     }
@@ -1233,7 +1364,7 @@
 
       peer = new Peer();
       peer.on('open', (id) => {
-        document.getElementById('host-id-display').innerHTML = `Codice Stanza:<br><strong>${id}</strong><br>(Invialo al tuo avversario)`;
+        document.getElementById('host-id-display').innerHTML = `Codice Stanza:<br><strong style="user-select:text; -webkit-user-select:text;">${id}</strong><br><button class="btn" style="margin-top:6px; padding:4px 8px; font-size:0.75rem;" onclick="navigator.clipboard.writeText('${id}').then(() => showToast('Codice Stanza Copiato!'))">📋 COPIA CODICE</button>`;
       });
       peer.on('connection', (c) => {
         conn = c;
@@ -1370,6 +1501,7 @@
               if (currentCountInDeck >= 4) return showToast(`Limite 4x raggiunto per ${card.name}!`);
               deck.cards.push(card.id);
               renderDeckBuilder();
+              saveCloudState();
             };
           }
 
@@ -1416,6 +1548,7 @@
       if (idx !== -1) {
         deck.cards.splice(idx, 1);
         renderDeckBuilder();
+        saveCloudState();
       }
     }
 
@@ -1429,6 +1562,7 @@
         deck.cards.push(eligible[Math.floor(Math.random() * eligible.length)]);
       }
       renderDeckBuilder();
+      saveCloudState();
     }
 
     function finishDeckBuilding() {
@@ -1439,13 +1573,14 @@
     }
 
     function openDeckBuilder() { showPaneDirect('deck'); }
-    function switchDeck(val) { userState.activeDeckName = val; renderDeckBuilder(); }
+    function switchDeck(val) { userState.activeDeckName = val; renderDeckBuilder(); saveCloudState(); }
     function promptCreateDeck() {
       const name = prompt("Nome nuovo Grimorio:");
       if (!name) return;
       userState.decks[name] = { commanderId: 'valeria', cards: [...defaultBaseDeck] };
       userState.activeDeckName = name;
       renderDeckBuilder();
+      saveCloudState();
     }
 
     function buyExpansion1Pack() {
@@ -2338,6 +2473,7 @@
       if (!p2Alive) {
         addLog("BATTAGLIA CONCLUSA: VITTORIA DI P1!", 'sys');
         userState.gold = (userState.gold || 0) + 100;
+        updateNavGold();
         saveCloudState();
         alert("VITTORIA! Hai decapitato il nemico. Guadagni +100 Oro 🪙!");
         showPaneDirect('home');
@@ -2451,23 +2587,93 @@
       showToast("Rito d'Armi attivato con successo!");
     }
 
-    // AVVIO SICURO
+    // AVVIO SICURO & RIPRISTINO SESSIONE
     window.addEventListener('DOMContentLoaded', async () => {
       showPaneDirect('auth');
 
+      // 1. Prova a ripristinare la sessione Cloud da Supabase
       if (sbClient) {
         try {
-          const { data: { session } } = await sbClient.auth.getSession();
-          if (session) {
-            const { data: profile } = await sbClient.from('profiles').select('*').eq('id', session.user.id).single();
-            if (profile) {
-              currentUser = { id: session.user.id, email: session.user.email, username: profile.username };
-              userState = normalizeUserState({ gold: profile.gold, collection: profile.collection, decks: profile.decks, activeDeckName: profile.active_deck_name });
-              onLoginSuccess(`Sessione Cloud ripristinata: ${profile.username}`);
+          const { data: { session }, error: sessionError } = await sbClient.auth.getSession();
+          if (session && session.user) {
+            console.log("Sessione Supabase trovata per:", session.user.email);
+            
+            // Cerca il profilo sul Cloud
+            let { data: profile, error: pErr } = await sbClient
+              .from('profiles')
+              .select('*')
+              .eq('id', session.user.id)
+              .maybeSingle();
+
+            // Autoriparazione: se il profilo non esiste nel DB, crealo all'istante
+            if (!profile) {
+              console.log("Profilo mancante sul DB, inizializzazione automatica...");
+              const initialDecks = { 'Mazzo Base': { commanderId: 'valeria', cards: [...defaultBaseDeck] } };
+              profile = {
+                id: session.user.id,
+                username: (session.user.user_metadata && session.user.user_metadata.username) || session.user.email.split('@')[0],
+                gold: 100,
+                decks: initialDecks,
+                collection: {},
+                active_deck_name: 'Mazzo Base',
+                updated_at: new Date().toISOString()
+              };
+              await sbClient.from('profiles').upsert(profile);
             }
+
+            currentUser = {
+              id: session.user.id,
+              email: session.user.email,
+              username: profile.username || session.user.email.split('@')[0]
+            };
+
+            let stateData = {
+              gold: profile.gold,
+              collection: profile.collection,
+              decks: profile.decks,
+              activeDeckName: profile.active_deck_name
+            };
+
+            // Controlla se il salvataggio locale recente ha più progressi
+            const localBackupRaw = localStorage.getItem('crownfall_user_state_' + currentUser.id);
+            if (localBackupRaw) {
+              try {
+                const lb = JSON.parse(localBackupRaw);
+                if (lb && typeof lb.gold === 'number' && lb.gold > (profile.gold || 0)) {
+                  stateData.gold = lb.gold;
+                }
+                if (lb && lb.decks && Object.keys(lb.decks).length > Object.keys(stateData.decks || {}).length) {
+                  stateData.decks = lb.decks;
+                }
+                if (lb && lb.unlockedCommanders) {
+                  stateData.unlockedCommanders = lb.unlockedCommanders;
+                }
+              } catch (e) {}
+            }
+
+            userState = normalizeUserState(stateData);
+            localStorage.setItem('crownfall_last_login_type', 'cloud');
+            onLoginSuccess(`Sessione Cloud ripristinata: ${currentUser.username}`);
+            return;
           }
         } catch (e) {
-          console.warn("Nessuna sessione attiva.");
+          console.warn("Errore ripristino sessione Cloud:", e);
+        }
+      }
+
+      // 2. Se non c'è sessione Cloud, controlla se l'utente stava giocando Offline
+      const lastLogin = localStorage.getItem('crownfall_last_login_type');
+      if (lastLogin === 'offline') {
+        const savedRaw = localStorage.getItem('crownfall_active_save') || localStorage.getItem('crownfall_offline_save');
+        if (savedRaw) {
+          try {
+            currentUser = { id: 'local_dev', email: 'offline@veridia.com', username: 'Condottiero Offline' };
+            userState = normalizeUserState(JSON.parse(savedRaw));
+            onLoginSuccess("Sessione Offline ripristinata!");
+            return;
+          } catch (e) {
+            console.warn("Errore ripristino sessione Offline:", e);
+          }
         }
       }
     });
