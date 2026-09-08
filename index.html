@@ -962,6 +962,8 @@
     let netBC = null;
     let netPeer = null;
     let netConn = null;
+    let netSbChannel = null;
+    const processedNetMsgIds = new Set();
     let currentRoomCode = null;
     let localClientId = 'cl_' + Math.random().toString(36).substring(2, 9);
     let isP2P = false;
@@ -1471,14 +1473,33 @@
       document.body.removeChild(ta);
     }
 
+    const TURN_ICE_SERVERS = [
+      { urls: 'stun:stun.l.google.com:19302' },
+      { urls: 'stun:stun1.l.google.com:19302' },
+      { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' },
+      { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' },
+      { urls: 'turn:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' }
+    ];
+
+    function normalizePeerCode(input) {
+      if (!input) return '';
+      let clean = input.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+      if (!clean.startsWith('cf')) {
+        clean = 'cf' + clean;
+      }
+      return clean;
+    }
+
     function hostMultiplayer() {
       const deckSelect = document.getElementById('lobby-deck-select-p2p');
       const deckName = deckSelect ? deckSelect.value : userState.activeDeckName;
       let deck = userState.decks[deckName] || userState.decks['Mazzo Base'] || Object.values(userState.decks)[0];
       deck.cards = ensureDeck30Cards(deck);
 
-      const roomCode = 'CF-' + Math.floor(1000 + Math.random() * 9000);
-      currentRoomCode = roomCode;
+      const rawNum = Math.floor(1000 + Math.random() * 9000);
+      const displayCode = 'CF-' + rawNum;
+      const peerCode = 'cf' + rawNum;
+      currentRoomCode = displayCode;
       isP2P = true;
       myP2PRole = 'p1';
 
@@ -1487,65 +1508,57 @@
         hostDisplay.innerHTML = `
           <div style="background: rgba(229,185,88,0.1); border: 2px dashed var(--gold-primary); border-radius: 8px; padding: 12px; text-align: center; margin-top: 6px;">
             <div style="font-size: 0.72rem; font-weight: 800; color: var(--gold-primary); text-transform: uppercase;">CODICE STANZA:</div>
-            <div id="host-room-code-display" style="font-size: 1.8rem; font-weight: 900; color: #fff; letter-spacing: 3px; margin: 4px 0; user-select: all; -webkit-user-select: all;">${roomCode}</div>
+            <div id="host-room-code-display" style="font-size: 1.8rem; font-weight: 900; color: #fff; letter-spacing: 3px; margin: 4px 0; user-select: all; -webkit-user-select: all;">${displayCode}</div>
             <button type="button" class="btn btn-gold" onclick="copyHostRoomCode()" style="padding: 5px 12px; font-size: 0.78rem; font-weight: 800;">📋 COPIA CODICE</button>
-            <div id="host-status-msg" style="font-size: 0.76rem; color: #a4b0be; margin-top: 8px;">⏳ In attesa che l'avversario inserisca il codice...</div>
+            <div id="host-status-msg" style="font-size: 0.76rem; color: #a4b0be; margin-top: 8px;">⏳ Connessione al relay WebRTC in corso...</div>
           </div>
         `;
       }
 
-      initNetwork(roomCode, true);
-      showToast(`Stanza ${roomCode} creata! Comunica il codice all'avversario.`);
+      initNetwork(peerCode, true);
+      showToast(`Stanza ${displayCode} creata! Comunica il codice all'avversario.`);
     }
     const hostP2PMatch = hostMultiplayer;
 
     function joinMultiplayer() {
       const inputEl = document.getElementById('join-room-input');
-      const roomCode = (inputEl ? inputEl.value : '').trim().toUpperCase();
-      if (!roomCode) return showToast("Inserisci il codice della stanza fornito dall'Host!");
+      const rawVal = (inputEl ? inputEl.value : '').trim();
+      if (!rawVal) return showToast("Inserisci il codice della stanza fornito dall'Host!");
 
-      const deckSelect = document.getElementById('lobby-deck-select-p2p');
-      const deckName = deckSelect ? deckSelect.value : userState.activeDeckName;
-      let deck = userState.decks[deckName] || userState.decks['Mazzo Base'] || Object.values(userState.decks)[0];
-      deck.cards = ensureDeck30Cards(deck);
-
-      currentRoomCode = roomCode;
+      const peerCode = normalizePeerCode(rawVal);
+      currentRoomCode = peerCode.toUpperCase();
       isP2P = true;
       myP2PRole = 'p2';
 
-      showToast(`Connessione alla stanza ${roomCode}...`);
-      initNetwork(roomCode, false);
+      showToast(`Connessione alla stanza ${currentRoomCode}...`);
+      initNetwork(peerCode, false);
 
-      const sendJoin = () => {
-        sendNetMsg({
-          type: 'HELLO_JOIN',
-          username: currentUser ? (currentUser.username || 'Condottiero 2') : 'Ospite',
-          commanderId: deck.commanderId || 'valeria',
-          cards: [...deck.cards]
-        });
-      };
-
-      sendJoin();
       let attempts = 0;
-      const handshakeInterval = setInterval(() => {
+      const joinTimer = setInterval(() => {
         if (battleState && battleState.phase) {
-          clearInterval(handshakeInterval);
-        } else if (attempts < 8) {
+          clearInterval(joinTimer);
+        } else if (netConn && netConn.open) {
+          sendGuestHello();
+        } else if (attempts < 6) {
           attempts++;
-          sendJoin();
+          console.log("Tentativo di connessione verso Host...", attempts);
+          attemptGuestConnect(peerCode);
         } else {
-          clearInterval(handshakeInterval);
+          clearInterval(joinTimer);
+          if (!battleState || !battleState.phase) {
+            showToast("Connessione in timeout. Controlla che l'Host abbia la stanza aperta!");
+          }
         }
-      }, 900);
+      }, 1500);
     }
     const joinP2PMatch = joinMultiplayer;
 
-    function initNetwork(roomCode, isHost) {
-      // 1. Canale locale istantaneo BroadcastChannel (per due finestre/schede nello stesso browser)
+    function initNetwork(peerCode, isHost) {
+      // 1. Canale locale BroadcastChannel (per test immediato tra due schede nello stesso browser)
       try {
         if (typeof BroadcastChannel !== 'undefined') {
-          if (netBC) netBC.close();
-          netBC = new BroadcastChannel('crownfall_' + roomCode);
+          if (netBC) { try { netBC.close(); } catch(e){} }
+          netBC = new BroadcastChannel('crownfall_' + peerCode);
           netBC.onmessage = (ev) => {
             if (ev.data && ev.data.senderId !== localClientId) {
               handleNetMsg(ev.data);
@@ -1556,73 +1569,104 @@
         console.warn("BroadcastChannel err:", e);
       }
 
-      // 2. PeerJS per duelli WebRTC su computer/dispositivi diversi
+      // 2. WebRTC con Google STUN + OpenRelay TURN (per superare qualsiasi NAT casalingo, mobile 4G/5G, firewall)
       if (typeof Peer !== 'undefined') {
         try {
           if (netPeer) { try { netPeer.destroy(); } catch(e){} }
-          const peerConfig = {
-            debug: 1,
-            config: {
-              iceServers: [
-                { urls: 'stun:stun.l.google.com:19302' },
-                { urls: 'stun:stun1.l.google.com:19302' },
-                { urls: 'stun:stun2.l.google.com:19302' }
-              ]
-            }
-          };
 
           if (isHost) {
-            netPeer = new Peer(roomCode, peerConfig);
-            netPeer.on('open', (id) => {
-              console.log("PeerJS Host pronto con ID:", id);
+            netPeer = new Peer(peerCode, {
+              debug: 1,
+              config: { iceServers: TURN_ICE_SERVERS }
             });
+
+            netPeer.on('open', (id) => {
+              console.log("PeerJS Host WebRTC online con ID:", id);
+              const statusEl = document.getElementById('host-status-msg');
+              if (statusEl) statusEl.textContent = "⏳ Stanza online attiva! In attesa dell'avversario...";
+            });
+
             netPeer.on('connection', (conn) => {
               netConn = conn;
               conn.on('open', () => {
-                console.log("PeerJS Connessione stabilita con Guest!");
+                console.log("PeerJS WebRTC connesso con Guest!");
+                const statusEl = document.getElementById('host-status-msg');
+                if (statusEl) statusEl.textContent = "⚔️ Avversario connesso! Sincronizzazione...";
               });
-              conn.on('data', (data) => {
-                handleNetMsg(data);
-              });
-              conn.on('error', (e) => console.warn("PeerJS conn error:", e));
+              conn.on('data', (data) => handleNetMsg(data));
+              conn.on('error', (e) => console.warn("Host conn err:", e));
             });
-            netPeer.on('error', (err) => console.warn("PeerJS Host:", err));
-          } else {
-            netPeer = new Peer(peerConfig);
-            netPeer.on('open', (id) => {
-              netConn = netPeer.connect(roomCode);
-              if (netConn) {
-                netConn.on('open', () => {
-                  console.log("PeerJS Connesso all'host!");
-                  const deckSelect = document.getElementById('lobby-deck-select-p2p');
-                  const deckName = deckSelect ? deckSelect.value : userState.activeDeckName;
-                  const deck = userState.decks[deckName] || Object.values(userState.decks)[0];
-                  sendNetMsg({
-                    type: 'HELLO_JOIN',
-                    username: currentUser ? (currentUser.username || 'Condottiero 2') : 'Ospite',
-                    commanderId: deck.commanderId || 'valeria',
-                    cards: ensureDeck30Cards(deck)
-                  });
-                });
-                netConn.on('data', (data) => {
-                  handleNetMsg(data);
-                });
-                netConn.on('error', (e) => console.warn("PeerJS conn error:", e));
+
+            netPeer.on('error', (err) => {
+              console.warn("PeerJS Host error:", err);
+              if (err && err.type === 'unavailable-id') {
+                showToast("Codice stanza già occupato, ricrea la stanza.");
               }
             });
-            netPeer.on('error', (err) => console.warn("PeerJS Guest:", err));
+          } else {
+            // Guest
+            netPeer = new Peer({
+              debug: 1,
+              config: { iceServers: TURN_ICE_SERVERS }
+            });
+
+            netPeer.on('open', (guestId) => {
+              console.log("PeerJS Guest registrato con ID:", guestId, "-> Connessione a:", peerCode);
+              attemptGuestConnect(peerCode);
+            });
+
+            netPeer.on('error', (err) => {
+              console.warn("PeerJS Guest error:", err);
+            });
           }
         } catch(e) {
-          console.warn("PeerJS init error:", e);
+          console.warn("Peer init error:", e);
         }
       }
     }
 
+    function attemptGuestConnect(hostId) {
+      if (!netPeer || netPeer.destroyed) return;
+      try {
+        netConn = netPeer.connect(hostId, { reliable: true });
+        if (netConn) {
+          netConn.on('open', () => {
+            console.log("WebRTC aperto con Host!");
+            showToast("Connesso all'Host! Avvio partita...");
+            sendGuestHello();
+          });
+          netConn.on('data', (data) => handleNetMsg(data));
+          netConn.on('error', (e) => console.warn("Guest conn err:", e));
+        }
+      } catch(e) { console.warn("Connect attempt failed:", e); }
+    }
+
+    function sendGuestHello() {
+      const deckSelect = document.getElementById('lobby-deck-select-p2p');
+      const deckName = deckSelect ? deckSelect.value : userState.activeDeckName;
+      let deck = userState.decks[deckName] || userState.decks['Mazzo Base'] || Object.values(userState.decks)[0];
+      const validCards = ensureDeck30Cards(deck);
+      sendNetMsg({
+        type: 'HELLO_JOIN',
+        username: currentUser ? (currentUser.username || 'Condottiero 2') : 'Ospite',
+        commanderId: deck.commanderId || 'valeria',
+        cards: validCards
+      });
+    }
+
     function sendNetMsg(payload) {
+      if (!payload) return;
       payload.senderId = localClientId;
+      if (!payload.msgId) {
+        payload.msgId = localClientId + '_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
+      }
+
+      // 1. Canale locale BroadcastChannel
       if (netBC) {
         try { netBC.postMessage(payload); } catch(e){}
       }
+
+      // 2. WebRTC DataChannel (P2P globale via STUN/TURN)
       if (netConn && netConn.open) {
         try { netConn.send(payload); } catch(e){}
       }
@@ -1632,38 +1676,58 @@
     function handleNetMsg(data) {
       if (!data || !data.type) return;
 
+      // Deduplicazione pacchetti (nel caso arrivino sia via Supabase che via locale)
+      if (data.msgId) {
+        if (processedNetMsgIds.has(data.msgId)) return;
+        processedNetMsgIds.add(data.msgId);
+        if (processedNetMsgIds.size > 250) {
+          const first = processedNetMsgIds.values().next().value;
+          processedNetMsgIds.delete(first);
+        }
+      }
+
       if (data.type === 'HELLO_JOIN') {
         if (myP2PRole === 'p1') {
-          const statusEl = document.getElementById('host-status-msg');
-          if (statusEl) statusEl.textContent = `⚔️ ${data.username} è entrato nella stanza! Avvio duello...`;
-
           const deckSelect = document.getElementById('lobby-deck-select-p2p');
           const deckName = deckSelect ? deckSelect.value : userState.activeDeckName;
           let hostDeck = userState.decks[deckName] || userState.decks['Mazzo Base'] || Object.values(userState.decks)[0];
           hostDeck.cards = ensureDeck30Cards(hostDeck);
 
+          const statusEl = document.getElementById('host-status-msg');
+          if (statusEl) statusEl.textContent = `⚔️ ${data.username} è entrato nella stanza! Avvio duello...`;
+
+          const p1Cards = [...hostDeck.cards].sort(() => Math.random() - 0.5);
+          const p2Cards = [...ensureDeck30Cards({ cards: data.cards })].sort(() => Math.random() - 0.5);
+
           sendNetMsg({
             type: 'HELLO_HOST',
             username: currentUser ? (currentUser.username || 'Host') : 'Condottiero 1',
             commanderId: hostDeck.commanderId || 'valeria',
-            cards: [...hostDeck.cards]
+            p1Cards: p1Cards,
+            p2Cards: p2Cards
           });
 
-          const hostData = {
-            username: currentUser ? (currentUser.username || 'Host') : 'Condottiero 1',
-            commanderId: hostDeck.commanderId || 'valeria',
-            cards: hostDeck.cards
-          };
-          const guestData = {
-            username: data.username,
-            commanderId: data.commanderId,
-            cards: data.cards
-          };
+          if (!battleState || !battleState.phase) {
+            const hostData = {
+              username: currentUser ? (currentUser.username || 'Host') : 'Condottiero 1',
+              commanderId: hostDeck.commanderId || 'valeria',
+              cards: p1Cards,
+              shuffledDeck: p1Cards
+            };
+            const guestData = {
+              username: data.username,
+              commanderId: data.commanderId,
+              cards: p2Cards,
+              shuffledDeck: p2Cards
+            };
 
-          startBattleP2P(hostData, guestData, 'p1');
+            startBattleP2P(hostData, guestData, 'p1');
+          }
         }
       } else if (data.type === 'HELLO_HOST') {
         if (myP2PRole === 'p2') {
+          if (battleState && battleState.phase) return;
+
           const deckSelect = document.getElementById('lobby-deck-select-p2p');
           const deckName = deckSelect ? deckSelect.value : userState.activeDeckName;
           let guestDeck = userState.decks[deckName] || userState.decks['Mazzo Base'] || Object.values(userState.decks)[0];
@@ -1672,12 +1736,14 @@
           const hostData = {
             username: data.username,
             commanderId: data.commanderId,
-            cards: data.cards
+            cards: data.p1Cards || data.cards,
+            shuffledDeck: data.p1Cards
           };
           const guestData = {
             username: currentUser ? (currentUser.username || 'Ospite') : 'Condottiero 2',
             commanderId: guestDeck.commanderId || 'valeria',
-            cards: guestDeck.cards
+            cards: data.p2Cards || guestDeck.cards,
+            shuffledDeck: data.p2Cards
           };
 
           startBattleP2P(hostData, guestData, 'p2');
@@ -1704,7 +1770,8 @@
         addLog(`${data.role.toUpperCase()} piazza Comandante su cella ${data.idx}`, data.role);
         renderPieces();
 
-        if (battleState.p1Placed && battleState.p2Placed) {
+        if (battleState.p1Placed && battleState.p2Placed && !battleState.hasDrawnInitialCards) {
+          battleState.hasDrawnInitialCards = true;
           document.querySelectorAll('.square').forEach(s => s.classList.remove('highlight-placement'));
           battleState.phase = 'active';
           battleState.turn = 'p1';
@@ -2329,7 +2396,7 @@
           blood: 0,
           actions: 2,
           altarDeployedThisTurn: false,
-          deck: [...ensureDeck30Cards({ cards: hostData.cards })].sort(() => Math.random() - 0.5),
+          deck: (hostData.shuffledDeck && hostData.shuffledDeck.length) ? [...hostData.shuffledDeck] : [...ensureDeck30Cards({ cards: hostData.cards })].sort(() => Math.random() - 0.5),
           hand: []
         },
         p2: {
@@ -2341,7 +2408,7 @@
           blood: 0,
           actions: 2,
           altarDeployedThisTurn: false,
-          deck: [...ensureDeck30Cards({ cards: guestData.cards })].sort(() => Math.random() - 0.5),
+          deck: (guestData.shuffledDeck && guestData.shuffledDeck.length) ? [...guestData.shuffledDeck] : [...ensureDeck30Cards({ cards: guestData.cards })].sort(() => Math.random() - 0.5),
           hand: []
         },
         grid: Array(64).fill(null),
@@ -2350,7 +2417,8 @@
         nextTurnManaDrainP1: 0,
         nextTurnManaDrainP2: 0,
         p1Placed: false,
-        p2Placed: false
+        p2Placed: false,
+        hasDrawnInitialCards: false
       };
 
       showPaneDirect('battle');
@@ -2514,7 +2582,8 @@
           if (isP2P) {
             sendNetMsg({ type: 'SYNC_PLACEMENT', role: 'p1', idx });
             renderPieces();
-            if (battleState.p2Placed) {
+            if (battleState.p2Placed && !battleState.hasDrawnInitialCards) {
+              battleState.hasDrawnInitialCards = true;
               document.querySelectorAll('.square').forEach(s => s.classList.remove('highlight-placement'));
               battleState.phase = 'active';
               battleState.turn = 'p1';
@@ -2524,7 +2593,7 @@
               renderHand();
               showToast("Entrambi i Comandanti schierati! Inizia il duello. Turno di P1.");
               addLog("--- INIZIO BATTAGLIA (Turno P1) ---", 'sys');
-            } else {
+            } else if (!battleState.p2Placed) {
               showToast("Comandante schierato! In attesa che l'avversario piazzi il suo...");
             }
           } else {
@@ -2584,7 +2653,8 @@
           sendNetMsg({ type: 'SYNC_PLACEMENT', role: 'p2', idx });
           renderPieces();
 
-          if (battleState.p1Placed) {
+          if (battleState.p1Placed && !battleState.hasDrawnInitialCards) {
+            battleState.hasDrawnInitialCards = true;
             document.querySelectorAll('.square').forEach(s => s.classList.remove('highlight-placement'));
             battleState.phase = 'active';
             battleState.turn = 'p1';
@@ -2594,7 +2664,7 @@
             renderHand();
             showToast("Entrambi i Comandanti schierati! Turno di P1.");
             addLog("--- INIZIO BATTAGLIA (Turno P1) ---", 'sys');
-          } else {
+          } else if (!battleState.p1Placed) {
             showToast("Comandante schierato! In attesa che P1 piazzi il suo...");
           }
           return;

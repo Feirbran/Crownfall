@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+</head>
+<body>
+  <h1>PeerJS Test</h1>
+  <div id="log"></div>
+  <script>
+    function log(msg) {
+      console.log(msg);
+      document.getElementById('log').innerHTML += '<p>' + msg + '</p>';
+    }
+
+    const hostId = 'cf' + Math.floor(100000 + Math.random() * 900000);
+    log('Creating host: ' + hostId);
+
+    const p1 = new Peer(hostId, {
+      debug: 2,
+      config: {
+        iceServers: [
+          { urls: 'stun:stun.l.google.com:19302' },
+          { urls: 'stun:stun1.l.google.com:19302' }
+        ]
+      }
+    });
+
+    p1.on('open', (id) => {
+      log('Host opened with id: ' + id);
+      
+      // Now create guest and connect
+      const p2 = new Peer({
+        debug: 2,
+        config: {
+          iceServers: [
+            { urls: 'stun:stun.l.google.com:19302' },
+            { urls: 'stun:stun1.l.google.com:19302' }
+          ]
+        }
+      });
+
+      p2.on('open', (p2Id) => {
+        log('Guest opened with id: ' + p2Id);
+        log('Guest connecting to: ' + id);
+        const conn = p2.connect(id, { reliable: true });
+        
+        conn.on('open', () => {
+          log('SUCCESS! Guest connected to host!');
+          conn.send({ hello: 'world' });
+        });
+
+        conn.on('error', (err) => {
+          log('Guest conn error: ' + err);
+        });
+      });
+
+      p2.on('error', (err) => {
+        log('Guest peer error: ' + err);
+      });
+    });
+
+    p1.on('connection', (conn) => {
+      log('Host received connection!');
+      conn.on('data', (data) => {
+        log('Host received data: ' + JSON.stringify(data));
+      });
+    });
+
+    p1.on('error', (err) => {
+      log('Host peer error: ' + err);
+    });
+  </script>
+</body>
+</html>
