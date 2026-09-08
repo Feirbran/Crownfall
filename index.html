@@ -697,7 +697,7 @@
 
           <div class="tray-footer-actions">
             <button class="btn" style="padding: 6px;" onclick="autoCompleteDeck()">✨ Autocompleta (30)</button>
-            <button class="btn-arena-done" onclick="finishDeckBuilding()">SALVA MAZZO E PROCEDI</button>
+            <button class="btn-arena-done" onclick="finishDeckBuilding()">SALVA MAZZO SUL CLOUD</button>
           </div>
         </aside>
       </div>
@@ -880,7 +880,7 @@
     const defaultBaseDeck = ['altar_iron', 'sentinel', 'sentinel', 'scout', 'crossbowman', 'shieldbearer', 'cleric', 'knight', 'spell_cleave', 'spell_heal'];
 
     // --- 3. STATO UTENTE E MULTIPLAYER ---
-    const STORAGE_KEY = 'CROWNFALL_PROG_V15_FINAL';
+    const STORAGE_KEY = 'CROWNFALL_PROG_V16_DEBUG';
     const SESSION_KEY = 'crownfall_active_session';
     
     let currentUser = null;
@@ -952,16 +952,32 @@
 
     async function handleAuthSubmit(e) {
       if (e) e.preventDefault();
+      
       const email = document.getElementById('auth-email').value.trim();
       const pass = document.getElementById('auth-password').value.trim();
       const user = document.getElementById('auth-username').value.trim() || email.split('@')[0];
 
-      if (!supabase) return showToast("Supabase non inizializzato, usa Gioca Offline!");
+      if (!email || !pass) {
+        return alert("ATTENZIONE: Compila Email e Password!");
+      }
+
+      if (!supabase) {
+        alert("ATTENZIONE: Supabase non è collegato. Avvio la modalità Offline di emergenza.");
+        return playOffline();
+      }
+
+      console.log(`[AUTH] Tentativo in modalità: ${authMode} per ${email}`);
 
       if (authMode === 'register') {
         const { data, error } = await supabase.auth.signUp({ email, password: pass });
-        if (error) return showToast(`Errore: ${error.message}`);
         
+        if (error) {
+          console.error("[AUTH ERROR]", error);
+          return alert(`ERRORE DI REGISTRAZIONE:\n${error.message}`);
+        }
+        
+        console.log("[AUTH] Registrazione Supabase OK", data.user);
+
         const initialProfile = {
           id: data.user.id,
           username: user,
@@ -970,16 +986,32 @@
           decks: { 'Mazzo Iniziale': { commanderId: 'valeria', cards: [...defaultBaseDeck] } },
           active_deck_name: 'Mazzo Iniziale'
         };
-        await supabase.from('profiles').insert([initialProfile]);
+        
+        const { error: dbError } = await supabase.from('profiles').insert([initialProfile]);
+        
+        if (dbError) {
+          console.error("[DB ERROR]", dbError);
+          alert(`ERRORE DATABASE (Tabella profiles non trovata o permessi errati):\n${dbError.message}`);
+        }
+
         currentUser = { id: data.user.id, email, username: user };
         userState = { gold: 100, unlockedCommanders: ['valeria', 'malakor', 'vespera', 'aurelius', 'vulkan'], collection: initialProfile.collection, decks: initialProfile.decks, activeDeckName: 'Mazzo Iniziale' };
         onLoginSuccess(`Registrato con successo, Condottiero ${user}!`);
+        
       } else {
         const { data, error } = await supabase.auth.signInWithPassword({ email, password: pass });
-        if (error) return showToast(`Errore: ${error.message}`);
+        
+        if (error) {
+          console.error("[AUTH ERROR]", error);
+          return alert(`ERRORE DI LOGIN:\n${error.message}\n\n(Sicuro di aver cliccato la tab "Registrati" per creare l'account?)`);
+        }
         
         const { data: profile, error: pError } = await supabase.from('profiles').select('*').eq('id', data.user.id).single();
-        if (pError) console.warn("Profilo cloud non ancora sincronizzato:", pError);
+        
+        if (pError) {
+          console.warn("[DB WARN] Profilo non trovato", pError);
+          alert(`ATTENZIONE: Account valido, ma il profilo non è presente nel Database.\nErrore: ${pError.message}`);
+        }
 
         currentUser = { id: data.user.id, email, username: profile ? profile.username : user };
         if (profile) {
@@ -1225,9 +1257,6 @@
         const card = CARDS_DB[id];
         const row = document.createElement('div');
         row.className = 'arena-tray-row';
-        row.onmouseenter = (e) => showHoverCard(card, e);
-        row.onmousemove = (e) => updateHoverCardPos(e);
-        row.onmouseleave = () => hideHoverCard();
         row.innerHTML = `
           <div class="tray-row-left"><span class="tray-qty-pill">${grouped[id]}x</span><span class="tray-card-name">${card.name}</span></div>
           <button class="btn-tray-minus" onclick="removeCard('${id}')">−</button>
@@ -1247,12 +1276,11 @@
 
     function autoCompleteDeck() {
       const deck = userState.decks[userState.activeDeckName];
-      const baseCards = Object.keys(CARDS_DB).filter(k => CARDS_DB[k].set === 0);
-
+      const keys = Object.keys(CARDS_DB);
       while (deck.cards.length < 30) {
-        const eligible = baseCards.filter(id => deck.cards.filter(cId => cId === id).length < 4);
-        if (eligible.length === 0) break;
-        deck.cards.push(eligible[Math.floor(Math.random() * eligible.length)]);
+        const avail = keys.filter(id => deck.cards.filter(c => c === id).length < 4);
+        if (avail.length === 0) break;
+        deck.cards.push(avail[Math.floor(Math.random() * avail.length)]);
       }
       renderDeckBuilder();
     }
