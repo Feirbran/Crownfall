@@ -551,16 +551,16 @@
           </div>
           <div class="form-field">
             <label>Email Sigillo</label>
-            <input type="email" id="auth-email" required placeholder="condottiero@veridia.com">
+            <!-- TOLTI required e type=email per evitare blocchi browser invisibili -->
+            <input type="text" id="auth-email" placeholder="condottiero@veridia.com">
           </div>
           <div class="form-field">
             <label>Password / Sigillo</label>
-            <input type="password" id="auth-password" required placeholder="Inserisci password...">
+            <input type="password" id="auth-password" placeholder="Inserisci password...">
           </div>
 
           <button type="submit" class="btn-gothic-action" id="auth-submit-btn">ACCEDI AL REGNO CLOUD</button>
           
-          <!-- PULSANTE OFFLINE PER BYPASSARE SUPABASE IN CASO DI ERRORI -->
           <button type="button" class="btn" style="width: 100%; margin-top: 8px; border-color: var(--border-frame);" onclick="playOffline()">🛡️ GIOCA OFFLINE (Senza Cloud)</button>
           
           <div class="auth-links">
@@ -880,7 +880,7 @@
     const defaultBaseDeck = ['altar_iron', 'sentinel', 'sentinel', 'scout', 'crossbowman', 'shieldbearer', 'cleric', 'knight', 'spell_cleave', 'spell_heal'];
 
     // --- 3. STATO UTENTE E MULTIPLAYER ---
-    const STORAGE_KEY = 'CROWNFALL_PROG_V16_DEBUG';
+    const STORAGE_KEY = 'CROWNFALL_PROG_V17_SAFE_LOGIN';
     const SESSION_KEY = 'crownfall_active_session';
     
     let currentUser = null;
@@ -922,13 +922,25 @@
     // --- 4. GESTIONE AUTENTICAZIONE E CLOUD SYNC ---
     function switchAuthMode(mode) {
       authMode = mode;
-      document.getElementById('tab-login').classList.toggle('active', mode === 'login');
-      document.getElementById('tab-register').classList.toggle('active', mode === 'register');
-      document.getElementById('field-username').style.display = (mode === 'register') ? 'flex' : 'none';
-      document.getElementById('auth-submit-btn').textContent = (mode === 'login') ? 'ACCEDI AL REGNO CLOUD' : 'REGISTRATI E CREA GRIMORIO';
+      const tLogin = document.getElementById('tab-login');
+      const tReg = document.getElementById('tab-register');
+      const fUser = document.getElementById('field-username');
+      const btnSubmit = document.getElementById('auth-submit-btn');
+
+      if (mode === 'register') {
+        tReg.classList.add('active');
+        tLogin.classList.remove('active');
+        fUser.style.display = 'flex';
+        btnSubmit.textContent = 'REGISTRATI E CREA GRIMORIO';
+      } else {
+        tLogin.classList.add('active');
+        tReg.classList.remove('active');
+        fUser.style.display = 'none';
+        btnSubmit.textContent = 'ACCEDI AL REGNO CLOUD';
+      }
     }
 
-    // NUOVA FUNZIONE: GIOCA OFFLINE
+    // FUNZIONE DI EMERGENZA: GIOCA OFFLINE
     function playOffline() {
       currentUser = { id: 'local_dev', email: 'offline@veridia.com', username: 'Condottiero Offline' };
       
@@ -950,6 +962,7 @@
       onLoginSuccess("Modalità Offline Attiva. Nessun salvataggio Cloud.");
     }
 
+    // FUNZIONE DI LOGIN CORAZZATA CON ALERT
     async function handleAuthSubmit(e) {
       if (e) e.preventDefault();
       
@@ -958,11 +971,11 @@
       const user = document.getElementById('auth-username').value.trim() || email.split('@')[0];
 
       if (!email || !pass) {
-        return alert("ATTENZIONE: Compila Email e Password!");
+        return alert("ATTENZIONE: Compila i campi Email e Password per procedere!");
       }
 
       if (!supabase) {
-        alert("ATTENZIONE: Supabase non è collegato. Avvio la modalità Offline di emergenza.");
+        alert("ATTENZIONE: Database Supabase non collegato. Avvio la modalità Offline.");
         return playOffline();
       }
 
@@ -972,12 +985,13 @@
         const { data, error } = await supabase.auth.signUp({ email, password: pass });
         
         if (error) {
-          console.error("[AUTH ERROR]", error);
-          return alert(`ERRORE DI REGISTRAZIONE:\n${error.message}`);
+          return alert(`ERRORE REGISTRAZIONE:\n${error.message}`);
+        }
+
+        if (!data.user) {
+           return alert("Registrazione fallita: utente non creato. Riprova.");
         }
         
-        console.log("[AUTH] Registrazione Supabase OK", data.user);
-
         const initialProfile = {
           id: data.user.id,
           username: user,
@@ -990,8 +1004,7 @@
         const { error: dbError } = await supabase.from('profiles').insert([initialProfile]);
         
         if (dbError) {
-          console.error("[DB ERROR]", dbError);
-          alert(`ERRORE DATABASE (Tabella profiles non trovata o permessi errati):\n${dbError.message}`);
+          alert(`ERRORE DATABASE:\n${dbError.message}\nVerifica le policy su Supabase.`);
         }
 
         currentUser = { id: data.user.id, email, username: user };
@@ -1002,15 +1015,13 @@
         const { data, error } = await supabase.auth.signInWithPassword({ email, password: pass });
         
         if (error) {
-          console.error("[AUTH ERROR]", error);
-          return alert(`ERRORE DI LOGIN:\n${error.message}\n\n(Sicuro di aver cliccato la tab "Registrati" per creare l'account?)`);
+          return alert(`ERRORE DI ACCESSO:\n${error.message}\n(Hai cliccato "Registrati" o la password è errata?)`);
         }
         
         const { data: profile, error: pError } = await supabase.from('profiles').select('*').eq('id', data.user.id).single();
         
         if (pError) {
-          console.warn("[DB WARN] Profilo non trovato", pError);
-          alert(`ATTENZIONE: Account valido, ma il profilo non è presente nel Database.\nErrore: ${pError.message}`);
+          alert(`ATTENZIONE: Profilo database non trovato. Errore: ${pError.message}`);
         }
 
         currentUser = { id: data.user.id, email, username: profile ? profile.username : user };
@@ -1257,6 +1268,9 @@
         const card = CARDS_DB[id];
         const row = document.createElement('div');
         row.className = 'arena-tray-row';
+        row.onmouseenter = (e) => showHoverCard(card, e);
+        row.onmousemove = (e) => updateHoverCardPos(e);
+        row.onmouseleave = () => hideHoverCard();
         row.innerHTML = `
           <div class="tray-row-left"><span class="tray-qty-pill">${grouped[id]}x</span><span class="tray-card-name">${card.name}</span></div>
           <button class="btn-tray-minus" onclick="removeCard('${id}')">−</button>
@@ -2309,7 +2323,6 @@
     window.addEventListener('DOMContentLoaded', async () => {
       showPaneDirect('auth');
       
-      // Controllo sessione cloud già attiva
       if (supabase) {
         try {
           const { data: { session } } = await supabase.auth.getSession();
@@ -2322,7 +2335,7 @@
             }
           }
         } catch (e) {
-          console.log("Supabase non raggiungibile o non configurato.");
+          console.log("Supabase session check failed.");
         }
       }
     });
