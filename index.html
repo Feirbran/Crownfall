@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>CROWNFALL — Tactical Commander Skirmish (Online Cloud Beta)</title>
+  
+  <!-- CDN ESTERNE GRATUITE: SUPABASE & PEERJS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+
+  <style>
+    :root {
+      --bg-dark: #0a0b10;
+      --bg-arena: #12141c;
+      --bg-card: #141620;
+      --bg-surface: #1d2130;
+      --border-frame: #3c425c;
+      --border-gold: #c99b42;
+      --gold-primary: #e5b958;
+      --gold-glow: rgba(229, 185, 88, 0.35);
+      --crimson-blood: #990012;
+      --mana-cyan: #00e5ff;
+      --text-main: #edf0f8;
+      --text-muted: #8b93b0;
+
+      --rarity-common: #a4b0be;
+      --rarity-uncommon: #00d2d3;
+      --rarity-rare: #ffd32a;
+      --rarity-mythic: #a55eea;
+      --rarity-legendary: #ff9f1a;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header.global-nav {
+      height: 52px;
+      background: linear-gradient(180deg, #141722 0%, #08090e 100%);
+      border-bottom: 2px solid var(--border-frame);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      flex-shrink: 0;
+      z-index: 100;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.8);
+    }
+
+    .brand-title {
+      font-size: 1.2rem;
+      font-weight: 900;
+      letter-spacing: 3px;
+      color: var(--gold-primary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      text-shadow: 0 0 12px var(--gold-glow);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-nav {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-frame);
+      color: var(--text-main);
+      padding: 6px 14px;
+      border-radius: 4px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-nav:hover {
+      border-color: var(--gold-primary);
+      color: var(--gold-primary);
+    }
+
+    .user-pill {
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--gold-primary);
+      background: #10131c;
+      border: 1px solid var(--border-gold);
+      padding: 5px 10px;
+      border-radius: 4px;
+      display: none;
+    }
+
+    .gold-pill {
+      font-size: 0.75rem;
+      font-weight: 900;
+      color: #ffd700;
+      background: #1c1707;
+      border: 1px solid #d4af37;
+      padding: 5px 10px;
+      border-radius: 4px;
+      display: none;
+    }
+
+    main.view-container {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .pane {
+      position: absolute;
+      inset: 0;
+      display: none !important;
+      flex-direction: column;
+      background: var(--bg-dark);
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .pane.active {
+      display: flex !important;
+    }
+
+    /* AUTH PANE */
+    #pane-auth {
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: radial-gradient(circle at 50% 25%, #181528 0%, #050608 85%);
+      overflow-y: auto;
+    }
+
+    .auth-wrapper {
+      width: 100%;
+      max-width: 440px;
+      background: var(--bg-card);
+      border: 2px solid var(--border-gold);
+      border-radius: 12px;
+      padding: 36px 30px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.9), 0 0 30px rgba(201, 155, 66, 0.2);
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      text-align: center;
+    }
+
+    .auth-header h1 {
+      font-size: 2rem;
+      font-weight: 900;
+      letter-spacing: 4px;
+      color: var(--gold-primary);
+      text-shadow: 0 0 15px var(--gold-glow);
+      margin-bottom: 6px;
+    }
+
+    .auth-header p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      text-align: left;
+    }
+
+    .auth-tabs {
+      display: flex;
+      border: 1px solid var(--border-frame);
+      border-radius: 6px;
+      overflow: hidden;
+      margin-bottom: 4px;
+    }
+
+    .auth-tab {
+      flex: 1;
+      text-align: center;
+      padding: 8px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      cursor: pointer;
+      background: var(--bg-surface);
+      color: var(--text-muted);
+      transition: all 0.2s;
+    }
+
+    .auth-tab.active {
+      background: var(--gold-primary);
+      color: #000;
+    }
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-field label {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .form-field input {
+      background: var(--bg-dark);
+      border: 1px solid var(--border-frame);
+      color: var(--text-main);
+      padding: 12px 14px;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .form-field input:focus {
+      border-color: var(--gold-primary);
+      box-shadow: 0 0 10px var(--gold-glow);
+    }
+
+    .btn-gothic-action {
+      background: linear-gradient(135deg, #d4af37 0%, #aa771c 100%);
+      color: #000;
+      border: 1px solid #ffeaa7;
+      border-radius: 6px;
+      padding: 14px;
+      font-size: 0.95rem;
+      font-weight: 900;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+      transition: all 0.2s;
+      margin-top: 8px;
+      width: 100%;
+    }
+
+    .btn-gothic-action:hover {
+      background: linear-gradient(135deg, #e5b958 0%, #c99b42 100%);
+      transform: translateY(-2px);
+    }
+
+    .btn {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-frame);
+      color: var(--text-main);
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn:hover { border-color: var(--gold-primary); color: var(--gold-primary); }
+    .btn.btn-gold { background: var(--gold-primary); color: #000; border-color: #ffeaa7; }
+    .btn.btn-crimson { background: var(--crimson-blood); color: #fff; border-color: #ff7675; }
+
+    /* HOME MENU */
+    #pane-home {
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+      background: radial-gradient(circle at center, #181c2d 0%, var(--bg-dark) 85%);
+    }
+
+    .home-hero h1 {
+      font-size: 3.2rem; font-weight: 900; letter-spacing: 6px; color: var(--gold-primary); text-shadow: 0 4px 25px var(--gold-glow); margin-bottom: 10px;
+    }
+    .home-hero p { color: var(--text-muted); max-width: 520px; font-size: 0.92rem; margin-bottom: 40px; line-height: 1.6; margin-left: auto; margin-right: auto; }
+
+    .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; width: 100%; max-width: 560px; margin: 0 auto; }
+    .menu-btn {
+      background: var(--bg-card); border: 1px solid var(--border-frame); border-radius: 8px; padding: 22px 18px; color: var(--text-main); display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s; box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    }
+    .menu-btn:hover { border-color: var(--gold-primary); transform: translateY(-3px); }
+    .menu-btn span.title { font-weight: 800; font-size: 0.95rem; color: var(--gold-primary); }
+    .menu-btn span.desc { font-size: 0.72rem; color: var(--text-muted); }
+
+    /* DECKBUILDER */
+    #pane-deck { height: 100%; background: radial-gradient(circle at 40% 30%, #151926 0%, var(--bg-dark) 90%); overflow: hidden; }
+    .arena-filter-bar { height: 50px; background: #0d0f16; border-bottom: 1px solid var(--border-frame); display: flex; align-items: center; justify-content: space-between; padding: 0 16px; gap: 12px; flex-shrink: 0; }
+    .arena-filter-group { display: flex; align-items: center; gap: 6px; }
+    .arena-search-input { background: var(--bg-dark); border: 1px solid var(--border-frame); color: #fff; padding: 6px 12px; border-radius: 14px; font-size: 0.8rem; width: 150px; outline: none; }
+    .mana-pip-filter { width: 26px; height: 26px; border-radius: 50%; background: var(--bg-surface); border: 1px solid var(--border-frame); color: var(--text-main); font-size: 0.75rem; font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    .mana-pip-filter.active { background: var(--gold-primary); color: #000; border-color: #fff; }
+    .type-pill-btn { background: var(--bg-surface); border: 1px solid var(--border-frame); color: var(--text-muted); padding: 5px 12px; border-radius: 12px; font-size: 0.75rem; cursor: pointer; font-weight: 700; }
+    .type-pill-btn.active { background: #2b334a; color: var(--text-main); border-color: var(--gold-primary); }
+
+    .arena-deck-workspace { flex: 1; display: grid; grid-template-columns: 1fr 320px; overflow: hidden; min-height: 0; }
+    .arena-catalog-area { overflow-y: auto; padding: 18px 22px; display: flex; flex-direction: column; gap: 16px; min-height: 0; }
+    .arena-step-banner { display: flex; align-items: center; justify-content: space-between; background: linear-gradient(90deg, rgba(201, 155, 66, 0.2) 0%, transparent 80%); padding: 8px 14px; border-left: 3px solid var(--gold-primary); border-radius: 2px; font-size: 0.82rem; font-weight: 700; }
+    .arena-cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 16px; align-content: start; }
+
+    .mtg-card {
+      width: 170px; height: 245px; background: #111319; border-radius: 8px; border: 2px solid #33384c; display: flex; flex-direction: column; position: relative; cursor: pointer; transition: transform 0.18s, border-color 0.18s, box-shadow 0.18s; overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.7);
+    }
+    .mtg-card:hover { transform: translateY(-4px) scale(1.02); z-index: 10; }
+    .mtg-card.rarity-common { border-color: var(--rarity-common); }
+    .mtg-card.rarity-uncommon { border-color: var(--rarity-uncommon); box-shadow: 0 0 10px rgba(0, 210, 211, 0.2); }
+    .mtg-card.rarity-rare { border-color: var(--rarity-rare); box-shadow: 0 0 12px rgba(255, 211, 42, 0.3); }
+    .mtg-card.rarity-mythic { border-color: var(--rarity-mythic); box-shadow: 0 0 14px rgba(165, 94, 234, 0.4); }
+    .mtg-card.rarity-legendary { border-color: var(--rarity-legendary); box-shadow: 0 0 16px rgba(255, 159, 26, 0.45); }
+
+    .mtg-card-header { background: linear-gradient(180deg, #2b3042 0%, #1a1c26 100%); border-bottom: 1px solid #3d435d; padding: 4px 6px; display: flex; align-items: center; justify-content: space-between; height: 26px; flex-shrink: 0; }
+    .mtg-card-title { font-size: 0.72rem; font-weight: 800; color: #f1f2f6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .mtg-cost-pip { width: 18px; height: 18px; border-radius: 50%; background: #0984e3; border: 1px solid #74b9ff; color: #fff; font-size: 0.65rem; font-weight: 900; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .mtg-cost-pip.gold { background: #b8860b; border-color: #ffd700; color: #000; }
+
+    .mtg-card-art { height: 90px; background: #080a0f; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; border-bottom: 1px solid #2d3248; flex-shrink: 0; font-size: 2.2rem; }
+    .mtg-type-banner { background: linear-gradient(180deg, #242938 0%, #161822 100%); border-bottom: 1px solid #2e344a; padding: 2px 6px; font-size: 0.6rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; flex-shrink: 0; display: flex; justify-content: space-between; align-items: center; }
+    .rarity-badge { font-size: 0.58rem; font-weight: 900; padding: 1px 4px; border-radius: 3px; text-transform: uppercase; }
+    .rarity-badge.common { background: rgba(164, 176, 190, 0.2); color: var(--rarity-common); border: 1px solid var(--rarity-common); }
+    .rarity-badge.uncommon { background: rgba(0, 210, 211, 0.2); color: var(--rarity-uncommon); border: 1px solid var(--rarity-uncommon); }
+    .rarity-badge.rare { background: rgba(255, 211, 42, 0.2); color: var(--rarity-rare); border: 1px solid var(--rarity-rare); }
+    .rarity-badge.mythic { background: rgba(165, 94, 234, 0.2); color: var(--rarity-mythic); border: 1px solid var(--rarity-mythic); }
+    .rarity-badge.legendary { background: rgba(255, 159, 26, 0.2); color: var(--rarity-legendary); border: 1px solid var(--rarity-legendary); }
+
+    .mtg-text-box { flex: 1; padding: 5px 6px; background: #0b0d12; font-size: 0.62rem; color: #c2c8de; line-height: 1.25; overflow-y: auto; }
+    .mtg-pt-box { position: absolute; bottom: 4px; right: 4px; background: #161924; border: 1px solid var(--gold-primary); border-radius: 4px; padding: 1px 6px; font-size: 0.68rem; font-weight: 900; color: #fff; }
+
+    .arena-deck-tray { background: #0b0d12; border-left: 1px solid var(--border-frame); display: flex; flex-direction: column; overflow: hidden; height: 100%; }
+    .tray-header { background: var(--bg-card); border-bottom: 1px solid var(--border-frame); padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; }
+    .tray-deck-title-row { display: flex; align-items: center; justify-content: space-between; }
+    .tray-deck-name { font-size: 0.95rem; font-weight: 800; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .tray-card-counter { font-size: 0.78rem; font-weight: 800; padding: 2px 8px; border-radius: 10px; background: var(--bg-dark); border: 1px solid var(--border-frame); }
+    .tray-card-counter.valid { color: #2ecc71; border-color: #2ecc71; }
+    .tray-card-counter.invalid { color: #e74c3c; border-color: #e74c3c; }
+
+    .tray-commander-banner { background: var(--bg-surface); border: 1px solid var(--border-gold); border-radius: 4px; padding: 6px 10px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
+    .tray-cards-stack { flex: 1; overflow-y: auto; padding: 8px 10px; display: flex; flex-direction: column; gap: 4px; min-height: 0; }
+    .arena-tray-row { background: var(--bg-surface); border: 1px solid var(--border-frame); border-radius: 4px; height: 32px; display: flex; align-items: center; justify-content: space-between; padding: 0 8px; cursor: pointer; }
+    .arena-tray-row:hover { border-color: var(--gold-primary); }
+    .tray-row-left { display: flex; align-items: center; gap: 8px; overflow: hidden; flex: 1; }
+    .tray-qty-pill { font-size: 0.72rem; font-weight: 800; color: var(--gold-primary); }
+    .tray-card-name { font-size: 0.78rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #e4e7f3; }
+    .btn-tray-minus { width: 22px; height: 22px; background: #2b1d24; border: 1px solid #682633; color: #ff7675; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; }
+
+    .tray-footer-actions { padding: 12px 14px; background: #0f1118; border-top: 1px solid var(--border-frame); display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; }
+    .btn-arena-done {
+      background: linear-gradient(135deg, #d4af37 0%, #aa771c 100%); color: #000; border: 1px solid #ffeaa7;
+      border-radius: 6px; padding: 12px; font-size: 0.92rem; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; text-align: center; width: 100%; display: inline-block;
+      box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+    }
+
+    /* CAMPO 8X8 */
+    #pane-battle { height: 100%; background: #050608; }
+    .battle-hud { padding: 10px 16px; background: #0d0f16; border-bottom: 2px solid var(--border-frame); display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; flex-shrink: 0; }
+    .player-hud-box { display: flex; align-items: center; gap: 14px; }
+    .hud-stat { display: flex; align-items: center; gap: 5px; font-weight: 700; }
+    .hud-stat.mana { color: var(--mana-cyan); }
+    .hud-stat.blood { color: #ff7675; }
+    .hud-stat.actions { color: var(--gold-primary); }
+
+    .battle-arena-wrap { flex: 1; display: flex; align-items: center; justify-content: center; padding: 8px; position: relative; overflow: hidden; min-height: 0; }
+    .chessboard-container { width: min(85vw, 530px); height: min(85vw, 530px); display: grid; grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(8, 1fr); border: 2px solid #3c425c; position: relative; box-shadow: 0 0 40px rgba(0,0,0,0.9); }
+    .square { position: relative; display: flex; align-items: center; justify-content: center; }
+    .square.light { background-color: #242938; }
+    .square.dark { background-color: #141722; }
+    .square.highlight-move { background-color: rgba(46, 204, 113, 0.5) !important; cursor: pointer; }
+    .square.highlight-attack { background-color: rgba(201, 0, 18, 0.55) !important; cursor: pointer; }
+    .square.highlight-deploy { background-color: rgba(0, 229, 255, 0.45) !important; cursor: pointer; }
+    .square.highlight-spell-target { background-color: rgba(255, 165, 0, 0.6) !important; border: 2px dashed #ffa500; cursor: pointer; }
+    .square.highlight-placement { background-color: rgba(212, 175, 55, 0.5) !important; border: 2px dashed #d4af37; cursor: pointer; }
+
+    .piece {
+      width: 82%; height: 82%; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; z-index: 10; font-weight: bold; font-size: 0.7rem; border: 2px solid #fff; cursor: pointer; will-change: transform; box-shadow: 0 4px 12px rgba(0,0,0,0.8);
+    }
+    .piece.p1 { background: radial-gradient(circle at 30% 30%, #2980b9, #0c2444); border-color: #74b9ff; color: #fff; }
+    .piece.p2 { background: radial-gradient(circle at 30% 30%, #c0392b, #51110a); border-color: #ff7675; color: #fff; }
+    .piece.altar { border-radius: 6px; background: #1e272e; border-color: var(--mana-cyan); }
+    .piece.exhausted { filter: grayscale(85%) opacity(0.65); }
+    .piece-badges { position: absolute; bottom: -4px; display: flex; gap: 2px; font-size: 0.6rem; background: rgba(0,0,0,0.9); padding: 1px 5px; border-radius: 3px; border: 1px solid rgba(255,255,255,0.2); }
+
+    .battle-hand-bar { height: 110px; background: #06070a; border-top: 2px solid var(--border-frame); display: flex; align-items: center; gap: 10px; padding: 6px 16px; overflow-x: auto; flex-shrink: 0; }
+    .hand-card { min-width: 90px; width: 90px; height: 94px; background: var(--bg-card); border: 1px solid var(--border-frame); border-radius: 6px; padding: 6px; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; flex-shrink: 0; }
+    .hand-card.selected { border-color: var(--mana-cyan); }
+
+    /* LOG DI BATTAGLIA */
+    #battle-log-drawer {
+      position: absolute; bottom: 120px; right: 14px; width: 290px; height: 190px; background: rgba(10, 12, 18, 0.94); border: 1px solid var(--border-gold); border-radius: 8px; display: flex; flex-direction: column; z-index: 200; box-shadow: 0 8px 30px rgba(0,0,0,0.85);
+    }
+    .log-header { background: #141724; padding: 6px 10px; font-size: 0.72rem; font-weight: 800; color: var(--gold-primary); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-frame); }
+    .log-entries { flex: 1; overflow-y: auto; padding: 6px 10px; font-family: monospace; font-size: 0.68rem; line-height: 1.4; color: #cfd4e8; display: flex; flex-direction: column; gap: 3px; }
+    .log-item-p1 { color: #74b9ff; }
+    .log-item-p2 { color: #ff7675; }
+    .log-item-sys { color: var(--gold-primary); }
+
+    /* HOVER PREVIEW */
+    #hover-card-preview {
+      position: fixed; width: 240px; height: 350px; background: #111319; border: 3px solid var(--gold-primary); border-radius: 10px; box-shadow: 0 16px 36px rgba(0,0,0,0.95); display: none; flex-direction: column; overflow: hidden; z-index: 999999; pointer-events: none;
+    }
+    #hover-card-preview.active { display: flex; }
+    .hcp-header { background: linear-gradient(180deg, #2b3042 0%, #1a1c26 100%); padding: 6px 10px; border-bottom: 2px solid #3d435c; display: flex; justify-content: space-between; align-items: center; }
+    .hcp-title { font-size: 0.85rem; font-weight: 900; color: #fff; }
+    .hcp-cost { width: 22px; height: 22px; border-radius: 50%; background: #0984e3; border: 1px solid #74b9ff; color: #fff; font-size: 0.75rem; font-weight: 900; display: flex; align-items: center; justify-content: center; }
+    .hcp-art { height: 130px; background: #08090d; display: flex; align-items: center; justify-content: center; border-bottom: 2px solid #2d3248; font-size: 3rem; }
+    .hcp-type { background: #1d212f; padding: 4px 10px; font-size: 0.65rem; font-weight: 800; color: var(--gold-primary); text-transform: uppercase; border-bottom: 1px solid #2d3248; display: flex; justify-content: space-between; align-items: center; }
+    .hcp-desc { flex: 1; padding: 8px 10px; font-size: 0.74rem; color: #cfd4e8; line-height: 1.35; background: #0f1118; }
+    .hcp-pt { background: #1c2232; border: 1px solid var(--gold-primary); border-radius: 4px; align-self: flex-end; margin: 0 8px 8px 0; padding: 2px 7px; font-size: 0.8rem; font-weight: 900; color: #fff; }
+
+    #card-summon-overlay {
+      position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(0,0,0,0.7); backdrop-filter: blur(6px); z-index: 99999; pointer-events: none; opacity: 0; transition: opacity 0.25s ease;
+    }
+    #card-summon-overlay.active { display: flex; opacity: 1; }
+
+    #app-toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px);
+      background: rgba(18, 21, 31, 0.98); border: 1px solid var(--gold-primary); color: var(--text-main);
+      padding: 12px 24px; border-radius: 6px; font-size: 0.88rem; font-weight: 700; z-index: 100000; box-shadow: 0 8px 25px rgba(0,0,0,0.8); transition: transform 0.3s; pointer-events: none;
+    }
+    #app-toast.show { transform: translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+
+  <header class="global-nav">
+    <div class="brand-title" onclick="showPane(currentUser ? 'home' : 'auth')">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 18l3-10 4 6 4-6 3 10H5z"/></svg>
+      CROWNFALL
+    </div>
+    <div class="nav-actions">
+      <span class="gold-pill" id="nav-gold-label">🪙 0 Oro</span>
+      <span class="user-pill" id="nav-user-label"></span>
+      <button class="btn-nav" onclick="showPane('home')">Menu</button>
+      <button class="btn-nav" onclick="showPane('battle-lobby')">Battaglia</button>
+      <button class="btn-nav" onclick="openDeckBuilder()">Grimorio</button>
+      <button class="btn-nav" id="btn-nav-logout" style="display: none; border-color: var(--crimson-blood); color: #ff7675;" onclick="handleLogout()">Esci</button>
+    </div>
+  </header>
+
+  <main class="view-container">
+
+    <!-- LOGIN / REGISTRAZIONE -->
+    <div id="pane-auth" class="pane active">
+      <div class="auth-wrapper">
+        <div class="auth-header">
+          <h1>CROWNFALL</h1>
+          <p>Autenticazione Cloud & Deck Synchronization.<br>Entra nell'Arena Dark Fantasy.</p>
+        </div>
+
+        <form class="auth-form" id="auth-form" onsubmit="handleAuthSubmit(event)">
+          <div class="auth-tabs">
+            <div class="auth-tab active" id="tab-login" onclick="switchAuthMode('login')">Accedi</div>
+            <div class="auth-tab" id="tab-register" onclick="switchAuthMode('register')">Registrati</div>
+          </div>
+
+          <div class="form-field" id="field-username" style="display: none;">
+            <label>Nome Condottiero</label>
+            <input type="text" id="auth-username" placeholder="Inserisci username pubblico...">
+          </div>
+          <div class="form-field">
+            <label>Email Sigillo</label>
+            <input type="email" id="auth-email" required placeholder="condottiero@veridia.com">
+          </div>
+          <div class="form-field">
+            <label>Password / Sigillo</label>
+            <input type="password" id="auth-password" required placeholder="Inserisci password...">
+          </div>
+
+          <button type="submit" class="btn-gothic-action" id="auth-submit-btn">ACCEDI AL REGNO</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- HOME -->
+    <div id="pane-home" class="pane">
+      <div class="home-hero" style="margin: auto; max-width: 600px; padding: 20px;">
+        <h1>CROWNFALL</h1>
+        <p>Scegli se sfidare l'IA locale o ingaggiare un duello Multiplayer P2P in tempo reale con un altro Comandante.</p>
+        <div class="menu-grid">
+          <div class="menu-btn" onclick="showPane('battle-lobby')">
+            <span class="title">👑 Arena di Guerra</span>
+            <span class="desc">Sfida IA o Multiplayer Online P2P</span>
+          </div>
+          <div class="menu-btn" onclick="openDeckBuilder()">
+            <span class="title">📜 Deckbuilding Arena</span>
+            <span class="desc">Costruisci il tuo grimorio (max 4x copie)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DECKBUILDER -->
+    <div id="pane-deck" class="pane">
+      <div class="arena-filter-bar">
+        <div class="arena-filter-group">
+          <input type="text" id="arena-search" class="arena-search-input" placeholder="🔍 Cerca nome..." oninput="onArenaFilterChanged()">
+          <div style="display: flex; gap: 4px; margin-left: 8px;">
+            <div class="mana-pip-filter active" data-mana="all" onclick="setManaFilter('all')">Tutti</div>
+            <div class="mana-pip-filter" data-mana="0" onclick="setManaFilter(0)">0</div>
+            <div class="mana-pip-filter" data-mana="1" onclick="setManaFilter(1)">1</div>
+            <div class="mana-pip-filter" data-mana="2" onclick="setManaFilter(2)">2</div>
+            <div class="mana-pip-filter" data-mana="3" onclick="setManaFilter(3)">3</div>
+            <div class="mana-pip-filter" data-mana="4" onclick="setManaFilter(4)">4+</div>
+          </div>
+        </div>
+
+        <div class="arena-filter-group">
+          <div class="type-pill-btn active" id="filter-type-all" onclick="setTypeFilter('all')">Tutto</div>
+          <div class="type-pill-btn" id="filter-type-altar" onclick="setTypeFilter('altar')">🏛️ Altari</div>
+          <div class="type-pill-btn" id="filter-type-unit" onclick="setTypeFilter('unit')">Truppe</div>
+          <div class="type-pill-btn" id="filter-type-spell" onclick="setTypeFilter('spell')">Sortilegi</div>
+        </div>
+
+        <div class="arena-filter-group">
+          <select id="arena-deck-selector" onchange="switchDeck(this.value)" style="padding: 4px 8px; font-size: 0.75rem; background: var(--bg-dark); color: #fff; border: 1px solid var(--border-frame); border-radius: 4px;"></select>
+          <button class="btn" style="padding: 4px 8px;" onclick="promptCreateDeck()">+ Nuovo</button>
+        </div>
+      </div>
+
+      <div class="arena-deck-workspace">
+        <section class="arena-catalog-area">
+          <div class="arena-step-banner" id="arena-step-banner"></div>
+          <div class="arena-cards-grid" id="arena-cards-grid"></div>
+        </section>
+
+        <aside class="arena-deck-tray">
+          <div class="tray-header">
+            <div class="tray-deck-title-row">
+              <span class="tray-deck-name" id="tray-deck-name">Mazzo Base</span>
+              <span class="tray-card-counter invalid" id="tray-counter-badge">0/30</span>
+            </div>
+
+            <div class="tray-commander-banner" onclick="startCommanderSelectionMode()">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 1.1rem;">👑</span>
+                <div>
+                  <div style="font-size: 0.75rem; font-weight: 800; color: var(--gold-primary);" id="tray-comm-name">Comandante</div>
+                  <div style="font-size: 0.62rem; color: var(--text-muted);">Clicca per cambiare</div>
+                </div>
+              </div>
+              <span style="font-size: 0.7rem; color: var(--gold-primary);">Modifica</span>
+            </div>
+          </div>
+
+          <div class="tray-cards-stack" id="tray-cards-stack"></div>
+
+          <div class="tray-footer-actions">
+            <button class="btn" style="padding: 6px;" onclick="autoCompleteDeck()">✨ Autocompleta (30)</button>
+            <button class="btn-arena-done" onclick="finishDeckBuilding()">SALVA MAZZO SUL CLOUD</button>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <!-- LOBBY (AI + MULTIPLAYER P2P) -->
+    <div id="pane-battle-lobby" class="pane">
+      <div style="max-width: 800px; width: 100%; margin: 32px auto; display: flex; flex-direction: column; gap: 20px; padding: 0 16px;">
+        <h2>Lobby di Battaglia</h2>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+          <!-- Opzione 1: Single Player vs AI -->
+          <div style="background: var(--bg-card); border: 1px solid var(--border-frame); border-radius: 8px; padding: 16px; display: flex; flex-direction: column; gap: 10px;">
+            <h3>🤖 Skirmish vs IA</h3>
+            <label style="font-size: 0.75rem; color: var(--text-muted);">Tuo Grimorio:</label>
+            <select id="lobby-deck-select-ai" onchange="updateLobbyP1Preview()" style="padding: 6px; background: var(--bg-dark); color: #fff; border: 1px solid var(--border-frame); border-radius: 4px;"></select>
+            <label style="font-size: 0.75rem; color: var(--text-muted);">Avversario IA:</label>
+            <select id="lobby-ai-select" onchange="updateLobbyP2Preview()" style="padding: 6px; background: var(--bg-dark); color: #fff; border: 1px solid var(--border-frame); border-radius: 4px;"></select>
+            <button class="btn btn-gold" style="margin-top: 10px;" onclick="startBattle('ai')">GIOCA VS IA</button>
+          </div>
+
+          <!-- Opzione 2: Multiplayer P2P -->
+          <div style="background: var(--bg-card); border: 2px solid var(--border-gold); border-radius: 8px; padding: 16px; display: flex; flex-direction: column; gap: 10px;">
+            <h3>🌐 Duello Multiplayer P2P (0€)</h3>
+            <label style="font-size: 0.75rem; color: var(--text-muted);">Tuo Grimorio:</label>
+            <select id="lobby-deck-select-p2p" style="padding: 6px; background: var(--bg-dark); color: #fff; border: 1px solid var(--border-frame); border-radius: 4px;"></select>
+            
+            <button class="btn" onclick="hostP2PMatch()">👑 CREA STANZA (HOST)</button>
+            <div id="host-id-display" style="font-size: 0.75rem; color: var(--gold-primary); word-break: break-all;"></div>
+
+            <hr style="border: 0; border-top: 1px solid var(--border-frame); margin: 6px 0;">
+
+            <input type="text" id="join-room-input" placeholder="Incolla Codice Stanza..." style="padding: 8px; background: var(--bg-dark); border: 1px solid var(--border-frame); color: #fff; border-radius: 4px; font-size: 0.8rem;">
+            <button class="btn btn-gold" onclick="joinP2PMatch()">⚔️ ENTRA NELLA STANZA</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CAMPO DI BATTAGLIA -->
+    <div id="pane-battle" class="pane">
+      <div class="battle-hud">
+        <div class="player-hud-box">
+          <span style="font-weight: 900; color: #9ec5fe;" id="hud-p1-name">P1</span>
+          <span class="hud-stat mana">💧 <span id="hud-p1-mana">1</span>/4</span>
+          <span class="hud-stat blood">🩸 <span id="hud-p1-blood">0</span></span>
+          <span class="hud-stat actions">⚡ Azioni: <span id="hud-p1-actions">2</span></span>
+        </div>
+        <div>
+          <button class="btn btn-gold" id="btn-rite-p1" onclick="useWeaponRiteP1()">Rito d'Armi</button>
+          <button class="btn btn-crimson" id="btn-end-turn" onclick="endTurnP1()">Passa Turno</button>
+        </div>
+        <div class="player-hud-box">
+          <span class="hud-stat actions">P2 Azioni: <span id="hud-p2-actions">2</span></span>
+          <span class="hud-stat blood">🩸 <span id="hud-p2-blood">0</span></span>
+          <span class="hud-stat mana">💧 <span id="hud-p2-mana">1</span>/4</span>
+          <span style="font-weight: 900; color: #f5a6b0;" id="hud-p2-name">P2</span>
+        </div>
+      </div>
+
+      <div class="battle-arena-wrap">
+        <div id="chessboard" class="chessboard-container"></div>
+        <div id="battle-log-drawer">
+          <div class="log-header">
+            <span>📜 REGISTRO DI BATTAGLIA</span>
+            <button class="btn" style="padding: 2px 6px; font-size: 0.65rem;" onclick="copyBattleLog()">📋 Copia Log</button>
+          </div>
+          <div class="log-entries" id="log-entries"></div>
+        </div>
+      </div>
+
+      <div class="battle-hand-bar" id="battle-hand"></div>
+    </div>
+
+  </main>
+
+  <!-- FLOATING CARD PREVIEW -->
+  <div id="hover-card-preview">
+    <div class="hcp-header">
+      <span class="hcp-title" id="hcp-title">Nome Carta</span>
+      <span class="hcp-cost" id="hcp-cost">0</span>
+    </div>
+    <div class="hcp-art" id="hcp-art">⚔️</div>
+    <div class="hcp-type" id="hcp-type">
+      <span id="hcp-type-text">TRUPPA</span>
+      <span class="rarity-badge common" id="hcp-rarity-badge">COMUNE</span>
+    </div>
+    <div class="hcp-desc" id="hcp-desc">Descrizione regole.</div>
+    <div class="hcp-pt" id="hcp-pt">0/0</div>
+  </div>
+
+  <div id="card-summon-overlay">
+    <div style="width:260px; height:380px; background:#111319; border:3px solid var(--gold-primary); border-radius:12px; display:flex; flex-direction:column; overflow:hidden;">
+      <div class="hcp-header">
+        <span class="hcp-title" id="sc-title">Carta</span>
+        <span class="hcp-cost" id="sc-cost">0</span>
+      </div>
+      <div class="hcp-art" id="sc-art" style="font-size:3.5rem; height:150px;">⚔️</div>
+      <div class="hcp-type" id="sc-type" style="padding: 4px 10px; font-size: 0.65rem; font-weight: 800; color: var(--gold-primary); border-bottom: 1px solid #2d3248; display: flex; justify-content: space-between;">
+        <span id="sc-type-text">TRUPPA</span>
+        <span class="rarity-badge common" id="sc-rarity-badge">COMUNE</span>
+      </div>
+      <div class="hcp-desc" id="sc-desc" style="font-size:0.8rem; padding:10px; color:#cfd4e8;">Descrizione.</div>
+      <div class="hcp-pt" id="sc-pt" style="align-self:flex-end; margin:0 10px 10px 0; border:1px solid var(--gold-primary); padding:2px 8px; border-radius:4px;">0/0</div>
+    </div>
+  </div>
+
+  <div id="app-toast">Notifica</div>
+
+  <script>
+    // --- 1. CONFIGURAZIONE SUPABASE DIRETTA ---
+    const SUPABASE_URL = "https://bvdsmwylswfxfdzobscn.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ2ZHNtd3lsc3dmeGZkem9ic2NuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NDIyMjEsImV4cCI6MjEwNDQxODIyMX0.3NrfBzGJfeJAi7k_sonRdH0EqOICbJL4AddQGf1CzMw";
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // --- 2. DATABASE DELLE CARTE & COMANDANTI ---
+    const RARITY_NAMES = { common: 'Comune', uncommon: 'Non Comune', rare: 'Rara', mythic: 'Mitica', legendary: 'Leggendaria' };
+
+    const COMMANDERS = {
+      valeria: { id: 'valeria', set: 0, rarity: 'legendary', name: 'Valeria del Bastione', hp: 24, att: 2, move: 'orth', glyph: '🛡️', archetype: 'bastion', riteCost: 3, riteDesc: '2 danni ai nemici entro raggio 2 e li respinge.' },
+      malakor: { id: 'malakor', set: 0, rarity: 'legendary', name: 'Malakor del Rogo', hp: 18, att: 1, move: 'omni', glyph: '🔥', archetype: 'fire', riteCost: 4, riteDesc: '3 danni da fuoco ad area a tutti i nemici entro raggio 2.' },
+      vespera: { id: 'vespera', set: 0, rarity: 'legendary', name: 'Vespera delle Maree', hp: 20, att: 1, move: 'diag', glyph: '🌊', archetype: 'tides', riteCost: 3, riteDesc: 'Spinge un bersaglio fino a 3 caselle (+2 se urta).' },
+      aurelius: { id: 'aurelius', set: 0, rarity: 'legendary', name: 'Aurelius il Giusto', hp: 22, att: 2, move: 'orth', glyph: '⚖️', archetype: 'order', riteCost: 4, riteDesc: 'Prosciuga 2 Mana dalla riserva nemica nel prossimo round.' },
+      vulkan: { id: 'vulkan', set: 0, rarity: 'legendary', name: 'Vulkan il Fabbro', hp: 18, att: 3, move: 'orth', glyph: '⚒️', archetype: 'forge', riteCost: 3, riteDesc: 'Trasforma un proprio Altare in un golem mobile 3/5.' }
+    };
+
+    const CARDS_DB = {
+      altar_iron: { id: 'altar_iron', set: 0, rarity: 'common', name: 'Altare di Ferro', type: 'altar', cost: 0, hp: 5, att: 0, glyph: '🏛️', desc: 'Genera +1 Mana Territoriale subito. Gli alleati vicini subiscono -1 danno.' },
+      altar_stone: { id: 'altar_stone', set: 0, rarity: 'common', name: 'Altare di Pietra', type: 'altar', cost: 0, hp: 5, att: 0, glyph: '🗿', desc: 'Genera +1 Mana Territoriale subito. Baluardo impassabile a difesa.' },
+      altar_blood: { id: 'altar_blood', set: 0, rarity: 'uncommon', name: 'Altare del Sangue', type: 'altar', cost: 0, hp: 5, att: 0, glyph: '🩸', desc: 'Genera +1 Mana Territoriale subito. Distruggerlo concede solo 1 Sangue.' },
+      altar_resonant: { id: 'altar_resonant', set: 0, rarity: 'uncommon', name: 'Altare Risonante', type: 'altar', cost: 0, hp: 5, att: 0, glyph: '🔔', desc: 'Genera +1 Mana Territoriale subito. Gli alleati adiacenti ottengono +1 passo di movimento!' },
+
+      sentinel: { id: 'sentinel', set: 0, rarity: 'common', name: 'Sentinella di Ferro', type: 'unit', cost: 1, hp: 3, att: 1, move: 'orth', range: 1, glyph: '🛡️', desc: 'Passo ortogonale. Salda linea difensiva.' },
+      scout: { id: 'scout', set: 0, rarity: 'uncommon', name: 'Esploratore Ombra', type: 'unit', cost: 1, hp: 1, att: 2, move: 'diag', range: 1, keywords: ['slancio'], glyph: '🗡️', desc: 'Slancio. Passo diagonale.' },
+      crossbowman: { id: 'crossbowman', set: 0, rarity: 'uncommon', name: 'Balestriere Reale', type: 'unit', cost: 2, hp: 2, att: 1, move: 'orth', range: 2, glyph: '🏹', desc: 'Tiro a distanza 2 in linea retta senza contrattacco.' },
+      shieldbearer: { id: 'shieldbearer', set: 0, rarity: 'rare', name: 'Portascudo Veterano', type: 'unit', cost: 2, hp: 4, att: 1, move: 'orth', range: 1, glyph: '🛡️', desc: 'Alta difesa frontale.' },
+      cleric: { id: 'cleric', set: 0, rarity: 'rare', name: 'Chierico del Crepuscolo', type: 'unit', cost: 2, hp: 3, att: 1, move: 'orth', range: 1, glyph: '✨', desc: 'Cura 2 PV al Comandante se termina adiacente.' },
+      knight: { id: 'knight', set: 0, rarity: 'rare', name: 'Cavaliere del Rogo', type: 'unit', cost: 3, hp: 3, att: 3, move: 'knight', range: 1, glyph: '🐎', desc: 'Balzo a L scacchistico.' },
+
+      spell_cleave: { id: 'spell_cleave', set: 0, rarity: 'uncommon', name: 'Fendente Spettrale', type: 'spell', cost: 1, glyph: '⚡', desc: '2 danni a truppa nemica a gittata 2 dal Comandante.' },
+      spell_fortify: { id: 'spell_fortify', set: 0, rarity: 'rare', name: 'Fortificazione Litica', type: 'spell', cost: 1, glyph: '🧱', desc: '+3 PV ad Altare o +2 PV a truppa alleata.' },
+      spell_push: { id: 'spell_push', set: 0, rarity: 'rare', name: 'Onda d\'Urto', type: 'spell', cost: 2, glyph: '💨', desc: 'Spinge un pezzo nemico di 2 caselle (+2 se urta).' },
+      spell_heal: { id: 'spell_heal', set: 0, rarity: 'common', name: 'Grazia del Bastione', type: 'spell', cost: 1, glyph: '💖', desc: 'Ripristina 3 PV al Comandante.' }
+    };
+
+    const defaultBaseDeck = ['altar_iron', 'sentinel', 'sentinel', 'scout', 'crossbowman', 'shieldbearer', 'cleric', 'knight', 'spell_cleave', 'spell_heal'];
+
+    // --- 3. STATO UTENTE E MULTIPLAYER ---
+    let currentUser = null;
+    let userState = {
+      gold: 50,
+      collection: {},
+      activeDeckName: 'Mazzo Base',
+      decks: { 'Mazzo Base': { commanderId: 'valeria', cards: [...defaultBaseDeck] } }
+    };
+
+    let peer = null;
+    let conn = null;
+    let isP2P = false;
+    let myP2PRole = null;
+
+    let authMode = 'login';
+    let battleLogs = [];
+    let battleState = null;
+    let deckFilters = { mana: 'all', type: 'all', search: '', mode: 'cards' };
+
+    function addLog(msg, type = 'sys') {
+      const text = `[${new Date().toLocaleTimeString().slice(3)}] ${msg}`;
+      battleLogs.push(text);
+      const container = document.getElementById('log-entries');
+      if (container) {
+        const l = document.createElement('div');
+        l.className = `log-item-${type}`;
+        l.textContent = text;
+        container.appendChild(l);
+        container.scrollTop = container.scrollHeight;
+      }
+    }
+
+    function copyBattleLog() {
+      navigator.clipboard.writeText(battleLogs.join("\n")).then(() => showToast("Log copiato!"));
+    }
+
+    // --- 4. GESTIONE AUTENTICAZIONE E CLOUD SYNC ---
+    function switchAuthMode(mode) {
+      authMode = mode;
+      document.getElementById('tab-login').classList.toggle('active', mode === 'login');
+      document.getElementById('tab-register').classList.toggle('active', mode === 'register');
+      document.getElementById('field-username').style.display = (mode === 'register') ? 'flex' : 'none';
+      document.getElementById('auth-submit-btn').textContent = (mode === 'login') ? 'ACCEDI AL REGNO' : 'REGISTRATI E CREA GRIMORIO';
+    }
+
+    async function handleAuthSubmit(e) {
+      if (e) e.preventDefault();
+      const email = document.getElementById('auth-email').value.trim();
+      const pass = document.getElementById('auth-password').value.trim();
+      const user = document.getElementById('auth-username').value.trim() || email.split('@')[0];
+
+      if (authMode === 'register') {
+        const { data, error } = await supabase.auth.signUp({ email, password: pass });
+        if (error) return showToast(`Errore: ${error.message}`);
+        
+        const initialProfile = {
+          id: data.user.id,
+          username: user,
+          gold: 100,
+          collection: { ...CARDS_DB },
+          decks: { 'Mazzo Iniziale': { commanderId: 'valeria', cards: [...defaultBaseDeck] } },
+          active_deck_name: 'Mazzo Iniziale'
+        };
+        await supabase.from('profiles').insert([initialProfile]);
+        currentUser = { id: data.user.id, email, username: user };
+        userState = { gold: 100, collection: initialProfile.collection, decks: initialProfile.decks, activeDeckName: 'Mazzo Iniziale' };
+        onLoginSuccess(`Registrato con successo, Condottiero ${user}!`);
+      } else {
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password: pass });
+        if (error) return showToast(`Errore: ${error.message}`);
+        
+        const { data: profile, error: pError } = await supabase.from('profiles').select('*').eq('id', data.user.id).single();
+        if (pError) console.warn("Profilo cloud non ancora sincronizzato:", pError);
+
+        currentUser = { id: data.user.id, email, username: profile ? profile.username : user };
+        if (profile) {
+          userState = { gold: profile.gold, collection: profile.collection, decks: profile.decks, activeDeckName: profile.active_deck_name };
+        }
+        onLoginSuccess(`Bentornato sul Cloud, ${currentUser.username}!`);
+      }
+    }
+
+    async function saveCloudState() {
+      if (currentUser) {
+        const { error } = await supabase.from('profiles').update({
+          gold: userState.gold,
+          decks: userState.decks,
+          collection: userState.collection,
+          active_deck_name: userState.activeDeckName
+        }).eq('id', currentUser.id);
+        if (error) {
+          showToast(`Errore salvataggio: ${error.message}`);
+        } else {
+          showToast("Grimorio e collezione sincronizzati nel Cloud!");
+        }
+      }
+    }
+
+    function onLoginSuccess(msg) {
+      document.getElementById('nav-user-label').textContent = `👤 ${currentUser.username}`;
+      document.getElementById('nav-user-label').style.display = 'inline-block';
+      document.getElementById('nav-gold-label').textContent = `🪙 ${userState.gold || 0} Oro`;
+      document.getElementById('nav-gold-label').style.display = 'inline-block';
+      document.getElementById('btn-nav-logout').style.display = 'inline-block';
+      showToast(msg);
+      showPaneDirect('home');
+    }
+
+    async function handleLogout() {
+      await supabase.auth.signOut();
+      currentUser = null;
+      document.getElementById('nav-user-label').style.display = 'none';
+      document.getElementById('nav-gold-label').style.display = 'none';
+      document.getElementById('btn-nav-logout').style.display = 'none';
+      showPaneDirect('auth');
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('app-toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2400);
+    }
+
+    function showPaneDirect(id) {
+      document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
+      const target = document.getElementById('pane-' + id);
+      if (target) target.classList.add('active');
+      if (id === 'deck') renderDeckBuilder();
+      if (id === 'battle-lobby') initLobby();
+    }
+
+    function showPane(id) {
+      if (!currentUser && id !== 'auth') return showToast("Accedi prima di proseguire!");
+      showPaneDirect(id);
+    }
+
+    // --- 5. NETWORKING MULTIPLAYER P2P (WEBRTC GRATUITO) ---
+    function hostP2PMatch() {
+      const deck = userState.decks[document.getElementById('lobby-deck-select-p2p').value];
+      if (deck.cards.length !== 30) return showToast("Il mazzo deve avere 30 carte!");
+
+      peer = new Peer();
+      peer.on('open', (id) => {
+        document.getElementById('host-id-display').innerHTML = `Codice Stanza:<br><strong>${id}</strong><br>(Invialo al tuo avversario)`;
+      });
+      peer.on('connection', (c) => {
+        conn = c;
+        isP2P = true;
+        myP2PRole = 'p1';
+        setupP2PConnection();
+        startBattle('p2p');
+      });
+    }
+
+    function joinP2PMatch() {
+      const hostId = document.getElementById('join-room-input').value.trim();
+      if (!hostId) return showToast("Inserisci il codice stanza generato dall'host!");
+
+      const deck = userState.decks[document.getElementById('lobby-deck-select-p2p').value];
+      if (deck.cards.length !== 30) return showToast("Il mazzo deve avere 30 carte!");
+
+      peer = new Peer();
+      conn = peer.connect(hostId);
+      isP2P = true;
+      myP2PRole = 'p2';
+      
+      conn.on('open', () => {
+        setupP2PConnection();
+        startBattle('p2p');
+      });
+    }
+
+    function setupP2PConnection() {
+      conn.on('data', (data) => {
+        if (data.type === 'ACTION_MOVE') {
+          glidePiece(data.from, data.to, () => {
+            battleState.grid[data.to] = battleState.grid[data.from];
+            battleState.grid[data.from] = null;
+            battleState[data.player].actions--;
+            renderPieces();
+            updateHUD();
+            checkWin();
+          });
+        } else if (data.type === 'ACTION_DEPLOY') {
+          battleState.grid[data.idx] = data.piece;
+          battleState[data.player].mana -= data.cost;
+          renderPieces();
+          updateHUD();
+        } else if (data.type === 'END_TURN') {
+          startTurnFor(data.nextTurn);
+        }
+      });
+    }
+
+    function sendP2P(payload) {
+      if (isP2P && conn && conn.open) conn.send(payload);
+    }
+
+    // --- 6. DECKBUILDING (CON VINCOLO RIGIDO 4X) ---
+    function renderDeckBuilder() {
+      const grid = document.getElementById('arena-cards-grid');
+      const selector = document.getElementById('arena-deck-selector');
+      selector.innerHTML = '';
+      Object.keys(userState.decks).forEach(name => {
+        const opt = document.createElement('option');
+        opt.value = name; opt.textContent = name;
+        if (name === userState.activeDeckName) opt.selected = true;
+        selector.appendChild(opt);
+      });
+
+      renderTray();
+      grid.innerHTML = '';
+
+      const deck = userState.decks[userState.activeDeckName];
+      document.getElementById('arena-step-banner').innerHTML = `Comandante: <strong>${COMMANDERS[deck.commanderId].name}</strong>`;
+
+      Object.values(CARDS_DB).forEach(card => {
+        const currentCopies = deck.cards.filter(id => id === card.id).length;
+        const isMaxed = currentCopies >= 4;
+        const cardEl = document.createElement('div');
+        const r = card.rarity;
+        cardEl.className = `mtg-card rarity-${r}`;
+        if (isMaxed) cardEl.style.opacity = '0.6';
+
+        cardEl.onclick = () => {
+          if (deck.cards.length >= 30) return showToast("Grimorio al completo (30 carte)!");
+          const count = deck.cards.filter(id => id === card.id).length;
+          if (count >= 4) return showToast(`Limite 4x raggiunto per ${card.name}!`);
+          deck.cards.push(card.id);
+          renderDeckBuilder();
+        };
+
+        cardEl.innerHTML = `
+          <div class="mtg-card-header"><span class="mtg-card-title">${card.name}</span><span class="mtg-cost-pip">${card.cost}</span></div>
+          <div class="mtg-card-art">${card.glyph} ${isMaxed ? '<div style="position:absolute;bottom:2px;left:4px;font-size:0.6rem;background:#000;color:#ff7675;padding:1px 4px;">4/4 MAX</div>' : ''}</div>
+          <div class="mtg-type-banner"><span>${card.type}</span><span class="rarity-badge ${r}">${RARITY_NAMES[r]}</span></div>
+          <div class="mtg-text-box">${card.desc}</div>
+          ${card.type === 'unit' ? `<div class="mtg-pt-box">${card.att}/${card.hp}</div>` : ''}
+        `;
+        grid.appendChild(cardEl);
+      });
+    }
+
+    function renderTray() {
+      const deck = userState.decks[userState.activeDeckName];
+      document.getElementById('tray-deck-name').textContent = userState.activeDeckName;
+      const count = document.getElementById('tray-counter-badge');
+      count.textContent = `${deck.cards.length}/30`;
+      count.className = `tray-card-counter ${deck.cards.length === 30 ? 'valid' : 'invalid'}`;
+      document.getElementById('tray-comm-name').textContent = COMMANDERS[deck.commanderId].name;
+
+      const stack = document.getElementById('tray-cards-stack');
+      stack.innerHTML = '';
+      const grouped = {};
+      deck.cards.forEach(id => grouped[id] = (grouped[id] || 0) + 1);
+
+      Object.keys(grouped).forEach(id => {
+        const card = CARDS_DB[id];
+        const row = document.createElement('div');
+        row.className = 'arena-tray-row';
+        row.innerHTML = `
+          <div class="tray-row-left"><span class="tray-qty-pill">${grouped[id]}x</span><span class="tray-card-name">${card.name}</span></div>
+          <button class="btn-tray-minus" onclick="removeCard('${id}')">−</button>
+        `;
+        stack.appendChild(row);
+      });
+    }
+
+    function removeCard(id) {
+      const deck = userState.decks[userState.activeDeckName];
+      const idx = deck.cards.indexOf(id);
+      if (idx !== -1) {
+        deck.cards.splice(idx, 1);
+        renderDeckBuilder();
+      }
+    }
+
+    function autoCompleteDeck() {
+      const deck = userState.decks[userState.activeDeckName];
+      const keys = Object.keys(CARDS_DB);
+      while (deck.cards.length < 30) {
+        const avail = keys.filter(id => deck.cards.filter(c => c === id).length < 4);
+        if (avail.length === 0) break;
+        deck.cards.push(avail[Math.floor(Math.random() * avail.length)]);
+      }
+      renderDeckBuilder();
+    }
+
+    function finishDeckBuilding() {
+      const deck = userState.decks[userState.activeDeckName];
+      if (deck.cards.length !== 30) return showToast("Il mazzo deve avere 30 carte!");
+      saveCloudState();
+      showPane('battle-lobby');
+    }
+
+    function openDeckBuilder() { showPaneDirect('deck'); }
+    function switchDeck(val) { userState.activeDeckName = val; renderDeckBuilder(); }
+    function promptCreateDeck() {
+      const name = prompt("Nome nuovo Grimorio:");
+      if (!name) return;
+      userState.decks[name] = { commanderId: 'valeria', cards: [...defaultBaseDeck] };
+      userState.activeDeckName = name;
+      renderDeckBuilder();
+    }
+
+    // --- 7. ARENA 8X8 E GAMEPLAY ---
+    function initLobby() {
+      const s1 = document.getElementById('lobby-deck-select-ai');
+      const s2 = document.getElementById('lobby-deck-select-p2p');
+      s1.innerHTML = ''; s2.innerHTML = '';
+      Object.keys(userState.decks).forEach(name => {
+        const o1 = document.createElement('option'); o1.value = name; o1.textContent = name;
+        const o2 = document.createElement('option'); o2.value = name; o2.textContent = name;
+        s1.appendChild(o1); s2.appendChild(o2);
+      });
+
+      const aiSel = document.getElementById('lobby-ai-select');
+      aiSel.innerHTML = '';
+      Object.values(COMMANDERS).forEach(c => {
+        const opt = document.createElement('option'); opt.value = c.id; opt.textContent = c.name;
+        aiSel.appendChild(opt);
+      });
+    }
+
+    function startBattle(mode) {
+      isP2P = (mode === 'p2p');
+      const deck = userState.decks[userState.activeDeckName];
+      const aiId = document.getElementById('lobby-ai-select').value;
+
+      battleState = {
+        phase: 'active',
+        turn: 'p1',
+        p1: { commander: COMMANDERS[deck.commanderId], hp: COMMANDERS[deck.commanderId].hp, mana: 1, maxMana: 1, blood: 0, actions: 2, deck: [...deck.cards].sort(() => Math.random() - 0.5), hand: [] },
+        p2: { commander: COMMANDERS[aiId], hp: COMMANDERS[aiId].hp, mana: 1, maxMana: 1, blood: 0, actions: 2, deck: [...defaultBaseDeck].sort(() => Math.random() - 0.5), hand: [] },
+        grid: Array(64).fill(null),
+        selectedSquare: null,
+        selectedHandIndex: null
+      };
+
+      battleState.grid[3] = { owner: 'p1', type: 'commander', name: battleState.p1.commander.name, hp: battleState.p1.commander.hp, att: battleState.p1.commander.att, move: 'orth', range: 1, glyph: '🛡️', exhausted: false };
+      battleState.grid[60] = { owner: 'p2', type: 'commander', name: battleState.p2.commander.name, hp: battleState.p2.commander.hp, att: battleState.p2.commander.att, move: 'orth', range: 1, glyph: '🔥', exhausted: false };
+
+      for(let i=0; i<4; i++) { drawCard('p1'); drawCard('p2'); }
+
+      showPaneDirect('battle');
+      createBoard();
+      renderPieces();
+      updateHUD();
+      renderHand();
+      addLog(`Battaglia avviata in modalità: ${isP2P ? 'P2P Online' : 'vs IA'}`);
+    }
+
+    function createBoard() {
+      const b = document.getElementById('chessboard');
+      b.innerHTML = '';
+      for (let r = 7; r >= 0; r--) {
+        for (let c = 0; c < 8; c++) {
+          const idx = r * 8 + c;
+          const sq = document.createElement('div');
+          sq.className = `square ${(r + c) % 2 === 0 ? 'dark' : 'light'}`;
+          sq.dataset.index = idx;
+          sq.onclick = () => onSquareClick(idx);
+          b.appendChild(sq);
+        }
+      }
+    }
+
+    function drawCard(pl) {
+      if (battleState[pl].deck.length > 0 && battleState[pl].hand.length < 6) {
+        battleState[pl].hand.push(battleState[pl].deck.shift());
+      }
+    }
+
+    function onSquareClick(idx) {
+      if (isP2P && battleState.turn !== myP2PRole) return showToast("Attendi il turno dell'avversario!");
+      if (battleState.selectedHandIndex !== null) return deployCard(idx);
+
+      const p = battleState.grid[idx];
+      if (p && p.owner === battleState.turn) {
+        if (p.type === 'altar') return showToast("Gli altari non possono muoversi!");
+        battleState.selectedSquare = idx;
+        highlightMoves(idx);
+        return;
+      }
+
+      if (battleState.selectedSquare !== null) {
+        const sq = document.querySelector(`.square[data-index="${idx}"]`);
+        if (sq.classList.contains('highlight-move')) {
+          executeMove(battleState.selectedSquare, idx);
+        } else if (sq.classList.contains('highlight-attack')) {
+          executeAttack(battleState.selectedSquare, idx);
+        } else {
+          clearHighlights();
+          battleState.selectedSquare = null;
+        }
+      }
+    }
+
+    function executeMove(from, to) {
+      const piece = battleState.grid[from];
+      clearHighlights();
+      glidePiece(from, to, () => {
+        battleState.grid[to] = piece;
+        battleState.grid[from] = null;
+        piece.exhausted = true;
+        battleState[battleState.turn].actions--;
+        renderPieces();
+        updateHUD();
+        sendP2P({ type: 'ACTION_MOVE', from, to, player: battleState.turn });
+        checkWin();
+      });
+    }
+
+    function executeAttack(from, to) {
+      const att = battleState.grid[from];
+      const def = battleState.grid[to];
+      def.hp -= att.att;
+      addLog(`${att.name} attacca ${def.name} (-${att.att} PV)`);
+      if (def.hp <= 0) {
+        battleState.grid[to] = null;
+        battleState[att.owner].blood += 2;
+      }
+      att.exhausted = true;
+      battleState[battleState.turn].actions--;
+      clearHighlights();
+      renderPieces();
+      updateHUD();
+      checkWin();
+    }
+
+    function deployCard(idx) {
+      const pl = battleState.turn;
+      const card = CARDS_DB[battleState[pl].hand[battleState.selectedHandIndex]];
+      if (battleState[pl].mana < card.cost) return showToast("Mana insufficiente!");
+      const sq = document.querySelector(`.square[data-index="${idx}"]`);
+      if (!sq.classList.contains('highlight-deploy')) return;
+
+      battleState[pl].mana -= card.cost;
+      battleState[pl].hand.splice(battleState.selectedHandIndex, 1);
+      battleState.selectedHandIndex = null;
+
+      const piece = { owner: pl, type: card.type, name: card.name, hp: card.hp, att: card.att, glyph: card.glyph, exhausted: false };
+      battleState.grid[idx] = piece;
+
+      if (card.type === 'altar') {
+        battleState[pl].maxMana = Math.min(4, battleState[pl].maxMana + 1);
+        battleState[pl].mana = Math.min(battleState[pl].maxMana, battleState[pl].mana + 1);
+      }
+
+      sendP2P({ type: 'ACTION_DEPLOY', idx, piece, cost: card.cost, player: pl });
+      clearHighlights();
+      renderPieces();
+      updateHUD();
+      renderHand();
+    }
+
+    function highlightMoves(idx) {
+      clearHighlights();
+      const p = battleState.grid[idx];
+      if (battleState[p.owner].actions <= 0 || p.exhausted) return;
+
+      const r = Math.floor(idx / 8), c = idx % 8;
+      const dirs = [[1,0], [-1,0], [0,1], [0,-1]];
+      dirs.forEach(([dr, dc]) => {
+        const nr = r + dr, nc = c + dc;
+        if (nr >= 0 && nr < 8 && nc >= 0 && nc < 8) {
+          const dest = nr * 8 + nc;
+          if (!battleState.grid[dest]) document.querySelector(`.square[data-index="${dest}"]`)?.classList.add('highlight-move');
+          else if (battleState.grid[dest].owner !== p.owner) document.querySelector(`.square[data-index="${dest}"]`)?.classList.add('highlight-attack');
+        }
+      });
+    }
+
+    function clearHighlights() {
+      document.querySelectorAll('.square').forEach(s => s.classList.remove('highlight-move', 'highlight-attack', 'highlight-deploy'));
+    }
+
+    function renderHand() {
+      const bar = document.getElementById('battle-hand');
+      bar.innerHTML = '';
+      battleState.p1.hand.forEach((id, i) => {
+        const c = CARDS_DB[id];
+        const cardEl = document.createElement('div');
+        cardEl.className = `hand-card ${battleState.selectedHandIndex === i ? 'selected' : ''}`;
+        cardEl.onclick = () => {
+          battleState.selectedHandIndex = (battleState.selectedHandIndex === i) ? null : i;
+          renderHand();
+          clearHighlights();
+          if (battleState.selectedHandIndex !== null) {
+            const cIdx = battleState.grid.findIndex(p => p && p.owner === 'p1' && p.type === 'commander');
+            const r = Math.floor(cIdx / 8), c = cIdx % 8;
+            [[1,0],[-1,0],[0,1],[0,-1]].forEach(([dr,dc]) => {
+              const nr = r+dr, nc = c+dc;
+              if (nr>=0 && nr<8 && nc>=0 && nc<8 && !battleState.grid[nr*8+nc]) {
+                document.querySelector(`.square[data-index="${nr*8+nc}"]`)?.classList.add('highlight-deploy');
+              }
+            });
+          }
+        };
+        cardEl.innerHTML = `<span style="color:var(--mana-cyan); font-weight:bold;">${c.cost}</span> <div>${c.name}</div>`;
+        bar.appendChild(cardEl);
+      });
+    }
+
+    function renderPieces() {
+      for (let i = 0; i < 64; i++) {
+        const sq = document.querySelector(`.square[data-index="${i}"]`);
+        if (!sq) continue;
+        sq.innerHTML = '';
+        const p = battleState.grid[i];
+        if (p) {
+          const el = document.createElement('div');
+          el.className = `piece ${p.owner} ${p.type} ${p.exhausted ? 'exhausted' : ''}`;
+          el.innerHTML = `<span>${p.glyph}</span><div class="piece-badges">${p.att}/${p.hp}</div>`;
+          sq.appendChild(el);
+        }
+      }
+    }
+
+    function updateHUD() {
+      document.getElementById('hud-p1-mana').textContent = battleState.p1.mana;
+      document.getElementById('hud-p1-actions').textContent = battleState.p1.actions;
+      document.getElementById('hud-p2-mana').textContent = battleState.p2.mana;
+      document.getElementById('hud-p2-actions').textContent = battleState.p2.actions;
+    }
+
+    function glidePiece(from, to, onDone) {
+      const fSq = document.querySelector(`.square[data-index="${from}"]`);
+      const tSq = document.querySelector(`.square[data-index="${to}"]`);
+      const pEl = fSq?.querySelector('.piece');
+      if (!pEl) return onDone && onDone();
+      tSq.appendChild(pEl);
+      if (onDone) onDone();
+    }
+
+    function endTurnP1() {
+      const next = battleState.turn === 'p1' ? 'p2' : 'p1';
+      startTurnFor(next);
+      sendP2P({ type: 'END_TURN', nextTurn: next });
+    }
+
+    function startTurnFor(player) {
+      battleState.turn = player;
+      battleState[player].actions = 2;
+      battleState[player].mana = battleState[player].maxMana;
+      battleState.grid.forEach(p => { if (p && p.owner === player) p.exhausted = false; });
+      drawCard(player);
+      updateHUD();
+      renderHand();
+      addLog(`Nuovo Turno per: ${player.toUpperCase()}`);
+    }
+
+    function checkWin() {
+      const p1Alive = battleState.grid.some(p => p && p.owner === 'p1' && p.type === 'commander');
+      const p2Alive = battleState.grid.some(p => p && p.owner === 'p2' && p.type === 'commander');
+      if (!p2Alive) { alert("VITTORIA! Decapitazione nemica completata!"); showPaneDirect('home'); }
+      if (!p1Alive) { alert("SCONFITTA! Il tuo Comandante è caduto."); showPaneDirect('home'); }
+    }
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      showPaneDirect('auth');
+      // Controllo sessione cloud già attiva
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        const { data: profile } = await supabase.from('profiles').select('*').eq('id', session.user.id).single();
+        if (profile) {
+          currentUser = { id: session.user.id, email: session.user.email, username: profile.username };
+          userState = { gold: profile.gold, collection: profile.collection, decks: profile.decks, activeDeckName: profile.active_deck_name };
+          onLoginSuccess(`Sessione Cloud ripristinata: ${profile.username}`);
+        }
+      }
+    });
+  </script>
+</body>
+</html>
