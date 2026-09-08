@@ -746,9 +746,9 @@
             <button class="btn btn-gold" style="margin-top: 10px;" onclick="startBattle('ai')">GIOCA VS IA</button>
           </div>
 
-          <!-- Opzione 2: Multiplayer P2P -->
+          <!-- Opzione 2: Multiplayer Online & Locale -->
           <div style="background: var(--bg-card); border: 2px solid var(--border-gold); border-radius: 8px; padding: 16px; display: flex; flex-direction: column; gap: 10px;">
-            <h3>🌐 Duello Multiplayer P2P (0€)</h3>
+            <h3>🌐 Duello Multiplayer Online & Locale</h3>
             <label style="font-size: 0.75rem; color: var(--text-muted);">Tuo Grimorio:</label>
             <select id="lobby-deck-select-p2p" onchange="onLobbyDeckChanged('p2p')" style="padding: 6px; background: var(--bg-dark); color: #fff; border: 1px solid var(--border-frame); border-radius: 4px;"></select>
             
@@ -760,13 +760,16 @@
             
             <div id="lobby-p2p-card" style="background: var(--bg-dark); padding: 8px; border-radius: 4px; font-size: 0.75rem; border: 1px solid var(--border-frame);"></div>
             
-            <button class="btn" onclick="hostP2PMatch()">👑 CREA STANZA (HOST)</button>
+            <button class="btn btn-gold" onclick="hostMultiplayer()" style="font-weight: 800; padding: 10px;">👑 CREA STANZA (HOST)</button>
             <div id="host-id-display" style="font-size: 0.75rem; color: var(--gold-primary); word-break: break-all;"></div>
 
             <hr style="border: 0; border-top: 1px solid var(--border-frame); margin: 6px 0;">
 
-            <input type="text" id="join-room-input" placeholder="Incolla Codice Stanza..." style="padding: 8px; background: var(--bg-dark); border: 1px solid var(--border-frame); color: #fff; border-radius: 4px; font-size: 0.8rem;">
-            <button class="btn btn-gold" onclick="joinP2PMatch()">⚔️ ENTRA NELLA STANZA</button>
+            <div style="display: flex; gap: 6px;">
+              <input type="text" id="join-room-input" placeholder="Incolla Codice Stanza (es. CF-1234)..." style="flex: 1; padding: 8px; background: var(--bg-dark); border: 1px solid var(--border-frame); color: #fff; border-radius: 4px; font-size: 0.8rem; text-transform: uppercase;">
+              <button class="btn" onclick="pasteRoomCode()" style="padding: 6px 10px; font-size: 0.75rem;">📋 Incolla</button>
+            </div>
+            <button class="btn btn-crimson" onclick="joinMultiplayer()" style="font-weight: 800; padding: 10px;">⚔️ ENTRA NELLA STANZA</button>
           </div>
         </div>
       </div>
@@ -922,7 +925,29 @@
       spell_wrath: { id: 'spell_wrath', set: 1, rarity: 'mythic', name: 'Giudizio Implacabile', type: 'spell', cost: 3, glyph: '💥', desc: '2 danni attorno al proprio Comandante.' }
     };
 
-    const defaultBaseDeck = ['altar_iron', 'sentinel', 'sentinel', 'scout', 'crossbowman', 'shieldbearer', 'cleric', 'knight', 'spell_cleave', 'spell_heal'];
+    const defaultBaseDeck = [
+      'altar_iron', 'altar_iron', 'altar_stone', 'altar_stone',
+      'sentinel', 'sentinel', 'sentinel', 'sentinel',
+      'scout', 'scout', 'scout',
+      'crossbowman', 'crossbowman', 'crossbowman',
+      'shieldbearer', 'shieldbearer', 'shieldbearer',
+      'cleric', 'cleric', 'cleric',
+      'knight', 'knight', 'knight',
+      'spell_cleave', 'spell_cleave', 'spell_cleave',
+      'spell_heal', 'spell_heal', 'spell_fortify', 'spell_push'
+    ];
+
+    function ensureDeck30Cards(deck) {
+      if (!deck || !Array.isArray(deck.cards)) return [...defaultBaseDeck];
+      if (deck.cards.length >= 30) return deck.cards.slice(0, 30);
+      const cards = [...deck.cards];
+      for (const c of defaultBaseDeck) {
+        if (cards.length >= 30) break;
+        const count = cards.filter(x => x === c).length;
+        if (count < 4) cards.push(c);
+      }
+      return cards;
+    }
 
     // --- 3. STATO UTENTE E MULTIPLAYER ---
     let currentUser = null;
@@ -934,10 +959,20 @@
       activeDeckName: 'Mazzo Base'
     };
 
-    let peer = null;
-    let conn = null;
+    let netBC = null;
+    let netPeer = null;
+    let netConn = null;
+    let currentRoomCode = null;
+    let localClientId = 'cl_' + Math.random().toString(36).substring(2, 9);
     let isP2P = false;
-    let myP2PRole = null;
+    let myP2PRole = 'p1';
+
+    function getMyRole() {
+      return (battleState && battleState.myRole) ? battleState.myRole : (isP2P ? (myP2PRole || 'p1') : 'p1');
+    }
+    function getOppRole() {
+      return getMyRole() === 'p1' ? 'p2' : 'p1';
+    }
 
     let authMode = 'login';
     let battleLogs = [];
@@ -1001,7 +1036,7 @@
       state.collection = (state.collection && typeof state.collection === 'object') ? state.collection : {};
       state.decks = (state.decks && typeof state.decks === 'object') ? state.decks : {};
       state.activeDeckName = state.activeDeckName || 'Mazzo Base';
-      if (!state.decks['Mazzo Base']) {
+      if (!state.decks['Mazzo Base'] || !Array.isArray(state.decks['Mazzo Base'].cards) || state.decks['Mazzo Base'].cards.length < 30) {
         state.decks['Mazzo Base'] = { commanderId: 'valeria', cards: [...defaultBaseDeck] };
       }
       Object.keys(CARDS_DB).forEach(id => {
@@ -1393,74 +1428,309 @@
       showPaneDirect(id);
     }
 
-    // --- 5. NETWORKING MULTIPLAYER P2P (WEBRTC GRATUITO) ---
-    function hostP2PMatch() {
-      const deck = userState.decks[document.getElementById('lobby-deck-select-p2p').value];
-      if (deck.cards.length !== 30) return showToast("Il mazzo deve avere 30 carte!");
-
-      if (typeof Peer === 'undefined') {
-        return alert("Impossibile caricare PeerJS. Verifica la connessione a Internet.");
+    // --- 5. NETWORKING MULTIPLAYER ROBUSTO (BROADCASTCHANNEL + WEBRTC PEERJS) ---
+    function copyHostRoomCode() {
+      if (!currentRoomCode) return;
+      const text = currentRoomCode;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          showToast("📋 Codice Stanza copiato: " + text);
+        }).catch(() => fallbackCopy(text));
+      } else {
+        fallbackCopy(text);
       }
-
-      peer = new Peer();
-      peer.on('open', (id) => {
-        document.getElementById('host-id-display').innerHTML = `Codice Stanza:<br><strong style="user-select:text; -webkit-user-select:text;">${id}</strong><br><button class="btn" style="margin-top:6px; padding:4px 8px; font-size:0.75rem;" onclick="navigator.clipboard.writeText('${id}').then(() => showToast('Codice Stanza Copiato!'))">📋 COPIA CODICE</button>`;
-      });
-      peer.on('connection', (c) => {
-        conn = c;
-        isP2P = true;
-        myP2PRole = 'p1';
-        setupP2PConnection();
-        startBattle('p2p');
-      });
     }
 
-    function joinP2PMatch() {
-      const hostId = document.getElementById('join-room-input').value.trim();
-      if (!hostId) return showToast("Inserisci il codice stanza generato dall'host!");
+    function pasteRoomCode() {
+      if (navigator.clipboard && navigator.clipboard.readText) {
+        navigator.clipboard.readText().then(text => {
+          const el = document.getElementById('join-room-input');
+          if (el) el.value = text.trim().toUpperCase();
+          showToast("Codice incollato!");
+        }).catch(() => {
+          showToast("Incolla manualmente con Ctrl+V");
+        });
+      } else {
+        showToast("Incolla manualmente con Ctrl+V");
+      }
+    }
 
-      const deck = userState.decks[document.getElementById('lobby-deck-select-p2p').value];
-      if (deck.cards.length !== 30) return showToast("Il mazzo deve avere 30 carte!");
+    function fallbackCopy(text) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        showToast("📋 Codice Stanza copiato: " + text);
+      } catch(e) {
+        showToast("Seleziona e copia il codice: " + text);
+      }
+      document.body.removeChild(ta);
+    }
 
-      if (typeof Peer === 'undefined') {
-        return alert("Impossibile caricare PeerJS. Verifica la connessione a Internet.");
+    function hostMultiplayer() {
+      const deckSelect = document.getElementById('lobby-deck-select-p2p');
+      const deckName = deckSelect ? deckSelect.value : userState.activeDeckName;
+      let deck = userState.decks[deckName] || userState.decks['Mazzo Base'] || Object.values(userState.decks)[0];
+      deck.cards = ensureDeck30Cards(deck);
+
+      const roomCode = 'CF-' + Math.floor(1000 + Math.random() * 9000);
+      currentRoomCode = roomCode;
+      isP2P = true;
+      myP2PRole = 'p1';
+
+      const hostDisplay = document.getElementById('host-id-display');
+      if (hostDisplay) {
+        hostDisplay.innerHTML = `
+          <div style="background: rgba(229,185,88,0.1); border: 2px dashed var(--gold-primary); border-radius: 8px; padding: 12px; text-align: center; margin-top: 6px;">
+            <div style="font-size: 0.72rem; font-weight: 800; color: var(--gold-primary); text-transform: uppercase;">CODICE STANZA:</div>
+            <div id="host-room-code-display" style="font-size: 1.8rem; font-weight: 900; color: #fff; letter-spacing: 3px; margin: 4px 0; user-select: all; -webkit-user-select: all;">${roomCode}</div>
+            <button type="button" class="btn btn-gold" onclick="copyHostRoomCode()" style="padding: 5px 12px; font-size: 0.78rem; font-weight: 800;">📋 COPIA CODICE</button>
+            <div id="host-status-msg" style="font-size: 0.76rem; color: #a4b0be; margin-top: 8px;">⏳ In attesa che l'avversario inserisca il codice...</div>
+          </div>
+        `;
       }
 
-      peer = new Peer();
-      conn = peer.connect(hostId);
+      initNetwork(roomCode, true);
+      showToast(`Stanza ${roomCode} creata! Comunica il codice all'avversario.`);
+    }
+    const hostP2PMatch = hostMultiplayer;
+
+    function joinMultiplayer() {
+      const inputEl = document.getElementById('join-room-input');
+      const roomCode = (inputEl ? inputEl.value : '').trim().toUpperCase();
+      if (!roomCode) return showToast("Inserisci il codice della stanza fornito dall'Host!");
+
+      const deckSelect = document.getElementById('lobby-deck-select-p2p');
+      const deckName = deckSelect ? deckSelect.value : userState.activeDeckName;
+      let deck = userState.decks[deckName] || userState.decks['Mazzo Base'] || Object.values(userState.decks)[0];
+      deck.cards = ensureDeck30Cards(deck);
+
+      currentRoomCode = roomCode;
       isP2P = true;
       myP2PRole = 'p2';
-      
-      conn.on('open', () => {
-        setupP2PConnection();
-        startBattle('p2p');
-      });
+
+      showToast(`Connessione alla stanza ${roomCode}...`);
+      initNetwork(roomCode, false);
+
+      const sendJoin = () => {
+        sendNetMsg({
+          type: 'HELLO_JOIN',
+          username: currentUser ? (currentUser.username || 'Condottiero 2') : 'Ospite',
+          commanderId: deck.commanderId || 'valeria',
+          cards: [...deck.cards]
+        });
+      };
+
+      sendJoin();
+      let attempts = 0;
+      const handshakeInterval = setInterval(() => {
+        if (battleState && battleState.phase) {
+          clearInterval(handshakeInterval);
+        } else if (attempts < 8) {
+          attempts++;
+          sendJoin();
+        } else {
+          clearInterval(handshakeInterval);
+        }
+      }, 900);
+    }
+    const joinP2PMatch = joinMultiplayer;
+
+    function initNetwork(roomCode, isHost) {
+      // 1. Canale locale istantaneo BroadcastChannel (per due finestre/schede nello stesso browser)
+      try {
+        if (typeof BroadcastChannel !== 'undefined') {
+          if (netBC) netBC.close();
+          netBC = new BroadcastChannel('crownfall_' + roomCode);
+          netBC.onmessage = (ev) => {
+            if (ev.data && ev.data.senderId !== localClientId) {
+              handleNetMsg(ev.data);
+            }
+          };
+        }
+      } catch(e) {
+        console.warn("BroadcastChannel err:", e);
+      }
+
+      // 2. PeerJS per duelli WebRTC su computer/dispositivi diversi
+      if (typeof Peer !== 'undefined') {
+        try {
+          if (netPeer) { try { netPeer.destroy(); } catch(e){} }
+          const peerConfig = {
+            debug: 1,
+            config: {
+              iceServers: [
+                { urls: 'stun:stun.l.google.com:19302' },
+                { urls: 'stun:stun1.l.google.com:19302' },
+                { urls: 'stun:stun2.l.google.com:19302' }
+              ]
+            }
+          };
+
+          if (isHost) {
+            netPeer = new Peer(roomCode, peerConfig);
+            netPeer.on('open', (id) => {
+              console.log("PeerJS Host pronto con ID:", id);
+            });
+            netPeer.on('connection', (conn) => {
+              netConn = conn;
+              conn.on('open', () => {
+                console.log("PeerJS Connessione stabilita con Guest!");
+              });
+              conn.on('data', (data) => {
+                handleNetMsg(data);
+              });
+              conn.on('error', (e) => console.warn("PeerJS conn error:", e));
+            });
+            netPeer.on('error', (err) => console.warn("PeerJS Host:", err));
+          } else {
+            netPeer = new Peer(peerConfig);
+            netPeer.on('open', (id) => {
+              netConn = netPeer.connect(roomCode);
+              if (netConn) {
+                netConn.on('open', () => {
+                  console.log("PeerJS Connesso all'host!");
+                  const deckSelect = document.getElementById('lobby-deck-select-p2p');
+                  const deckName = deckSelect ? deckSelect.value : userState.activeDeckName;
+                  const deck = userState.decks[deckName] || Object.values(userState.decks)[0];
+                  sendNetMsg({
+                    type: 'HELLO_JOIN',
+                    username: currentUser ? (currentUser.username || 'Condottiero 2') : 'Ospite',
+                    commanderId: deck.commanderId || 'valeria',
+                    cards: ensureDeck30Cards(deck)
+                  });
+                });
+                netConn.on('data', (data) => {
+                  handleNetMsg(data);
+                });
+                netConn.on('error', (e) => console.warn("PeerJS conn error:", e));
+              }
+            });
+            netPeer.on('error', (err) => console.warn("PeerJS Guest:", err));
+          }
+        } catch(e) {
+          console.warn("PeerJS init error:", e);
+        }
+      }
     }
 
-    function setupP2PConnection() {
-      conn.on('data', (data) => {
-        if (data.type === 'ACTION_MOVE') {
-          glidePiece(data.from, data.to, () => {
-            battleState.grid[data.to] = battleState.grid[data.from];
-            battleState.grid[data.from] = null;
-            battleState[data.player].actions--;
-            renderPieces();
-            updateHUD();
-            checkWin();
+    function sendNetMsg(payload) {
+      payload.senderId = localClientId;
+      if (netBC) {
+        try { netBC.postMessage(payload); } catch(e){}
+      }
+      if (netConn && netConn.open) {
+        try { netConn.send(payload); } catch(e){}
+      }
+    }
+    const sendP2P = sendNetMsg;
+
+    function handleNetMsg(data) {
+      if (!data || !data.type) return;
+
+      if (data.type === 'HELLO_JOIN') {
+        if (myP2PRole === 'p1') {
+          const statusEl = document.getElementById('host-status-msg');
+          if (statusEl) statusEl.textContent = `⚔️ ${data.username} è entrato nella stanza! Avvio duello...`;
+
+          const deckSelect = document.getElementById('lobby-deck-select-p2p');
+          const deckName = deckSelect ? deckSelect.value : userState.activeDeckName;
+          let hostDeck = userState.decks[deckName] || userState.decks['Mazzo Base'] || Object.values(userState.decks)[0];
+          hostDeck.cards = ensureDeck30Cards(hostDeck);
+
+          sendNetMsg({
+            type: 'HELLO_HOST',
+            username: currentUser ? (currentUser.username || 'Host') : 'Condottiero 1',
+            commanderId: hostDeck.commanderId || 'valeria',
+            cards: [...hostDeck.cards]
           });
-        } else if (data.type === 'ACTION_DEPLOY') {
-          battleState.grid[data.idx] = data.piece;
-          battleState[data.player].mana -= data.cost;
+
+          const hostData = {
+            username: currentUser ? (currentUser.username || 'Host') : 'Condottiero 1',
+            commanderId: hostDeck.commanderId || 'valeria',
+            cards: hostDeck.cards
+          };
+          const guestData = {
+            username: data.username,
+            commanderId: data.commanderId,
+            cards: data.cards
+          };
+
+          startBattleP2P(hostData, guestData, 'p1');
+        }
+      } else if (data.type === 'HELLO_HOST') {
+        if (myP2PRole === 'p2') {
+          const deckSelect = document.getElementById('lobby-deck-select-p2p');
+          const deckName = deckSelect ? deckSelect.value : userState.activeDeckName;
+          let guestDeck = userState.decks[deckName] || userState.decks['Mazzo Base'] || Object.values(userState.decks)[0];
+          guestDeck.cards = ensureDeck30Cards(guestDeck);
+
+          const hostData = {
+            username: data.username,
+            commanderId: data.commanderId,
+            cards: data.cards
+          };
+          const guestData = {
+            username: currentUser ? (currentUser.username || 'Ospite') : 'Condottiero 2',
+            commanderId: guestDeck.commanderId || 'valeria',
+            cards: guestDeck.cards
+          };
+
+          startBattleP2P(hostData, guestData, 'p2');
+        }
+      } else if (data.type === 'SYNC_PLACEMENT') {
+        const comm = (data.role === 'p1') ? battleState.p1.commander : battleState.p2.commander;
+        battleState.grid[data.idx] = {
+          owner: data.role,
+          type: 'commander',
+          cardId: comm.id,
+          name: comm.name,
+          hp: comm.hp,
+          att: comm.att,
+          move: comm.move,
+          range: 1,
+          glyph: comm.glyph,
+          rarity: 'legendary',
+          riteDesc: comm.riteDesc,
+          riteCost: comm.riteCost,
+          archetype: comm.archetype,
+          exhausted: false
+        };
+        battleState[data.role + 'Placed'] = true;
+        addLog(`${data.role.toUpperCase()} piazza Comandante su cella ${data.idx}`, data.role);
+        renderPieces();
+
+        if (battleState.p1Placed && battleState.p2Placed) {
+          document.querySelectorAll('.square').forEach(s => s.classList.remove('highlight-placement'));
+          battleState.phase = 'active';
+          battleState.turn = 'p1';
+          for (let i = 0; i < 4; i++) {
+            drawCard('p1');
+            drawCard('p2');
+          }
           renderPieces();
           updateHUD();
-        } else if (data.type === 'END_TURN') {
-          startTurnFor(data.nextTurn);
+          renderHand();
+          showToast("Entrambi i Comandanti schierati! Turno di P1.");
+          addLog("--- INIZIO BATTAGLIA (Turno P1) ---", 'sys');
         }
-      });
-    }
-
-    function sendP2P(payload) {
-      if (isP2P && conn && conn.open) conn.send(payload);
+      } else if (data.type === 'ACTION_MOVE') {
+        executeMoveAction(data.from, data.to, data.player, false);
+      } else if (data.type === 'ACTION_ATTACK') {
+        executeAttackAction(data.from, data.to, data.player, false);
+      } else if (data.type === 'ACTION_DEPLOY') {
+        executeDeployAction(data.idx, data.cardId, data.player, false);
+      } else if (data.type === 'ACTION_SPELL') {
+        executeSpellAction(data.targetIdx, data.cardId, data.player, false);
+      } else if (data.type === 'ACTION_RITE') {
+        executeRiteAction(data.player, false);
+      } else if (data.type === 'SYNC_END_TURN') {
+        startTurnFor(data.nextTurn);
+      }
     }
 
     // --- 6. DECKBUILDING (CON VINCOLO RIGIDO 4X) ---
@@ -1967,35 +2237,133 @@
 
 
     function startBattle(mode) {
-      isP2P = (mode === 'p2p');
-      const deckName = isP2P ? document.getElementById('lobby-deck-select-p2p').value : document.getElementById('lobby-deck-select-ai').value;
-      const deck = userState.decks[deckName];
-      if (deck.cards.length !== 30) return showToast("Il mazzo deve avere 30 carte!");
+      if (mode === 'p2p') {
+        return hostMultiplayer();
+      }
+      isP2P = false;
+      myP2PRole = 'p1';
 
-      const aiCommId = document.getElementById('lobby-ai-select').value;
+      const deckSelect = document.getElementById('lobby-deck-select-ai');
+      const deckName = deckSelect ? deckSelect.value : userState.activeDeckName;
+      let deck = userState.decks[deckName] || userState.decks['Mazzo Base'] || Object.values(userState.decks)[0];
+      deck.cards = ensureDeck30Cards(deck);
+
+      const aiCommId = document.getElementById('lobby-ai-select') ? document.getElementById('lobby-ai-select').value : 'malakor';
+      const aiComm = COMMANDERS[aiCommId] || COMMANDERS['malakor'];
+      const p1Comm = COMMANDERS[deck.commanderId] || COMMANDERS['valeria'];
 
       battleLogs = [];
       const logContainer = document.getElementById('log-entries');
       if (logContainer) logContainer.innerHTML = '';
 
       battleState = {
+        isP2P: false,
+        myRole: 'p1',
         phase: 'placement',
         turn: 'p1',
         round: 1,
-        p1: { commander: COMMANDERS[deck.commanderId], hp: COMMANDERS[deck.commanderId].hp, mana: 1, maxMana: 1, blood: 0, actions: 2, altarDeployedThisTurn: false, deck: [...deck.cards].sort(() => Math.random() - 0.5), hand: [] },
-        p2: { commander: COMMANDERS[aiCommId], hp: COMMANDERS[aiCommId].hp, mana: 1, maxMana: 1, blood: 0, actions: 2, altarDeployedThisTurn: false, deck: [...defaultBaseDeck].sort(() => Math.random() - 0.5), hand: [] },
+        p1: {
+          name: currentUser ? (currentUser.username || 'P1') : 'Condottiero',
+          commander: p1Comm,
+          hp: p1Comm.hp,
+          mana: 1,
+          maxMana: 1,
+          blood: 0,
+          actions: 2,
+          altarDeployedThisTurn: false,
+          deck: [...deck.cards].sort(() => Math.random() - 0.5),
+          hand: []
+        },
+        p2: {
+          name: 'IA Avversaria',
+          commander: aiComm,
+          hp: aiComm.hp,
+          mana: 1,
+          maxMana: 1,
+          blood: 0,
+          actions: 2,
+          altarDeployedThisTurn: false,
+          deck: [...defaultBaseDeck].sort(() => Math.random() - 0.5),
+          hand: []
+        },
         grid: Array(64).fill(null),
         selectedSquare: null,
         selectedHandIndex: null,
         nextTurnManaDrainP1: 0,
-        nextTurnManaDrainP2: 0
+        nextTurnManaDrainP2: 0,
+        p1Placed: false,
+        p2Placed: false
       };
 
       showPaneDirect('battle');
       createBoard();
-      highlightRow1();
-      addLog(`Nuova battaglia avviata: ${isP2P ? 'Multiplayer P2P' : 'Single Player vs IA'}`, 'sys');
+      highlightPlacementRow('p1');
+      addLog("Nuova battaglia avviata: Single Player vs IA", 'sys');
       showToast("Piazza il tuo Comandante sulla prima riga (a1–h1)!");
+      updateHUD();
+    }
+
+    function startBattleP2P(hostData, guestData, role) {
+      isP2P = true;
+      myP2PRole = role;
+
+      const hComm = COMMANDERS[hostData.commanderId] || COMMANDERS['valeria'];
+      const gComm = COMMANDERS[guestData.commanderId] || COMMANDERS['malakor'];
+
+      battleLogs = [];
+      const logContainer = document.getElementById('log-entries');
+      if (logContainer) logContainer.innerHTML = '';
+
+      battleState = {
+        isP2P: true,
+        myRole: role,
+        phase: 'placement',
+        turn: 'p1',
+        round: 1,
+        p1: {
+          name: hostData.username,
+          commander: hComm,
+          hp: hComm.hp,
+          mana: 1,
+          maxMana: 1,
+          blood: 0,
+          actions: 2,
+          altarDeployedThisTurn: false,
+          deck: [...ensureDeck30Cards({ cards: hostData.cards })].sort(() => Math.random() - 0.5),
+          hand: []
+        },
+        p2: {
+          name: guestData.username,
+          commander: gComm,
+          hp: gComm.hp,
+          mana: 1,
+          maxMana: 1,
+          blood: 0,
+          actions: 2,
+          altarDeployedThisTurn: false,
+          deck: [...ensureDeck30Cards({ cards: guestData.cards })].sort(() => Math.random() - 0.5),
+          hand: []
+        },
+        grid: Array(64).fill(null),
+        selectedSquare: null,
+        selectedHandIndex: null,
+        nextTurnManaDrainP1: 0,
+        nextTurnManaDrainP2: 0,
+        p1Placed: false,
+        p2Placed: false
+      };
+
+      showPaneDirect('battle');
+      createBoard();
+      highlightPlacementRow(role);
+      addLog(`Nuova battaglia avviata: Multiplayer P2P [${hostData.username} vs ${guestData.username}]`, 'sys');
+
+      if (role === 'p1') {
+        showToast("Sei P1 (Host). Piazza il tuo Comandante sulla prima riga (a1–h1)!");
+      } else {
+        showToast("Sei P2 (Ospite). Piazza il tuo Comandante sull'ottava riga (a8–h8)!");
+      }
+      updateHUD();
     }
 
     function createBoard() {
@@ -2013,9 +2381,10 @@
       }
     }
 
-    function highlightRow1() {
+    function highlightPlacementRow(role = 'p1') {
+      const start = (role === 'p2') ? 56 : 0;
       for (let i = 0; i < 8; i++) {
-        document.querySelector(`.square[data-index="${i}"]`)?.classList.add('highlight-placement');
+        document.querySelector(`.square[data-index="${start + i}"]`)?.classList.add('highlight-placement');
       }
     }
 
@@ -2114,73 +2483,143 @@
     }
 
     function onSquareClick(idx) {
-      if (isP2P && battleState.turn !== myP2PRole) return showToast("Attendi il turno dell'avversario!");
+      const role = getMyRole();
 
+      // 1. FASE DI PIAZZAMENTO COMANDANTI
       if (battleState.phase === 'placement') {
-        if (idx > 7) return showToast("Piazza il tuo comandante sulla prima riga!");
-        battleState.grid[idx] = {
-          owner: 'p1',
-          type: 'commander',
-          cardId: battleState.p1.commander.id,
-          name: battleState.p1.commander.name,
-          hp: battleState.p1.commander.hp,
-          att: battleState.p1.commander.att,
-          move: battleState.p1.commander.move,
-          range: 1,
-          glyph: battleState.p1.commander.glyph,
-          rarity: 'legendary',
-          riteDesc: battleState.p1.commander.riteDesc,
-          riteCost: battleState.p1.commander.riteCost,
-          archetype: battleState.p1.commander.archetype,
-          exhausted: false
-        };
-        addLog(`P1 piazza Comandante su cella ${idx}`, 'p1');
+        if (role === 'p1') {
+          if (idx > 7) return showToast("Piazza il tuo Comandante sulla prima riga (a1–h1)!");
+          if (battleState.p1Placed) return showToast("Hai già piazzato il tuo Comandante!");
 
-        if (!isP2P) {
-          const aiIdx = selectStrategicAIPlacement(idx);
-          battleState.grid[aiIdx] = {
-            owner: 'p2',
+          const comm = battleState.p1.commander;
+          battleState.grid[idx] = {
+            owner: 'p1',
             type: 'commander',
-            cardId: battleState.p2.commander.id,
-            name: battleState.p2.commander.name,
-            hp: battleState.p2.commander.hp,
-            att: battleState.p2.commander.att,
-            move: battleState.p2.commander.move,
+            cardId: comm.id,
+            name: comm.name,
+            hp: comm.hp,
+            att: comm.att,
+            move: comm.move,
             range: 1,
-            glyph: battleState.p2.commander.glyph,
+            glyph: comm.glyph,
             rarity: 'legendary',
-            riteDesc: battleState.p2.commander.riteDesc,
-            riteCost: battleState.p2.commander.riteCost,
-            archetype: battleState.p2.commander.archetype,
+            riteDesc: comm.riteDesc,
+            riteCost: comm.riteCost,
+            archetype: comm.archetype,
             exhausted: false
           };
-          addLog(`IA piazza Comandante su cella ${aiIdx}`, 'p2');
-        }
+          battleState.p1Placed = true;
+          addLog(`P1 piazza Comandante su cella ${idx}`, 'p1');
 
-        battleState.phase = 'active';
-        document.querySelectorAll('.square').forEach(s => s.classList.remove('highlight-placement'));
-        
-        for (let i = 0; i < 4; i++) { drawCard('p1'); if(!isP2P) drawCard('p2'); }
-        renderPieces();
-        updateHUD();
-        renderHand();
-        showToast("Comandanti schierati! Inizia la battaglia.");
-        return;
+          if (isP2P) {
+            sendNetMsg({ type: 'SYNC_PLACEMENT', role: 'p1', idx });
+            renderPieces();
+            if (battleState.p2Placed) {
+              document.querySelectorAll('.square').forEach(s => s.classList.remove('highlight-placement'));
+              battleState.phase = 'active';
+              battleState.turn = 'p1';
+              for (let i = 0; i < 4; i++) { drawCard('p1'); drawCard('p2'); }
+              renderPieces();
+              updateHUD();
+              renderHand();
+              showToast("Entrambi i Comandanti schierati! Inizia il duello. Turno di P1.");
+              addLog("--- INIZIO BATTAGLIA (Turno P1) ---", 'sys');
+            } else {
+              showToast("Comandante schierato! In attesa che l'avversario piazzi il suo...");
+            }
+          } else {
+            // Modalità IA
+            const aiIdx = selectStrategicAIPlacement(idx);
+            const aiComm = battleState.p2.commander;
+            battleState.grid[aiIdx] = {
+              owner: 'p2',
+              type: 'commander',
+              cardId: aiComm.id,
+              name: aiComm.name,
+              hp: aiComm.hp,
+              att: aiComm.att,
+              move: aiComm.move,
+              range: 1,
+              glyph: aiComm.glyph,
+              rarity: 'legendary',
+              riteDesc: aiComm.riteDesc,
+              riteCost: aiComm.riteCost,
+              archetype: aiComm.archetype,
+              exhausted: false
+            };
+            battleState.p2Placed = true;
+            addLog(`IA piazza Comandante su cella ${aiIdx}`, 'p2');
+            battleState.phase = 'active';
+            document.querySelectorAll('.square').forEach(s => s.classList.remove('highlight-placement'));
+            for (let i = 0; i < 4; i++) { drawCard('p1'); drawCard('p2'); }
+            renderPieces();
+            updateHUD();
+            renderHand();
+            showToast("Comandanti schierati! Inizia la battaglia.");
+          }
+          return;
+        } else if (role === 'p2') {
+          if (idx < 56 || idx > 63) return showToast("Piazza il tuo Comandante sull'ottava riga (a8–h8)!");
+          if (battleState.p2Placed) return showToast("Hai già piazzato il tuo Comandante!");
+
+          const comm = battleState.p2.commander;
+          battleState.grid[idx] = {
+            owner: 'p2',
+            type: 'commander',
+            cardId: comm.id,
+            name: comm.name,
+            hp: comm.hp,
+            att: comm.att,
+            move: comm.move,
+            range: 1,
+            glyph: comm.glyph,
+            rarity: 'legendary',
+            riteDesc: comm.riteDesc,
+            riteCost: comm.riteCost,
+            archetype: comm.archetype,
+            exhausted: false
+          };
+          battleState.p2Placed = true;
+          addLog(`P2 piazza Comandante su cella ${idx}`, 'p2');
+          sendNetMsg({ type: 'SYNC_PLACEMENT', role: 'p2', idx });
+          renderPieces();
+
+          if (battleState.p1Placed) {
+            document.querySelectorAll('.square').forEach(s => s.classList.remove('highlight-placement'));
+            battleState.phase = 'active';
+            battleState.turn = 'p1';
+            for (let i = 0; i < 4; i++) { drawCard('p1'); drawCard('p2'); }
+            renderPieces();
+            updateHUD();
+            renderHand();
+            showToast("Entrambi i Comandanti schierati! Turno di P1.");
+            addLog("--- INIZIO BATTAGLIA (Turno P1) ---", 'sys');
+          } else {
+            showToast("Comandante schierato! In attesa che P1 piazzi il suo...");
+          }
+          return;
+        }
       }
 
+      // 2. FASE ATTIVA: CONTROLLO TURNO
+      if (battleState.turn !== role) {
+        return showToast("Attendi il turno dell'avversario!");
+      }
+
+      // Se c'è una carta selezionata dalla mano
       if (battleState.selectedHandIndex !== null) {
-        const cardId = battleState.p1.hand[battleState.selectedHandIndex];
+        const cardId = battleState[role].hand[battleState.selectedHandIndex];
         const card = CARDS_DB[cardId];
         if (card.type === 'spell') castSpell(idx);
         else deployCard(idx);
         return;
       }
 
+      // Selezione pezzo alleato
       const p = battleState.grid[idx];
-      if (p && p.owner === 'p1') {
+      if (p && p.owner === role) {
         if (p.type === 'altar') {
           showToast("Gli altari sono strutture fisse e non possono muoversi!");
-          addLog("P1 ha tentato di muovere un Altare immobile", 'p1');
           return;
         }
         battleState.selectedSquare = idx;
@@ -2188,12 +2627,13 @@
         return;
       }
 
+      // Azione di movimento o attacco se una casella era selezionata
       if (battleState.selectedSquare !== null) {
         const sq = document.querySelector(`.square[data-index="${idx}"]`);
-        if (sq.classList.contains('highlight-move')) {
-          executeMoveAction(battleState.selectedSquare, idx);
-        } else if (sq.classList.contains('highlight-attack')) {
-          attack(battleState.selectedSquare, idx);
+        if (sq && sq.classList.contains('highlight-move')) {
+          executeMoveAction(battleState.selectedSquare, idx, role, true);
+        } else if (sq && sq.classList.contains('highlight-attack')) {
+          executeAttackAction(battleState.selectedSquare, idx, role, true);
         } else {
           battleState.selectedSquare = null;
           clearHighlights();
@@ -2232,22 +2672,25 @@
       }, 250);
     }
 
-    function executeMoveAction(fromIdx, toIdx) {
+    function executeMoveAction(fromIdx, toIdx, player = getMyRole(), isOriginator = true) {
       const piece = battleState.grid[fromIdx];
+      if (!piece) return;
       battleState.selectedSquare = null;
       clearHighlights();
 
-      addLog(`P1 muove ${piece.name} da ${fromIdx} a ${toIdx} (Azioni rimaste: ${battleState.p1.actions - 1})`, 'p1');
+      addLog(`${player.toUpperCase()} muove ${piece.name} da ${fromIdx} a ${toIdx} (Azioni rimaste: ${battleState[player].actions - 1})`, player);
 
       glidePiece(fromIdx, toIdx, () => {
         battleState.grid[toIdx] = piece;
         battleState.grid[fromIdx] = null;
         piece.exhausted = true;
-        battleState.p1.actions--;
+        battleState[player].actions--;
         renderPieces();
         updateHUD();
-        if (isP2P) sendP2P({ type: 'ACTION_MOVE', from: fromIdx, to: toIdx, player: 'p1' });
         checkWin();
+        if (isP2P && isOriginator) {
+          sendNetMsg({ type: 'ACTION_MOVE', from: fromIdx, to: toIdx, player });
+        }
       });
     }
 
@@ -2262,7 +2705,8 @@
     function highlightMoves(idx) {
       clearHighlights();
       const p = battleState.grid[idx];
-      if (battleState.p1.actions <= 0 || p.exhausted) {
+      const role = getMyRole();
+      if (battleState[role].actions <= 0 || p.exhausted) {
         if (p.exhausted) showToast("Questa unità ha già agito in questo turno!");
         return;
       }
@@ -2303,9 +2747,14 @@
 
     function renderHand() {
       const bar = document.getElementById('battle-hand');
+      if (!bar) return;
       bar.innerHTML = '';
-      battleState.p1.hand.forEach((id, i) => {
+      const role = getMyRole();
+      if (!battleState || !battleState[role]) return;
+
+      battleState[role].hand.forEach((id, i) => {
         const c = CARDS_DB[id];
+        if (!c) return;
         const cardEl = document.createElement('div');
         const r = c.rarity || 'common';
         cardEl.className = `hand-card ${battleState.selectedHandIndex === i ? 'selected' : ''}`;
@@ -2316,6 +2765,7 @@
         cardEl.onmouseleave = () => hideHoverCard();
 
         cardEl.onclick = () => {
+          if (battleState.turn !== role) return showToast("Non è il tuo turno!");
           battleState.selectedHandIndex = battleState.selectedHandIndex === i ? null : i;
           renderHand();
           clearHighlights();
@@ -2328,7 +2778,7 @@
         cardEl.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center;">
             <span style="font-weight:bold; color:var(--mana-cyan);">${c.cost}</span>
-            <span class="rarity-badge ${r}" style="font-size:0.5rem; padding:0 3px;">${RARITY_NAMES[r].slice(0,3)}</span>
+            <span class="rarity-badge ${r}" style="font-size:0.5rem; padding:0 3px;">${(RARITY_NAMES[r] || 'COM').slice(0,3)}</span>
           </div>
           <div style="font-size:0.75rem; font-weight:bold; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${c.name}</div>
         `;
@@ -2337,7 +2787,8 @@
     }
 
     function highlightDeploy() {
-      const cIdx = battleState.grid.findIndex(p => p && p.owner === 'p1' && p.type === 'commander');
+      const role = getMyRole();
+      const cIdx = battleState.grid.findIndex(p => p && p.owner === role && p.type === 'commander');
       if (cIdx === -1) return;
       getAdjs(cIdx).forEach(i => {
         if (!battleState.grid[i]) document.querySelector(`.square[data-index="${i}"]`)?.classList.add('highlight-deploy');
@@ -2346,10 +2797,12 @@
 
     /* GESTIONE SORTILEGI */
     function highlightSpellTargets(card) {
-      const p1CommIdx = battleState.grid.findIndex(p => p && p.owner === 'p1' && p.type === 'commander');
-      if (p1CommIdx === -1) return;
-      const commR = Math.floor(p1CommIdx / 8);
-      const commC = p1CommIdx % 8;
+      const role = getMyRole();
+      const opp = getOppRole();
+      const commIdx = battleState.grid.findIndex(p => p && p.owner === role && p.type === 'commander');
+      if (commIdx === -1) return;
+      const commR = Math.floor(commIdx / 8);
+      const commC = commIdx % 8;
 
       for (let i = 0; i < 64; i++) {
         const target = battleState.grid[i];
@@ -2358,27 +2811,27 @@
         const dist = Math.max(Math.abs(r - commR), Math.abs(c - commC));
 
         if (card.id === 'spell_cleave') {
-          if (target && target.owner === 'p2' && target.type !== 'altar' && dist <= 2) {
+          if (target && target.owner === opp && target.type !== 'altar' && dist <= 2) {
             document.querySelector(`.square[data-index="${i}"]`)?.classList.add('highlight-spell-target');
           }
         } else if (card.id === 'spell_fortify') {
-          if (target && target.owner === 'p1') {
+          if (target && target.owner === role) {
             document.querySelector(`.square[data-index="${i}"]`)?.classList.add('highlight-spell-target');
           }
         } else if (card.id === 'spell_push') {
-          if (target && target.owner === 'p2' && target.type !== 'altar') {
+          if (target && target.owner === opp && target.type !== 'altar') {
             document.querySelector(`.square[data-index="${i}"]`)?.classList.add('highlight-spell-target');
           }
         } else if (card.id === 'spell_heal') {
-          if (i === p1CommIdx) {
+          if (i === commIdx) {
             document.querySelector(`.square[data-index="${i}"]`)?.classList.add('highlight-spell-target');
           }
         } else if (card.id === 'spell_bloodsurge') {
-          if (target && target.owner === 'p2') {
+          if (target && target.owner === opp) {
             document.querySelector(`.square[data-index="${i}"]`)?.classList.add('highlight-spell-target');
           }
         } else if (card.id === 'spell_wrath') {
-          if (i === p1CommIdx) {
+          if (i === commIdx) {
             document.querySelector(`.square[data-index="${i}"]`)?.classList.add('highlight-spell-target');
           }
         }
@@ -2386,23 +2839,36 @@
     }
 
     function castSpell(targetIdx) {
-      const card = CARDS_DB[battleState.p1.hand[battleState.selectedHandIndex]];
-      if (battleState.p1.mana < card.cost) return showToast("Mana insufficiente!");
+      const role = getMyRole();
+      const cardId = battleState[role].hand[battleState.selectedHandIndex];
+      executeSpellAction(targetIdx, cardId, role, true);
+    }
 
-      if (card.id === 'spell_bloodsurge' && battleState.p1.blood < 2) {
-        return showToast("Eruzione di Sangue richiede almeno 2 Sangue!");
+    function executeSpellAction(targetIdx, cardId, player = getMyRole(), isOriginator = true) {
+      const card = CARDS_DB[cardId];
+      if (!card) return;
+      const opp = (player === 'p1') ? 'p2' : 'p1';
+
+      if (isOriginator) {
+        if (battleState[player].mana < card.cost) return showToast("Mana insufficiente!");
+        if (card.id === 'spell_bloodsurge' && battleState[player].blood < 2) {
+          return showToast("Eruzione di Sangue richiede almeno 2 Sangue!");
+        }
+        const sq = document.querySelector(`.square[data-index="${targetIdx}"]`);
+        if (!sq || !sq.classList.contains('highlight-spell-target')) return;
+
+        battleState[player].mana -= card.cost;
+        if (card.id === 'spell_bloodsurge') battleState[player].blood -= 2;
+        battleState[player].hand.splice(battleState.selectedHandIndex, 1);
+        battleState.selectedHandIndex = null;
+      } else {
+        battleState[player].mana -= card.cost;
+        if (card.id === 'spell_bloodsurge') battleState[player].blood -= 2;
+        const hIdx = battleState[player].hand.indexOf(cardId);
+        if (hIdx !== -1) battleState[player].hand.splice(hIdx, 1);
       }
 
-      const sq = document.querySelector(`.square[data-index="${targetIdx}"]`);
-      if (!sq || !sq.classList.contains('highlight-spell-target')) return;
-
-      battleState.p1.mana -= card.cost;
-      if (card.id === 'spell_bloodsurge') battleState.p1.blood -= 2;
-
-      battleState.p1.hand.splice(battleState.selectedHandIndex, 1);
-      battleState.selectedHandIndex = null;
-
-      addLog(`P1 lancia Sortilegio: ${card.name} [${RARITY_NAMES[card.rarity]}] su cella ${targetIdx}`, 'p1');
+      addLog(`${player.toUpperCase()} lancia Sortilegio: ${card.name} [${RARITY_NAMES[card.rarity] || 'Comune'}] su cella ${targetIdx}`, player);
 
       animateCardPlayed(card, () => {
         const target = battleState.grid[targetIdx];
@@ -2410,31 +2876,35 @@
         if (card.id === 'spell_cleave' && target) {
           target.hp -= 2;
           addLog(`${target.name} subisce 2 danni da Fendente Spettrale (PV residui: ${target.hp})`, 'sys');
-          if (target.hp <= 0) handlePieceDefeated(targetIdx, 'p1');
+          if (target.hp <= 0) handlePieceDefeated(targetIdx, player);
         } else if (card.id === 'spell_fortify' && target) {
           const healAmount = target.type === 'altar' ? 3 : 2;
           target.hp += healAmount;
           addLog(`${target.name} ottiene +${healAmount} PV da Fortificazione Litica`, 'sys');
         } else if (card.id === 'spell_push' && target) {
-          pushPiece(targetIdx, 2, 'p1');
+          pushPiece(targetIdx, 2, player);
         } else if (card.id === 'spell_heal') {
-          battleState.p1.hp = Math.min(battleState.p1.commander.hp, battleState.p1.hp + 3);
+          battleState[player].hp = Math.min(battleState[player].commander.hp, battleState[player].hp + 3);
           const comm = battleState.grid[targetIdx];
-          if (comm) comm.hp = Math.min(battleState.p1.commander.hp, comm.hp + 3);
+          if (comm) comm.hp = Math.min(battleState[player].commander.hp, comm.hp + 3);
           addLog("Grazia del Bastione ripristina 3 PV al Comandante!", 'sys');
         } else if (card.id === 'spell_bloodsurge' && target) {
           target.hp -= 3;
           addLog(`${target.name} subisce 3 danni da Eruzione di Sangue!`, 'sys');
-          if (target.hp <= 0) handlePieceDefeated(targetIdx, 'p1');
+          if (target.hp <= 0) handlePieceDefeated(targetIdx, player);
         } else if (card.id === 'spell_wrath') {
           getAdjs(targetIdx).forEach(adj => {
             const p = battleState.grid[adj];
-            if (p && p.owner === 'p2') {
+            if (p && p.owner === opp) {
               p.hp -= 2;
               addLog(`Giudizio Implacabile colpisce ${p.name} (-2 PV)`, 'sys');
-              if (p.hp <= 0) handlePieceDefeated(adj, 'p1');
+              if (p.hp <= 0) handlePieceDefeated(adj, player);
             }
           });
+        }
+
+        if (isP2P && isOriginator) {
+          sendNetMsg({ type: 'ACTION_SPELL', targetIdx, cardId, player });
         }
 
         clearHighlights();
@@ -2446,28 +2916,41 @@
     }
 
     function deployCard(idx) {
-      const card = CARDS_DB[battleState.p1.hand[battleState.selectedHandIndex]];
-      if (battleState.p1.mana < card.cost) return showToast("Mana insufficiente!");
-      const sq = document.querySelector(`.square[data-index="${idx}"]`);
-      if (!sq || !sq.classList.contains('highlight-deploy')) return;
+      const role = getMyRole();
+      const cardId = battleState[role].hand[battleState.selectedHandIndex];
+      executeDeployAction(idx, cardId, role, true);
+    }
 
-      if (card.type === 'altar') {
-        const altarsCount = battleState.grid.filter(p => p && p.owner === 'p1' && p.type === 'altar').length;
-        if (altarsCount >= 4) return showToast("Limite raggiunto: massimo 4 Altari contemporanei!");
-        if (battleState.p1.altarDeployedThisTurn) return showToast("Regola Ufficiale: puoi schierare al massimo 1 Altare per turno!");
+    function executeDeployAction(idx, cardId, player = getMyRole(), isOriginator = true) {
+      const card = CARDS_DB[cardId];
+      if (!card) return;
+
+      if (isOriginator) {
+        if (battleState[player].mana < card.cost) return showToast("Mana insufficiente!");
+        const sq = document.querySelector(`.square[data-index="${idx}"]`);
+        if (!sq || !sq.classList.contains('highlight-deploy')) return;
+
+        if (card.type === 'altar') {
+          const altarsCount = battleState.grid.filter(p => p && p.owner === player && p.type === 'altar').length;
+          if (altarsCount >= 4) return showToast("Limite raggiunto: massimo 4 Altari contemporanei!");
+          if (battleState[player].altarDeployedThisTurn) return showToast("Puoi schierare al massimo 1 Altare per turno!");
+        }
+
+        battleState[player].mana -= card.cost;
+        battleState[player].hand.splice(battleState.selectedHandIndex, 1);
+        battleState.selectedHandIndex = null;
+      } else {
+        battleState[player].mana -= card.cost;
+        const hIdx = battleState[player].hand.indexOf(cardId);
+        if (hIdx !== -1) battleState[player].hand.splice(hIdx, 1);
       }
 
-      battleState.p1.mana -= card.cost;
-      battleState.p1.hand.splice(battleState.selectedHandIndex, 1);
-      battleState.selectedHandIndex = null;
-
-      addLog(`P1 schiera ${card.name} [${RARITY_NAMES[card.rarity]}] su cella ${idx}`, 'p1');
+      addLog(`${player.toUpperCase()} schiera ${card.name} [${RARITY_NAMES[card.rarity] || 'Comune'}] su cella ${idx}`, player);
 
       animateCardPlayed(card, () => {
         const hasSlancio = card.keywords && card.keywords.includes('slancio');
-
         const piece = {
-          owner: 'p1',
+          owner: player,
           type: card.type,
           cardId: card.id,
           name: card.name,
@@ -2480,17 +2963,19 @@
           rarity: card.rarity || 'common',
           exhausted: !hasSlancio
         };
-        
+
         battleState.grid[idx] = piece;
 
         if (card.type === 'altar') {
-          battleState.p1.altarDeployedThisTurn = true;
-          battleState.p1.maxMana = Math.min(4, battleState.p1.maxMana + 1);
-          battleState.p1.mana = Math.min(battleState.p1.maxMana, battleState.p1.mana + 1);
-          showToast("Altare attivo! +1 Mana subito!");
+          battleState[player].altarDeployedThisTurn = true;
+          battleState[player].maxMana = Math.min(4, battleState[player].maxMana + 1);
+          battleState[player].mana = Math.min(battleState[player].maxMana, battleState[player].mana + 1);
+          if (player === getMyRole()) showToast("Altare attivo! +1 Mana subito!");
         }
 
-        if (isP2P) sendP2P({ type: 'ACTION_DEPLOY', idx, piece, cost: card.cost, player: 'p1' });
+        if (isP2P && isOriginator) {
+          sendNetMsg({ type: 'ACTION_DEPLOY', idx, cardId, player });
+        }
 
         clearHighlights();
         renderPieces();
@@ -2556,9 +3041,16 @@
     }
 
     function attack(from, to) {
+      executeAttackAction(from, to, getMyRole(), true);
+    }
+
+    function executeAttackAction(from, to, player = getMyRole(), isOriginator = true) {
       const att = battleState.grid[from];
       const def = battleState.grid[to];
       if (!att || !def) return;
+
+      battleState.selectedSquare = null;
+      clearHighlights();
 
       let damage = att.att;
       if (hasIronAltarProtection(to, def)) {
@@ -2566,7 +3058,7 @@
         addLog(`Altare di Ferro protegge ${def.name}: -1 danno subito!`, 'sys');
       }
 
-      addLog(`${att.name} attacca ${def.name} infliggendo ${damage} danni`, 'p1');
+      addLog(`${att.name} attacca ${def.name} infliggendo ${damage} danni`, player);
       def.hp -= damage;
 
       if (att.cardId === 'colossus' || att.name === 'Colosso di Basalto') {
@@ -2595,16 +3087,22 @@
       }
 
       if (battleState.grid[from]) battleState.grid[from].exhausted = true;
-      battleState.p1.actions--;
+      battleState[player].actions--;
       renderPieces();
       updateHUD();
       checkWin();
+
+      if (isP2P && isOriginator) {
+        sendNetMsg({ type: 'ACTION_ATTACK', from, to, player });
+      }
     }
 
     function showRiteHoverCard(e) {
-      if (!battleState || !battleState.p1 || !battleState.p1.commander) return;
-      const comm = battleState.p1.commander;
-      const blood = battleState.p1.blood;
+      if (!battleState) return;
+      const role = getMyRole();
+      if (!battleState[role] || !battleState[role].commander) return;
+      const comm = battleState[role].commander;
+      const blood = battleState[role].blood;
       const cost = comm.riteCost;
       const isReady = blood >= cost;
       
@@ -2680,14 +3178,16 @@
       document.getElementById('hud-p2-blood').textContent = battleState.p2.blood;
       document.getElementById('hud-p2-actions').textContent = battleState.p2.actions;
 
+      const role = getMyRole();
+      const myComm = battleState[role].commander;
       const riteBtn = document.getElementById('btn-rite-p1');
-      const blood = battleState.p1.blood;
-      const isReady = blood >= comm1.riteCost;
+      const blood = battleState[role].blood;
+      const isReady = blood >= myComm.riteCost;
 
-      riteBtn.textContent = `🩸 Rito (${blood}/${comm1.riteCost}🩸)`;
-      riteBtn.title = `${comm1.name} — Rito d'Armi (${comm1.riteCost} 🩸):\n${comm1.riteDesc}\n\nStato: ${isReady ? 'PRONTO! Clicca per attivare' : 'Sangue insufficiente'}`;
+      riteBtn.textContent = `🩸 Rito (${blood}/${myComm.riteCost}🩸)`;
+      riteBtn.title = `${myComm.name} — Rito d'Armi (${myComm.riteCost} 🩸):\n${myComm.riteDesc}\n\nStato: ${isReady ? 'PRONTO! Clicca per attivare' : 'Sangue insufficiente'}`;
 
-      if (isReady) {
+      if (isReady && battleState.turn === role) {
         riteBtn.style.border = '2px solid #ff7675';
         riteBtn.style.boxShadow = '0 0 14px rgba(255, 118, 117, 0.8), 0 0 22px rgba(229, 185, 88, 0.5)';
         riteBtn.style.background = 'linear-gradient(135deg, #c0392b 0%, #e74c3c 100%)';
@@ -2698,45 +3198,80 @@
         riteBtn.style.background = 'var(--bg-surface)';
         riteBtn.style.color = 'var(--text-muted)';
       }
+
+      const endTurnBtn = document.getElementById('btn-end-turn');
+      if (endTurnBtn) {
+        if (battleState.turn === role) {
+          endTurnBtn.style.opacity = '1';
+          endTurnBtn.style.cursor = 'pointer';
+        } else {
+          endTurnBtn.style.opacity = '0.45';
+          endTurnBtn.style.cursor = 'not-allowed';
+        }
+      }
     }
 
     function endTurnP1() {
-      addLog("--- FINE TURNO P1 ---", 'p1');
+      const role = getMyRole();
+      if (battleState.turn !== role) return showToast("Non è il tuo turno!");
 
-      const p1CommIdx = battleState.grid.findIndex(p => p && p.owner === 'p1' && p.type === 'commander');
-      if (p1CommIdx !== -1) {
-        getAdjs(p1CommIdx).forEach(adj => {
+      addLog(`--- FINE TURNO ${role.toUpperCase()} ---`, role);
+
+      const commIdx = battleState.grid.findIndex(p => p && p.owner === role && p.type === 'commander');
+      if (commIdx !== -1) {
+        getAdjs(commIdx).forEach(adj => {
           const u = battleState.grid[adj];
-          if (u && u.owner === 'p1' && (u.cardId === 'cleric' || u.name === 'Chierico del Crepuscolo')) {
-            battleState.grid[p1CommIdx].hp = Math.min(battleState.p1.commander.hp, battleState.grid[p1CommIdx].hp + 2);
-            addLog("Chierico del Crepuscolo guarisce il Comandante di 2 PV!", 'p1');
+          if (u && u.owner === role && (u.cardId === 'cleric' || u.name === 'Chierico del Crepuscolo')) {
+            battleState.grid[commIdx].hp = Math.min(battleState[role].commander.hp, battleState.grid[commIdx].hp + 2);
+            addLog(`Chierico del Crepuscolo guarisce il Comandante ${role.toUpperCase()} di 2 PV!`, role);
           }
         });
       }
 
-      const nextTurn = 'p2';
+      const nextTurn = (role === 'p1') ? 'p2' : 'p1';
       if (isP2P) {
-        sendP2P({ type: 'END_TURN', nextTurn: nextTurn });
+        sendNetMsg({ type: 'SYNC_END_TURN', nextTurn });
         showToast("Turno avversario...");
       }
 
-      battleState.turn = 'p2';
-      battleState.p2.actions = 2;
-      battleState.p2.mana = Math.max(0, battleState.p2.maxMana - (battleState.nextTurnManaDrainP2 || 0));
-      battleState.nextTurnManaDrainP2 = 0;
-      battleState.p2.altarDeployedThisTurn = false;
-      
+      startTurnFor(nextTurn);
+    }
+
+    function startTurnFor(nextTurn) {
+      battleState.turn = nextTurn;
+      battleState[nextTurn].actions = 2;
+      const drainKey = (nextTurn === 'p1') ? 'nextTurnManaDrainP1' : 'nextTurnManaDrainP2';
+      battleState[nextTurn].mana = Math.max(0, battleState[nextTurn].maxMana - (battleState[drainKey] || 0));
+      battleState[drainKey] = 0;
+      battleState[nextTurn].altarDeployedThisTurn = false;
+
       battleState.grid.forEach(p => {
-        if (p && p.owner === 'p2') p.exhausted = false;
+        if (p && p.owner === nextTurn) p.exhausted = false;
       });
 
-      drawCard('p2');
+      drawCard(nextTurn);
       updateHUD();
-      
-      if (!isP2P) {
-        showToast("Turno avversario (IA)...");
-        addLog(`Inizio Turno IA: Mana=${battleState.p2.mana}/${battleState.p2.maxMana}, Azioni=${battleState.p2.actions}`, 'p2');
-        setTimeout(runAI, 600);
+      renderHand();
+      renderPieces();
+
+      const role = getMyRole();
+      if (isP2P) {
+        if (nextTurn === role) {
+          showToast("È il tuo Turno!");
+          addLog(`--- TUO TURNO (${role.toUpperCase()}) --- [Azioni: 2, Mana: ${battleState[role].mana}]`, role);
+        } else {
+          showToast("Turno dell'avversario...");
+          addLog(`--- TURNO AVVERSARIO (${nextTurn.toUpperCase()}) ---`, nextTurn);
+        }
+      } else {
+        if (nextTurn === 'p2') {
+          showToast("Turno avversario (IA)...");
+          addLog(`Inizio Turno IA: Mana=${battleState.p2.mana}/${battleState.p2.maxMana}, Azioni=${battleState.p2.actions}`, 'p2');
+          setTimeout(runAI, 600);
+        } else {
+          showToast("Tuo Turno!");
+          addLog("--- TUO TURNO (P1) --- [Azioni: 2, Unità pronte]", 'p1');
+        }
       }
     }
 
@@ -2817,143 +3352,151 @@
 
       renderPieces();
       checkWin();
-
-      battleState.turn = 'p1';
-      battleState.p1.actions = 2;
-      battleState.p1.mana = Math.max(0, battleState.p1.maxMana - (battleState.nextTurnManaDrainP1 || 0));
-      battleState.nextTurnManaDrainP1 = 0;
-      battleState.p1.altarDeployedThisTurn = false;
-      
-      battleState.grid.forEach(p => {
-        if (p && p.owner === 'p1') p.exhausted = false;
-      });
-
-      drawCard('p1');
-      updateHUD();
-      renderHand();
-      addLog("--- TUO TURNO (P1) --- [Azioni: 2, Unità pronte]", 'p1');
-      showToast("Tuo Turno!");
+      startTurnFor('p1');
     }
 
     function checkWin() {
       const p1Alive = battleState.grid.some(p => p && p.owner === 'p1' && p.type === 'commander' && p.hp > 0);
       const p2Alive = battleState.grid.some(p => p && p.owner === 'p2' && p.type === 'commander' && p.hp > 0);
 
+      const role = getMyRole();
       if (!p2Alive) {
         addLog("BATTAGLIA CONCLUSA: VITTORIA DI P1!", 'sys');
-        userState.gold = (userState.gold || 0) + 100;
-        updateNavGold();
-        saveCloudState();
-        alert("VITTORIA! Hai decapitato il nemico. Guadagni +100 Oro 🪙!");
+        if (role === 'p1') {
+          userState.gold = (userState.gold || 0) + 100;
+          updateNavGold();
+          saveCloudState();
+          alert("🏆 VITTORIA! Il Comandante nemico è stato abbattuto. Guadagni +100 Oro 🪙!");
+        } else {
+          alert("💀 SCONFITTA! Il tuo Comandante è caduto sul campo di battaglia.");
+        }
         showPaneDirect('home');
       } else if (!p1Alive) {
-        addLog("BATTAGLIA CONCLUSA: SCONFITTA DI P1!", 'sys');
-        alert("SCONFITTA! Il tuo Comandante è caduto.");
+        addLog("BATTAGLIA CONCLUSA: VITTORIA DI P2!", 'sys');
+        if (role === 'p2') {
+          userState.gold = (userState.gold || 0) + 100;
+          updateNavGold();
+          saveCloudState();
+          alert("🏆 VITTORIA! Il Comandante nemico è stato abbattuto. Guadagni +100 Oro 🪙!");
+        } else {
+          alert("💀 SCONFITTA! Il tuo Comandante è caduto sul campo di battaglia.");
+        }
         showPaneDirect('home');
       }
     }
 
     /* RITI D'ARMI FEDELI PER CIASCUN COMANDANTE */
     function useWeaponRiteP1() {
-      const comm = battleState.p1.commander;
-      if (battleState.p1.blood < comm.riteCost) {
+      executeRiteAction(getMyRole(), true);
+    }
+
+    function executeRiteAction(player = getMyRole(), isOriginator = true) {
+      const comm = battleState[player].commander;
+      const opp = (player === 'p1') ? 'p2' : 'p1';
+
+      if (isOriginator && battleState[player].blood < comm.riteCost) {
         return showToast(`Sangue insufficiente! Richiede ${comm.riteCost} 🩸.`);
       }
 
-      const cIdx = battleState.grid.findIndex(p => p && p.owner === 'p1' && p.type === 'commander');
+      const cIdx = battleState.grid.findIndex(p => p && p.owner === player && p.type === 'commander');
       if (cIdx === -1) return;
       const cr = Math.floor(cIdx / 8), cc = cIdx % 8;
 
-      battleState.p1.blood -= comm.riteCost;
-      addLog(`P1 scatena il Rito d'Armi di ${comm.name}!`, 'p1');
+      battleState[player].blood -= comm.riteCost;
+      addLog(`${player.toUpperCase()} scatena il Rito d'Armi di ${comm.name}!`, player);
 
       if (comm.id === 'valeria') {
         for (let i = 0; i < 64; i++) {
           const p = battleState.grid[i];
-          if (p && p.owner === 'p2') {
+          if (p && p.owner === opp) {
             const dist = Math.max(Math.abs(Math.floor(i/8) - cr), Math.abs((i%8) - cc));
             if (dist <= 2) {
               p.hp -= 2;
-              pushPiece(i, 1, 'p1');
-              if (p.hp <= 0) handlePieceDefeated(i, 'p1');
+              pushPiece(i, 1, player);
+              if (p.hp <= 0) handlePieceDefeated(i, player);
             }
           }
         }
       } else if (comm.id === 'malakor') {
         for (let i = 0; i < 64; i++) {
           const p = battleState.grid[i];
-          if (p && p.owner === 'p2') {
+          if (p && p.owner === opp) {
             const dist = Math.max(Math.abs(Math.floor(i/8) - cr), Math.abs((i%8) - cc));
             if (dist <= 2) {
               p.hp -= 3;
               addLog(`Fiamme colpiscono ${p.name} (-3 PV)`, 'sys');
-              if (p.hp <= 0) handlePieceDefeated(i, 'p1');
+              if (p.hp <= 0) handlePieceDefeated(i, player);
             }
           }
         }
       } else if (comm.id === 'vespera') {
-        const p2CommIdx = battleState.grid.findIndex(p => p && p.owner === 'p2' && p.type === 'commander');
-        if (p2CommIdx !== -1) pushPiece(p2CommIdx, 3, 'p1');
+        const oppCommIdx = battleState.grid.findIndex(p => p && p.owner === opp && p.type === 'commander');
+        if (oppCommIdx !== -1) pushPiece(oppCommIdx, 3, player);
       } else if (comm.id === 'aurelius') {
-        battleState.nextTurnManaDrainP2 = 2;
-        addLog("Aurelius prosciuga 2 Mana dalla riserva nemica per il prossimo turno!", 'p1');
+        if (player === 'p1') battleState.nextTurnManaDrainP2 = 2;
+        else battleState.nextTurnManaDrainP1 = 2;
+        addLog("Aurelius prosciuga 2 Mana dalla riserva nemica nel prossimo turno!", player);
       } else if (comm.id === 'vulkan') {
-        const altarIdx = battleState.grid.findIndex(p => p && p.owner === 'p1' && p.type === 'altar');
+        const altarIdx = battleState.grid.findIndex(p => p && p.owner === player && p.type === 'altar');
         if (altarIdx !== -1) {
-          battleState.grid[altarIdx] = { owner: 'p1', type: 'unit', name: 'Golem di Forgia', hp: 5, att: 3, move: 'orth', range: 1, glyph: '🗿', desc: 'Forgiato dall\'Altare.', rarity: 'rare', exhausted: false };
-          addLog("L'Altare prende vita come Golem di Forgia 3/5!", 'p1');
+          battleState.grid[altarIdx] = { owner: player, type: 'unit', name: 'Golem di Forgia', hp: 5, att: 3, move: 'orth', range: 1, glyph: '🗿', desc: 'Forgiato dall\'Altare.', rarity: 'rare', exhausted: false };
+          addLog("L'Altare prende vita come Golem di Forgia 3/5!", player);
         } else {
-          showToast("Nessun Altare attivo da trasformare!");
+          if (player === getMyRole()) showToast("Nessun Altare attivo da trasformare!");
         }
       } else if (comm.id === 'garek') {
         const adjs = getAdjs(cIdx);
-        const altar = adjs.find(i => battleState.grid[i] && battleState.grid[i].owner === 'p1' && battleState.grid[i].type === 'altar');
+        const altar = adjs.find(i => battleState.grid[i] && battleState.grid[i].owner === player && battleState.grid[i].type === 'altar');
         if (altar !== undefined) {
           battleState.grid[altar].hp += 3;
           battleState.grid[altar].att += 2;
-          addLog("Garek infonde l'Altare: +2 ATT e +3 PV!", 'p1');
+          addLog("Garek infonde l'Altare: +2 ATT e +3 PV!", player);
         } else {
-          showToast("Nessun Altare adiacente a Garek!");
+          if (player === getMyRole()) showToast("Nessun Altare adiacente a Garek!");
         }
       } else if (comm.id === 'morbida') {
-        const p2CommIdx = battleState.grid.findIndex(p => p && p.owner === 'p2' && p.type === 'commander');
-        if (p2CommIdx !== -1) {
-          battleState.grid[p2CommIdx].hp -= 3;
-          addLog("Morbida infligge 3 danni diretti al Comandante nemico!", 'p1');
-          if (battleState.grid[p2CommIdx].hp <= 0) handlePieceDefeated(p2CommIdx, 'p1');
+        const oppCommIdx = battleState.grid.findIndex(p => p && p.owner === opp && p.type === 'commander');
+        if (oppCommIdx !== -1) {
+          battleState.grid[oppCommIdx].hp -= 3;
+          addLog("Morbida infligge 3 danni diretti al Comandante nemico!", player);
+          if (battleState.grid[oppCommIdx].hp <= 0) handlePieceDefeated(oppCommIdx, player);
         }
       } else if (comm.id === 'kaelen') {
         const adjs = getAdjs(cIdx);
-        const friend = adjs.find(i => battleState.grid[i] && battleState.grid[i].owner === 'p1' && battleState.grid[i].type !== 'altar');
+        const friend = adjs.find(i => battleState.grid[i] && battleState.grid[i].owner === player && battleState.grid[i].type !== 'altar');
         if (friend !== undefined) {
           const temp = battleState.grid[friend];
           battleState.grid[friend] = battleState.grid[cIdx];
           battleState.grid[cIdx] = temp;
-          addLog("Kaelen scambia di posizione due unità con il Vortice!", 'p1');
+          addLog("Kaelen scambia di posizione due unità con il Vortice!", player);
         }
       } else if (comm.id === 'justiciar_kael') {
-        battleState.p2.blood = 0;
-        addLog("Justiciar Kael azzera la riserva Sangue dell'IA!", 'p1');
+        battleState[opp].blood = 0;
+        addLog(`Justiciar Kael azzera la riserva Sangue di ${opp.toUpperCase()}!`, player);
       } else if (comm.id === 'ignis') {
         for (let i = 0; i < 64; i++) {
           const p = battleState.grid[i];
           if (p && p.type === 'altar') {
             getAdjs(i).forEach(adj => {
               const target = battleState.grid[adj];
-              if (target && target.owner === 'p2') {
+              if (target && target.owner === opp) {
                 target.hp -= 3;
                 addLog(`Forgia Vivente colpisce ${target.name} (-3 PV)`, 'sys');
-                if (target.hp <= 0) handlePieceDefeated(adj, 'p1');
+                if (target.hp <= 0) handlePieceDefeated(adj, player);
               }
             });
           }
         }
       }
 
+      if (isP2P && isOriginator) {
+        sendNetMsg({ type: 'ACTION_RITE', player });
+      }
+
       renderPieces();
       updateHUD();
       checkWin();
-      showToast("Rito d'Armi attivato con successo!");
+      if (player === getMyRole()) showToast("Rito d'Armi scatenato con successo!");
     }
 
     // AVVIO SICURO & RIPRISTINO SESSIONE
