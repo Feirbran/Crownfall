@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>CROWNFALL — Tactical Commander Skirmish (Online Cloud Beta)</title>
+  <title>CROWNFALL — Tactical Commander Skirmish</title>
   
   <!-- CDN ESTERNE GRATUITE: SUPABASE & PEERJS -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -39,6 +39,11 @@
       user-select: none;
       -webkit-user-select: none;
       -webkit-tap-highlight-color: transparent;
+    }
+
+    input, textarea, select, button {
+      user-select: auto !important;
+      -webkit-user-select: auto !important;
     }
 
     body {
@@ -131,7 +136,7 @@
     .pane {
       position: absolute;
       inset: 0;
-      display: none !important;
+      display: none;
       flex-direction: column;
       background: var(--bg-dark);
       overflow-y: auto;
@@ -161,7 +166,7 @@
       box-shadow: 0 20px 50px rgba(0,0,0,0.9), 0 0 30px rgba(201, 155, 66, 0.2);
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      gap: 20px;
       text-align: center;
     }
 
@@ -183,7 +188,7 @@
     .auth-form {
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 14px;
       text-align: left;
     }
 
@@ -192,18 +197,18 @@
       border: 1px solid var(--border-frame);
       border-radius: 6px;
       overflow: hidden;
-      margin-bottom: 4px;
     }
 
     .auth-tab {
       flex: 1;
       text-align: center;
-      padding: 8px;
-      font-size: 0.78rem;
+      padding: 10px;
+      font-size: 0.8rem;
       font-weight: 800;
       cursor: pointer;
       background: var(--bg-surface);
       color: var(--text-muted);
+      border: none;
       transition: all 0.2s;
     }
 
@@ -255,7 +260,7 @@
       cursor: pointer;
       box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
       transition: all 0.2s;
-      margin-top: 8px;
+      margin-top: 4px;
       width: 100%;
     }
 
@@ -283,7 +288,7 @@
       justify-content: space-around;
       font-size: 0.78rem;
       border-top: 1px solid var(--border-frame);
-      padding-top: 16px;
+      padding-top: 14px;
     }
 
     .auth-links a {
@@ -301,7 +306,7 @@
       margin: 0 auto;
       display: flex;
       flex-direction: column;
-      gap: 28px;
+      gap: 24px;
     }
 
     .static-content-pane h2 {
@@ -350,11 +355,11 @@
     .home-hero h1 {
       font-size: 3.2rem; font-weight: 900; letter-spacing: 6px; color: var(--gold-primary); text-shadow: 0 4px 25px var(--gold-glow); margin-bottom: 10px;
     }
-    .home-hero p { color: var(--text-muted); max-width: 520px; font-size: 0.92rem; margin-bottom: 40px; line-height: 1.6; margin-left: auto; margin-right: auto; }
+    .home-hero p { color: var(--text-muted); max-width: 540px; font-size: 0.92rem; margin-bottom: 36px; line-height: 1.6; margin-left: auto; margin-right: auto; }
 
-    .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; width: 100%; max-width: 560px; margin: 0 auto; }
+    .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; width: 100%; max-width: 580px; margin: 0 auto; }
     .menu-btn {
-      background: var(--bg-card); border: 1px solid var(--border-frame); border-radius: 8px; padding: 22px 18px; color: var(--text-main); display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s; box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      background: var(--bg-card); border: 1px solid var(--border-frame); border-radius: 8px; padding: 20px 16px; color: var(--text-main); display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; transition: all 0.2s; box-shadow: 0 8px 24px rgba(0,0,0,0.5);
     }
     .menu-btn:hover { border-color: var(--gold-primary); transform: translateY(-3px); }
     .menu-btn span.title { font-weight: 800; font-size: 0.95rem; color: var(--gold-primary); }
@@ -435,9 +440,6 @@
       box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
     }
 
-    /* LOBBY BATTLE PANE */
-    #pane-battle-lobby { overflow-y: auto; background: var(--bg-dark); }
-    
     /* CAMPO 8X8 */
     #pane-battle { height: 100%; background: #050608; }
     .battle-hud { padding: 10px 16px; background: #0d0f16; border-bottom: 2px solid var(--border-frame); display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; flex-shrink: 0; }
@@ -522,9 +524,12 @@
     <div class="nav-actions">
       <span class="gold-pill" id="nav-gold-label">🪙 0 Oro</span>
       <span class="user-pill" id="nav-user-label"></span>
+      <button class="btn-nav" onclick="showPaneDirect('lore')">Lore</button>
+      <button class="btn-nav" onclick="showPaneDirect('tutorial')">Tutorial</button>
       <button class="btn-nav" onclick="showPane('home')">Menu</button>
       <button class="btn-nav" onclick="showPane('battle-lobby')">Battaglia</button>
       <button class="btn-nav" onclick="openDeckBuilder()">Grimorio</button>
+      <button class="btn-nav" onclick="showPane('packs')">Mercato Box</button>
       <button class="btn-nav" id="btn-nav-logout" style="display: none; border-color: var(--crimson-blood); color: #ff7675;" onclick="handleLogout()">Esci</button>
     </div>
   </header>
@@ -539,10 +544,10 @@
           <p>Autenticazione Cloud & Deck Synchronization.<br>Entra nell'Arena Dark Fantasy.</p>
         </div>
 
-        <form class="auth-form" id="auth-form" onsubmit="handleAuthSubmit(event)">
+        <div class="auth-form">
           <div class="auth-tabs">
-            <div class="auth-tab active" id="tab-login" onclick="switchAuthMode('login')">Accedi</div>
-            <div class="auth-tab" id="tab-register" onclick="switchAuthMode('register')">Registrati</div>
+            <button type="button" class="auth-tab active" id="tab-login" onclick="switchAuthMode('login')">Accedi</button>
+            <button type="button" class="auth-tab" id="tab-register" onclick="switchAuthMode('register')">Registrati</button>
           </div>
 
           <div class="form-field" id="field-username" style="display: none;">
@@ -551,7 +556,6 @@
           </div>
           <div class="form-field">
             <label>Email Sigillo</label>
-            <!-- TOLTI required e type=email per evitare blocchi browser invisibili -->
             <input type="text" id="auth-email" placeholder="condottiero@veridia.com">
           </div>
           <div class="form-field">
@@ -559,15 +563,15 @@
             <input type="password" id="auth-password" placeholder="Inserisci password...">
           </div>
 
-          <button type="submit" class="btn-gothic-action" id="auth-submit-btn">ACCEDI AL REGNO CLOUD</button>
+          <button type="button" class="btn-gothic-action" id="auth-submit-btn" onclick="handleAuthSubmit()">ACCEDI AL REGNO CLOUD</button>
           
-          <button type="button" class="btn" style="width: 100%; margin-top: 8px; border-color: var(--border-frame);" onclick="playOffline()">🛡️ GIOCA OFFLINE (Senza Cloud)</button>
+          <button type="button" class="btn" style="width: 100%; margin-top: 4px; border-color: var(--border-frame);" onclick="playOffline()">🛡️ GIOCA SUBITO (MODALITÀ OFFLINE)</button>
           
           <div class="auth-links">
             <a href="javascript:void(0)" onclick="showPaneDirect('lore')">📖 Leggi la Lore</a>
             <a href="javascript:void(0)" onclick="showPaneDirect('tutorial')">⚔️ Accademia Tattica</a>
           </div>
-        </form>
+        </div>
       </div>
     </div>
 
@@ -575,7 +579,7 @@
     <div id="pane-lore" class="pane">
       <div class="static-content-pane">
         <div class="lore-header">
-          <h1>GLI ANNALI DI VERIDIA</h1>
+          <h1 style="color: var(--gold-primary); font-size: 2.2rem; margin-bottom: 6px;">GLI ANNALI DI VERIDIA</h1>
           <p style="color: var(--text-muted); font-size: 0.95rem;">Le cronache del mondo spezzato e la guerra per il Demiurgo.</p>
         </div>
         <div class="content-box">
@@ -592,7 +596,7 @@
           <p>I soldati sul campo non sono individui indipendenti, ma gusci proiettati a distanza dal frammento di Corona del Comandante. Se il Comandante viene ucciso (PV a 0), il campo di forza collassa all'istante e l'intero esercito si dissolve in polvere.</p>
         </div>
         <div style="display: flex; gap: 12px; justify-content: center; margin-top: 10px;">
-          <button class="btn btn-gold" onclick="showPane('tutorial')">Vai al Tutorial</button>
+          <button class="btn btn-gold" onclick="showPaneDirect('tutorial')">Vai al Tutorial</button>
           <button class="btn" onclick="showPane('battle-lobby')">Schiera la Battaglia</button>
         </div>
       </div>
@@ -624,17 +628,25 @@
 
     <!-- HOME -->
     <div id="pane-home" class="pane">
-      <div class="home-hero" style="margin: auto; max-width: 600px; padding: 20px;">
+      <div class="home-hero" style="margin: auto; max-width: 620px; padding: 20px;">
         <h1>CROWNFALL</h1>
-        <p>Scegli se sfidare l'IA locale o ingaggiare un duello Multiplayer P2P in tempo reale con un altro Comandante.</p>
+        <p>Scegli il tuo Campione, schiera gli Altari territoriali e sfida l'IA o un altro Comandante in Multiplayer P2P per guadagnare Oro e gloria.</p>
         <div class="menu-grid">
+          <div class="menu-btn" onclick="showPaneDirect('lore')">
+            <span class="title">📖 La Lore di Veridia</span>
+            <span class="desc">La Sottrazione, il Demiurgo e i Frammenti</span>
+          </div>
+          <div class="menu-btn" onclick="showPaneDirect('tutorial')">
+            <span class="title">⚔️ Accademia Tattica</span>
+            <span class="desc">Come muovere, attaccare e usare gli Altari</span>
+          </div>
           <div class="menu-btn" onclick="showPane('battle-lobby')">
-            <span class="title">👑 Arena di Guerra</span>
-            <span class="desc">Sfida IA o Multiplayer Online P2P</span>
+            <span class="title">👑 Arena di Battaglia</span>
+            <span class="desc">Sfida l'IA locale o gioca online in P2P</span>
           </div>
           <div class="menu-btn" onclick="openDeckBuilder()">
-            <span class="title">📜 Deckbuilding Arena</span>
-            <span class="desc">Costruisci il tuo grimorio (max 4x copie)</span>
+            <span class="title">📜 Deckbuilder Arena</span>
+            <span class="desc">Costruisci il tuo grimorio a 30 carte (max 4x)</span>
           </div>
         </div>
       </div>
@@ -697,7 +709,7 @@
 
           <div class="tray-footer-actions">
             <button class="btn" style="padding: 6px;" onclick="autoCompleteDeck()">✨ Autocompleta (30)</button>
-            <button class="btn-arena-done" onclick="finishDeckBuilding()">SALVA MAZZO SUL CLOUD</button>
+            <button class="btn-arena-done" onclick="finishDeckBuilding()">SALVA MAZZO</button>
           </div>
         </aside>
       </div>
@@ -716,6 +728,7 @@
             <select id="lobby-deck-select-ai" onchange="updateLobbyP1Preview()" style="padding: 6px; background: var(--bg-dark); color: #fff; border: 1px solid var(--border-frame); border-radius: 4px;"></select>
             <label style="font-size: 0.75rem; color: var(--text-muted);">Avversario IA:</label>
             <select id="lobby-ai-select" onchange="updateLobbyP2Preview()" style="padding: 6px; background: var(--bg-dark); color: #fff; border: 1px solid var(--border-frame); border-radius: 4px;"></select>
+            <div id="lobby-p1-card" style="background: var(--bg-dark); padding: 8px; border-radius: 4px; font-size: 0.75rem; border: 1px solid var(--border-frame);"></div>
             <button class="btn btn-gold" style="margin-top: 10px;" onclick="startBattle('ai')">GIOCA VS IA</button>
           </div>
 
@@ -826,12 +839,18 @@
   <div id="app-toast">Notifica</div>
 
   <script>
-    // --- 1. CONFIGURAZIONE SUPABASE ---
+    // --- 1. CONFIGURAZIONE SUPABASE DIRETTA (SENZA CONFLITTO VARIABILI) ---
     const SUPABASE_URL = "https://bvdsmwylswfxfdzobscn.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ2ZHNtd3lsc3dmeGZkem9ic2NuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NDIyMjEsImV4cCI6MjEwNDQxODIyMX0.3NrfBzGJfeJAi7k_sonRdH0EqOICbJL4AddQGf1CzMw";
     
-    // Inizializzazione sicura nel caso CDN fallisca
-    const supabase = (typeof window.supabase !== 'undefined') ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+    let sbClient = null;
+    try {
+      if (typeof window.supabase !== 'undefined' && typeof window.supabase.createClient === 'function') {
+        sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      }
+    } catch (err) {
+      console.warn("Supabase init error:", err);
+    }
 
     // --- 2. DATABASE DELLE CARTE & COMANDANTI ---
     const RARITY_NAMES = { common: 'Comune', uncommon: 'Non Comune', rare: 'Rara', mythic: 'Mitica', legendary: 'Leggendaria' };
@@ -880,9 +899,6 @@
     const defaultBaseDeck = ['altar_iron', 'sentinel', 'sentinel', 'scout', 'crossbowman', 'shieldbearer', 'cleric', 'knight', 'spell_cleave', 'spell_heal'];
 
     // --- 3. STATO UTENTE E MULTIPLAYER ---
-    const STORAGE_KEY = 'CROWNFALL_PROG_V17_SAFE_LOGIN';
-    const SESSION_KEY = 'crownfall_active_session';
-    
     let currentUser = null;
     let userState = {
       gold: 50,
@@ -940,16 +956,20 @@
       }
     }
 
-    // FUNZIONE DI EMERGENZA: GIOCA OFFLINE
+    // BYPASS DIRETTO OFFLINE
     function playOffline() {
       currentUser = { id: 'local_dev', email: 'offline@veridia.com', username: 'Condottiero Offline' };
       
       const raw = localStorage.getItem('crownfall_offline_save');
       if (raw) {
-        userState = JSON.parse(raw);
+        try {
+          userState = JSON.parse(raw);
+        } catch (e) {
+          console.warn(e);
+        }
       } else {
         userState = {
-          gold: 50,
+          gold: 100,
           unlockedCommanders: ['valeria', 'malakor', 'vespera', 'aurelius', 'vulkan'],
           collection: {},
           decks: { 'Mazzo Base': { commanderId: 'valeria', cards: [...defaultBaseDeck] } },
@@ -959,37 +979,33 @@
           if (CARDS_DB[id].set === 0) userState.collection[id] = 4;
         });
       }
-      onLoginSuccess("Modalità Offline Attiva. Nessun salvataggio Cloud.");
+      onLoginSuccess("Modalità Offline Attiva. Benvenuto!");
     }
 
-    // FUNZIONE DI LOGIN CORAZZATA CON ALERT
-    async function handleAuthSubmit(e) {
-      if (e) e.preventDefault();
-      
+    // AUTENTICAZIONE CON ALERT ESPLICITI
+    async function handleAuthSubmit() {
       const email = document.getElementById('auth-email').value.trim();
       const pass = document.getElementById('auth-password').value.trim();
       const user = document.getElementById('auth-username').value.trim() || email.split('@')[0];
 
       if (!email || !pass) {
-        return alert("ATTENZIONE: Compila i campi Email e Password per procedere!");
+        return alert("ATTENZIONE: Inserisci Email e Password prima di cliccare!");
       }
 
-      if (!supabase) {
-        alert("ATTENZIONE: Database Supabase non collegato. Avvio la modalità Offline.");
+      if (!sbClient) {
+        alert("Attenzione: Servizio Supabase non raggiungibile. Accesso in modalità Offline.");
         return playOffline();
       }
 
-      console.log(`[AUTH] Tentativo in modalità: ${authMode} per ${email}`);
-
       if (authMode === 'register') {
-        const { data, error } = await supabase.auth.signUp({ email, password: pass });
+        const { data, error } = await sbClient.auth.signUp({ email, password: pass });
         
         if (error) {
-          return alert(`ERRORE REGISTRAZIONE:\n${error.message}`);
+          return alert(`ERRORE DI REGISTRAZIONE:\n${error.message}`);
         }
 
-        if (!data.user) {
-           return alert("Registrazione fallita: utente non creato. Riprova.");
+        if (!data || !data.user) {
+          return alert("Registrazione non riuscita. Riprova.");
         }
         
         const initialProfile = {
@@ -1001,10 +1017,9 @@
           active_deck_name: 'Mazzo Iniziale'
         };
         
-        const { error: dbError } = await supabase.from('profiles').insert([initialProfile]);
-        
+        const { error: dbError } = await sbClient.from('profiles').insert([initialProfile]);
         if (dbError) {
-          alert(`ERRORE DATABASE:\n${dbError.message}\nVerifica le policy su Supabase.`);
+          alert(`AVVISO DATABASE:\n${dbError.message}\n(Se compare l'errore sulla tabella 'profiles', ricordati di eseguire lo script SQL su Supabase!)`);
         }
 
         currentUser = { id: data.user.id, email, username: user };
@@ -1012,21 +1027,20 @@
         onLoginSuccess(`Registrato con successo, Condottiero ${user}!`);
         
       } else {
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password: pass });
+        const { data, error } = await sbClient.auth.signInWithPassword({ email, password: pass });
         
         if (error) {
-          return alert(`ERRORE DI ACCESSO:\n${error.message}\n(Hai cliccato "Registrati" o la password è errata?)`);
+          return alert(`ERRORE DI ACCESSO:\n${error.message}\n\n(Se non hai ancora un account, clicca prima sul pulsante 'Registrati' in alto!)`);
         }
         
-        const { data: profile, error: pError } = await supabase.from('profiles').select('*').eq('id', data.user.id).single();
-        
+        const { data: profile, error: pError } = await sbClient.from('profiles').select('*').eq('id', data.user.id).single();
         if (pError) {
-          alert(`ATTENZIONE: Profilo database non trovato. Errore: ${pError.message}`);
+          console.warn(pError);
         }
 
         currentUser = { id: data.user.id, email, username: profile ? profile.username : user };
         if (profile) {
-          userState = { gold: profile.gold, unlockedCommanders: ['valeria', 'malakor', 'vespera', 'aurelius', 'vulkan'], collection: profile.collection, decks: profile.decks, activeDeckName: profile.active_deck_name };
+          userState = { gold: profile.gold, unlockedCommanders: ['valeria', 'malakor', 'vespera', 'aurelius', 'vulkan'], collection: profile.collection || {}, decks: profile.decks || {}, activeDeckName: profile.active_deck_name || 'Mazzo Base' };
         }
         onLoginSuccess(`Bentornato sul Cloud, ${currentUser.username}!`);
       }
@@ -1039,8 +1053,8 @@
         return;
       }
 
-      if (supabase && currentUser) {
-        const { error } = await supabase.from('profiles').update({
+      if (sbClient && currentUser) {
+        const { error } = await sbClient.from('profiles').update({
           gold: userState.gold,
           decks: userState.decks,
           collection: userState.collection,
@@ -1065,7 +1079,7 @@
     }
 
     async function handleLogout() {
-      if (supabase) await supabase.auth.signOut();
+      if (sbClient) await sbClient.auth.signOut();
       currentUser = null;
       document.getElementById('nav-user-label').style.display = 'none';
       document.getElementById('nav-gold-label').style.display = 'none';
@@ -1083,15 +1097,23 @@
 
     function showPaneDirect(id) {
       hideHoverCard();
-      document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.pane').forEach(p => {
+        p.classList.remove('active');
+        p.style.display = 'none';
+      });
       const target = document.getElementById('pane-' + id);
-      if (target) target.classList.add('active');
+      if (target) {
+        target.classList.add('active');
+        target.style.display = 'flex';
+      }
       if (id === 'deck') renderDeckBuilder();
       if (id === 'battle-lobby') initLobby();
     }
 
     function showPane(id) {
-      if (!currentUser && id !== 'auth' && id !== 'lore' && id !== 'tutorial') return showToast("Accedi prima di proseguire!");
+      if (!currentUser && id !== 'auth' && id !== 'lore' && id !== 'tutorial') {
+        return showToast("Accedi prima di continuare!");
+      }
       showPaneDirect(id);
     }
 
@@ -1099,6 +1121,10 @@
     function hostP2PMatch() {
       const deck = userState.decks[document.getElementById('lobby-deck-select-p2p').value];
       if (deck.cards.length !== 30) return showToast("Il mazzo deve avere 30 carte!");
+
+      if (typeof Peer === 'undefined') {
+        return alert("Impossibile caricare PeerJS. Verifica la connessione a Internet.");
+      }
 
       peer = new Peer();
       peer.on('open', (id) => {
@@ -1119,6 +1145,10 @@
 
       const deck = userState.decks[document.getElementById('lobby-deck-select-p2p').value];
       if (deck.cards.length !== 30) return showToast("Il mazzo deve avere 30 carte!");
+
+      if (typeof Peer === 'undefined') {
+        return alert("Impossibile caricare PeerJS. Verifica la connessione a Internet.");
+      }
 
       peer = new Peer();
       conn = peer.connect(hostId);
@@ -1216,8 +1246,7 @@
           }
           if (deckFilters.search && !card.name.toLowerCase().includes(deckFilters.search)) return;
 
-          const owned = userState.collection[card.id] || 0;
-          const isUnlocked = card.set === 0 || owned > 0;
+          const isUnlocked = card.set === 0 || (userState.collection[card.id] || 0) > 0;
           const currentCountInDeck = deck.cards.filter(id => id === card.id).length;
           const isMaxedOut = currentCountInDeck >= 4;
 
@@ -1268,9 +1297,6 @@
         const card = CARDS_DB[id];
         const row = document.createElement('div');
         row.className = 'arena-tray-row';
-        row.onmouseenter = (e) => showHoverCard(card, e);
-        row.onmousemove = (e) => updateHoverCardPos(e);
-        row.onmouseleave = () => hideHoverCard();
         row.innerHTML = `
           <div class="tray-row-left"><span class="tray-qty-pill">${grouped[id]}x</span><span class="tray-card-name">${card.name}</span></div>
           <button class="btn-tray-minus" onclick="removeCard('${id}')">−</button>
@@ -1290,11 +1316,12 @@
 
     function autoCompleteDeck() {
       const deck = userState.decks[userState.activeDeckName];
-      const keys = Object.keys(CARDS_DB);
+      const baseCards = Object.keys(CARDS_DB).filter(k => CARDS_DB[k].set === 0);
+
       while (deck.cards.length < 30) {
-        const avail = keys.filter(id => deck.cards.filter(c => c === id).length < 4);
-        if (avail.length === 0) break;
-        deck.cards.push(avail[Math.floor(Math.random() * avail.length)]);
+        const eligible = baseCards.filter(id => deck.cards.filter(cId => cId === id).length < 4);
+        if (eligible.length === 0) break;
+        deck.cards.push(eligible[Math.floor(Math.random() * eligible.length)]);
       }
       renderDeckBuilder();
     }
@@ -2319,23 +2346,23 @@
       showToast("Rito d'Armi attivato con successo!");
     }
 
-    // GESTIONE CONNESSIONE ALL'AVVIO
+    // AVVIO SICURO
     window.addEventListener('DOMContentLoaded', async () => {
       showPaneDirect('auth');
-      
-      if (supabase) {
+
+      if (sbClient) {
         try {
-          const { data: { session } } = await supabase.auth.getSession();
+          const { data: { session } } = await sbClient.auth.getSession();
           if (session) {
-            const { data: profile } = await supabase.from('profiles').select('*').eq('id', session.user.id).single();
+            const { data: profile } = await sbClient.from('profiles').select('*').eq('id', session.user.id).single();
             if (profile) {
               currentUser = { id: session.user.id, email: session.user.email, username: profile.username };
-              userState = { gold: profile.gold, unlockedCommanders: ['valeria', 'malakor', 'vespera', 'aurelius', 'vulkan'], collection: profile.collection, decks: profile.decks, activeDeckName: profile.active_deck_name };
+              userState = { gold: profile.gold, unlockedCommanders: ['valeria', 'malakor', 'vespera', 'aurelius', 'vulkan'], collection: profile.collection || {}, decks: profile.decks || {}, activeDeckName: profile.active_deck_name || 'Mazzo Base' };
               onLoginSuccess(`Sessione Cloud ripristinata: ${profile.username}`);
             }
           }
         } catch (e) {
-          console.log("Supabase session check failed.");
+          console.warn("Nessuna sessione attiva.");
         }
       }
     });
