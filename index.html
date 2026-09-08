@@ -842,6 +842,7 @@
     // --- 1. CONFIGURAZIONE SUPABASE DIRETTA (SENZA CONFLITTO VARIABILI) ---
     const SUPABASE_URL = "https://bvdsmwylswfxfdzobscn.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ2ZHNtd3lsc3dmeGZkem9ic2NuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NDIyMjEsImV4cCI6MjEwNDQxODIyMX0.3NrfBzGJfeJAi7k_sonRdH0EqOICbJL4AddQGf1CzMw";
+<<<<<<< Updated upstream
     
     let sbClient = null;
     try {
@@ -851,6 +852,9 @@
     } catch (err) {
       console.warn("Supabase init error:", err);
     }
+=======
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+>>>>>>> Stashed changes
 
     // --- 2. DATABASE DELLE CARTE & COMANDANTI ---
     const RARITY_NAMES = { common: 'Comune', uncommon: 'Non Comune', rare: 'Rara', mythic: 'Mitica', legendary: 'Leggendaria' };
@@ -998,6 +1002,7 @@
       }
 
       if (authMode === 'register') {
+<<<<<<< Updated upstream
         const { data, error } = await sbClient.auth.signUp({ email, password: pass });
         
         if (error) {
@@ -1007,6 +1012,10 @@
         if (!data || !data.user) {
           return alert("Registrazione non riuscita. Riprova.");
         }
+=======
+        const { data, error } = await supabaseClient.auth.signUp({ email, password: pass });
+        if (error) return showToast(`Errore: ${error.message}`);
+>>>>>>> Stashed changes
         
         const initialProfile = {
           id: data.user.id,
@@ -1016,6 +1025,7 @@
           decks: { 'Mazzo Iniziale': { commanderId: 'valeria', cards: [...defaultBaseDeck] } },
           active_deck_name: 'Mazzo Iniziale'
         };
+<<<<<<< Updated upstream
         
         const { error: dbError } = await sbClient.from('profiles').insert([initialProfile]);
         if (dbError) {
@@ -1037,6 +1047,18 @@
         if (pError) {
           console.warn(pError);
         }
+=======
+        await supabaseClient.from('profiles').insert([initialProfile]);
+        currentUser = { id: data.user.id, email, username: user };
+        userState = { gold: 100, collection: initialProfile.collection, decks: initialProfile.decks, activeDeckName: 'Mazzo Iniziale' };
+        onLoginSuccess(`Registrato con successo, Condottiero ${user}!`);
+      } else {
+        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password: pass });
+        if (error) return showToast(`Errore: ${error.message}`);
+        
+        const { data: profile, error: pError } = await supabaseClient.from('profiles').select('*').eq('id', data.user.id).single();
+        if (pError) console.warn("Profilo cloud non ancora sincronizzato:", pError);
+>>>>>>> Stashed changes
 
         currentUser = { id: data.user.id, email, username: profile ? profile.username : user };
         if (profile) {
@@ -1047,6 +1069,7 @@
     }
 
     async function saveCloudState() {
+<<<<<<< Updated upstream
       if (currentUser && currentUser.id === 'local_dev') {
         localStorage.setItem('crownfall_offline_save', JSON.stringify(userState));
         showToast("Salvataggio locale completato.");
@@ -1055,6 +1078,10 @@
 
       if (sbClient && currentUser) {
         const { error } = await sbClient.from('profiles').update({
+=======
+      if (currentUser) {
+        const { error } = await supabaseClient.from('profiles').update({
+>>>>>>> Stashed changes
           gold: userState.gold,
           decks: userState.decks,
           collection: userState.collection,
@@ -1079,7 +1106,11 @@
     }
 
     async function handleLogout() {
+<<<<<<< Updated upstream
       if (sbClient) await sbClient.auth.signOut();
+=======
+      await supabaseClient.auth.signOut();
+>>>>>>> Stashed changes
       currentUser = null;
       document.getElementById('nav-user-label').style.display = 'none';
       document.getElementById('nav-gold-label').style.display = 'none';
@@ -2349,6 +2380,7 @@
     // AVVIO SICURO
     window.addEventListener('DOMContentLoaded', async () => {
       showPaneDirect('auth');
+<<<<<<< Updated upstream
 
       if (sbClient) {
         try {
@@ -2363,6 +2395,16 @@
           }
         } catch (e) {
           console.warn("Nessuna sessione attiva.");
+=======
+      // Controllo sessione cloud già attiva
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (session) {
+        const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', session.user.id).single();
+        if (profile) {
+          currentUser = { id: session.user.id, email: session.user.email, username: profile.username };
+          userState = { gold: profile.gold, collection: profile.collection, decks: profile.decks, activeDeckName: profile.active_deck_name };
+          onLoginSuccess(`Sessione Cloud ripristinata: ${profile.username}`);
+>>>>>>> Stashed changes
         }
       }
     });
