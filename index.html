@@ -726,10 +726,19 @@
           <div style="background: var(--bg-card); border: 1px solid var(--border-frame); border-radius: 8px; padding: 16px; display: flex; flex-direction: column; gap: 10px;">
             <h3>🤖 Skirmish vs IA</h3>
             <label style="font-size: 0.75rem; color: var(--text-muted);">Tuo Grimorio:</label>
-            <select id="lobby-deck-select-ai" onchange="updateLobbyP1Preview()" style="padding: 6px; background: var(--bg-dark); color: #fff; border: 1px solid var(--border-frame); border-radius: 4px;"></select>
+            <select id="lobby-deck-select-ai" onchange="onLobbyDeckChanged('ai')" style="padding: 6px; background: var(--bg-dark); color: #fff; border: 1px solid var(--border-frame); border-radius: 4px;"></select>
+            
+            <label style="font-size: 0.75rem; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center;">
+              <span>Tuo Comandante Leader:</span>
+              <a href="javascript:void(0)" onclick="openDeckBuilder(); startCommanderSelectionMode();" style="color: var(--gold-primary); text-decoration: none; font-size: 0.7rem; font-weight: 700;">👑 Galleria Carte ➔</a>
+            </label>
+            <select id="lobby-comm-select-ai" onchange="onLobbyCommanderChanged('ai', this.value)" style="padding: 6px; background: var(--bg-dark); color: #fff; border: 1px solid var(--border-frame); border-radius: 4px;"></select>
+            
+            <div id="lobby-p1-card" style="background: var(--bg-dark); padding: 8px; border-radius: 4px; font-size: 0.75rem; border: 1px solid var(--border-frame);"></div>
+            
             <label style="font-size: 0.75rem; color: var(--text-muted);">Avversario IA:</label>
             <select id="lobby-ai-select" onchange="updateLobbyP2Preview()" style="padding: 6px; background: var(--bg-dark); color: #fff; border: 1px solid var(--border-frame); border-radius: 4px;"></select>
-            <div id="lobby-p1-card" style="background: var(--bg-dark); padding: 8px; border-radius: 4px; font-size: 0.75rem; border: 1px solid var(--border-frame);"></div>
+            <div id="lobby-p2-card" style="background: var(--bg-dark); padding: 8px; border-radius: 4px; font-size: 0.75rem; border: 1px solid var(--border-frame);"></div>
             <button class="btn btn-gold" style="margin-top: 10px;" onclick="startBattle('ai')">GIOCA VS IA</button>
           </div>
 
@@ -737,7 +746,15 @@
           <div style="background: var(--bg-card); border: 2px solid var(--border-gold); border-radius: 8px; padding: 16px; display: flex; flex-direction: column; gap: 10px;">
             <h3>🌐 Duello Multiplayer P2P (0€)</h3>
             <label style="font-size: 0.75rem; color: var(--text-muted);">Tuo Grimorio:</label>
-            <select id="lobby-deck-select-p2p" style="padding: 6px; background: var(--bg-dark); color: #fff; border: 1px solid var(--border-frame); border-radius: 4px;"></select>
+            <select id="lobby-deck-select-p2p" onchange="onLobbyDeckChanged('p2p')" style="padding: 6px; background: var(--bg-dark); color: #fff; border: 1px solid var(--border-frame); border-radius: 4px;"></select>
+            
+            <label style="font-size: 0.75rem; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center;">
+              <span>Tuo Comandante Leader:</span>
+              <a href="javascript:void(0)" onclick="openDeckBuilder(); startCommanderSelectionMode();" style="color: var(--gold-primary); text-decoration: none; font-size: 0.7rem; font-weight: 700;">👑 Galleria Carte ➔</a>
+            </label>
+            <select id="lobby-comm-select-p2p" onchange="onLobbyCommanderChanged('p2p', this.value)" style="padding: 6px; background: var(--bg-dark); color: #fff; border: 1px solid var(--border-frame); border-radius: 4px;"></select>
+            
+            <div id="lobby-p2p-card" style="background: var(--bg-dark); padding: 8px; border-radius: 4px; font-size: 0.75rem; border: 1px solid var(--border-frame);"></div>
             
             <button class="btn" onclick="hostP2PMatch()">👑 CREA STANZA (HOST)</button>
             <div id="host-id-display" style="font-size: 0.75rem; color: var(--gold-primary); word-break: break-all;"></div>
@@ -760,8 +777,8 @@
           <span class="hud-stat blood">🩸 <span id="hud-p1-blood">0</span></span>
           <span class="hud-stat actions">⚡ Azioni: <span id="hud-p1-actions">2</span></span>
         </div>
-        <div>
-          <button class="btn btn-gold" id="btn-rite-p1" onclick="useWeaponRiteP1()">Rito d'Armi</button>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <button class="btn btn-gold" id="btn-rite-p1" onclick="useWeaponRiteP1()" onmouseenter="showRiteHoverCard(event)" onmousemove="updateHoverCardPos(event)" onmouseleave="hideHoverCard()">Rito d'Armi</button>
           <button class="btn btn-crimson" id="btn-end-turn" onclick="endTurnP1()">Passa Turno</button>
         </div>
         <div class="player-hud-box">
@@ -960,7 +977,19 @@
     function normalizeUserState(state) {
       if (!state) state = {};
       state.gold = (typeof state.gold === 'number') ? state.gold : 100;
-      state.unlockedCommanders = Array.isArray(state.unlockedCommanders) ? state.unlockedCommanders : ['valeria', 'malakor', 'vespera', 'aurelius', 'vulkan'];
+      
+      const baseCommanders = ['valeria', 'malakor', 'vespera', 'aurelius', 'vulkan'];
+      let unlocked = Array.isArray(state.unlockedCommanders) ? [...state.unlockedCommanders] : [];
+      if (state.collection && Array.isArray(state.collection._unlockedCommanders)) {
+        state.collection._unlockedCommanders.forEach(c => {
+          if (!unlocked.includes(c)) unlocked.push(c);
+        });
+      }
+      baseCommanders.forEach(c => {
+        if (!unlocked.includes(c)) unlocked.push(c);
+      });
+      state.unlockedCommanders = unlocked;
+
       state.collection = (state.collection && typeof state.collection === 'object') ? state.collection : {};
       state.decks = (state.decks && typeof state.decks === 'object') ? state.decks : {};
       state.activeDeckName = state.activeDeckName || 'Mazzo Base';
@@ -1147,7 +1176,10 @@
             username: currentUser.username,
             gold: userState.gold,
             decks: userState.decks,
-            collection: userState.collection,
+            collection: {
+              ...userState.collection,
+              _unlockedCommanders: userState.unlockedCommanders
+            },
             active_deck_name: userState.activeDeckName,
             updated_at: new Date().toISOString()
           });
@@ -1439,14 +1471,24 @@
       grid.innerHTML = '';
 
       const deck = userState.decks[userState.activeDeckName];
-      document.getElementById('arena-step-banner').innerHTML = `Comandante: <strong>${COMMANDERS[deck.commanderId].name}</strong>`;
 
       if (deckFilters.mode === 'commander_select') {
+        document.getElementById('arena-step-banner').innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <span>👑 Scegli il Comandante per <strong>${userState.activeDeckName}</strong> (Attuale: <strong>${COMMANDERS[deck.commanderId].name}</strong>)</span>
+            <button class="btn" style="padding: 3px 10px; font-size: 0.72rem;" onclick="exitCommanderSelectionMode()">✖ Chiudi / Torna alle Carte</button>
+          </div>
+        `;
+
         Object.values(COMMANDERS).forEach(comm => {
-          const isUnlocked = userState.unlockedCommanders.includes(comm.id);
+          const isUnlocked = comm.set === 0 || (userState.unlockedCommanders && userState.unlockedCommanders.includes(comm.id));
           const cardEl = document.createElement('div');
           const r = comm.rarity || 'legendary';
           cardEl.className = `mtg-card rarity-${r} ${isUnlocked ? '' : 'locked'}`;
+          if (comm.id === deck.commanderId) {
+            cardEl.style.boxShadow = '0 0 18px var(--gold-primary)';
+            cardEl.style.borderColor = 'var(--gold-primary)';
+          }
 
           cardEl.onmouseenter = (e) => showHoverCard(comm, e);
           cardEl.onmousemove = (e) => updateHoverCardPos(e);
@@ -1458,9 +1500,14 @@
               saveCloudState();
               deckFilters.mode = 'cards';
               renderDeckBuilder();
-              showToast(`${comm.name} impostato come leader!`);
+              showToast(`👑 ${comm.name} impostato come leader del Grimorio!`);
+            };
+          } else {
+            cardEl.onclick = () => {
+              showToast(`🔒 ${comm.name} è bloccato (Set 1). Sbloccalo nel Mercato Box!`);
             };
           }
+
           cardEl.innerHTML = `
             <div class="mtg-card-header"><span class="mtg-card-title">${comm.name}</span><span class="mtg-cost-pip gold">Set ${comm.set}</span></div>
             <div class="mtg-card-art"><div class="mtg-card-art-glyph">${comm.glyph}</div></div>
@@ -1474,6 +1521,13 @@
           grid.appendChild(cardEl);
         });
       } else {
+        document.getElementById('arena-step-banner').innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <span>Comandante Leader: <strong>${COMMANDERS[deck.commanderId].name}</strong> (${COMMANDERS[deck.commanderId].glyph} PV: ${COMMANDERS[deck.commanderId].hp}, ATT: ${COMMANDERS[deck.commanderId].att})</span>
+            <button class="btn" style="padding: 3px 10px; font-size: 0.72rem; color: var(--gold-primary); border-color: var(--border-gold);" onclick="startCommanderSelectionMode()">👑 Cambia Comandante</button>
+          </div>
+        `;
+
         Object.values(CARDS_DB).forEach(card => {
           if (deckFilters.type !== 'all' && card.type !== deckFilters.type) return;
           if (deckFilters.mana !== 'all') {
@@ -1572,7 +1626,23 @@
       showPane('battle-lobby');
     }
 
-    function openDeckBuilder() { showPaneDirect('deck'); }
+    function openDeckBuilder() {
+      deckFilters.mode = 'cards';
+      showPaneDirect('deck');
+    }
+
+    function startCommanderSelectionMode() {
+      deckFilters.mode = 'commander_select';
+      showPaneDirect('deck');
+      renderDeckBuilder();
+      showToast("👑 Clicca su un Comandante per renderlo leader del Grimorio!");
+    }
+
+    function exitCommanderSelectionMode() {
+      deckFilters.mode = 'cards';
+      renderDeckBuilder();
+    }
+
     function switchDeck(val) { userState.activeDeckName = val; renderDeckBuilder(); saveCloudState(); }
     function promptCreateDeck() {
       const name = prompt("Nome nuovo Grimorio:");
@@ -1651,6 +1721,7 @@
       Object.keys(userState.decks).forEach(name => {
         const o1 = document.createElement('option'); o1.value = name; o1.textContent = `${name} (${userState.decks[name].cards.length}/30)`;
         const o2 = document.createElement('option'); o2.value = name; o2.textContent = `${name} (${userState.decks[name].cards.length}/30)`;
+        if (name === userState.activeDeckName) { o1.selected = true; o2.selected = true; }
         s1.appendChild(o1); s2.appendChild(o2);
       });
 
@@ -1663,19 +1734,101 @@
       aiSel.value = 'malakor';
 
       updateLobbyP1Preview();
+      updateLobbyP2PPreview();
       updateLobbyP2Preview();
     }
 
+    function onLobbyDeckChanged(mode) {
+      if (mode === 'ai') {
+        const deckName = document.getElementById('lobby-deck-select-ai').value;
+        userState.activeDeckName = deckName;
+        updateLobbyP1Preview();
+      } else {
+        const deckName = document.getElementById('lobby-deck-select-p2p').value;
+        userState.activeDeckName = deckName;
+        updateLobbyP2PPreview();
+      }
+      saveCloudState();
+    }
+
+    function onLobbyCommanderChanged(mode, commId) {
+      const deckSelectId = (mode === 'ai') ? 'lobby-deck-select-ai' : 'lobby-deck-select-p2p';
+      const deckName = document.getElementById(deckSelectId).value;
+      if (userState.decks[deckName]) {
+        userState.decks[deckName].commanderId = commId;
+        saveCloudState();
+        if (mode === 'ai') updateLobbyP1Preview();
+        else updateLobbyP2PPreview();
+        showToast(`👑 Leader impostato: ${COMMANDERS[commId].name}`);
+      }
+    }
+
+    function populateLobbyCommanderSelect(selId, currentCommId) {
+      const sel = document.getElementById(selId);
+      if (!sel) return;
+      sel.innerHTML = '';
+      Object.values(COMMANDERS).forEach(c => {
+        const isUnlocked = c.set === 0 || (userState.unlockedCommanders && userState.unlockedCommanders.includes(c.id));
+        const opt = document.createElement('option');
+        opt.value = c.id;
+        opt.textContent = `${c.name} [Set ${c.set}] ${isUnlocked ? '' : '🔒 (Bloccato)'}`;
+        if (!isUnlocked) opt.disabled = true;
+        if (c.id === currentCommId) opt.selected = true;
+        sel.appendChild(opt);
+      });
+    }
+
     function updateLobbyP1Preview() {
-      const deck = userState.decks[document.getElementById('lobby-deck-select-ai').value];
+      const deckSelect = document.getElementById('lobby-deck-select-ai');
+      if (!deckSelect) return;
+      const deck = userState.decks[deckSelect.value];
       if (!deck) return;
+      populateLobbyCommanderSelect('lobby-comm-select-ai', deck.commanderId);
       const c = COMMANDERS[deck.commanderId];
-      document.getElementById('lobby-p1-card').innerHTML = `<strong>${c.name}</strong> [${RARITY_NAMES[c.rarity]}] | PV: ${c.hp} | ATT: ${c.att}`;
+      const p1Card = document.getElementById('lobby-p1-card');
+      if (p1Card && c) {
+        p1Card.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <strong>${c.name}</strong>
+            <span class="rarity-badge ${c.rarity || 'legendary'}">${RARITY_NAMES[c.rarity || 'legendary']}</span>
+          </div>
+          <div style="font-size: 0.75rem; color: var(--gold-primary); margin-top: 3px;">${c.glyph} PV: ${c.hp} | ATT: ${c.att} | Movimento: ${c.move}</div>
+          <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 3px;"><em>Rito (${c.riteCost}🩸): ${c.riteDesc}</em></div>
+        `;
+      }
+    }
+
+    function updateLobbyP2PPreview() {
+      const deckSelect = document.getElementById('lobby-deck-select-p2p');
+      if (!deckSelect) return;
+      const deck = userState.decks[deckSelect.value];
+      if (!deck) return;
+      populateLobbyCommanderSelect('lobby-comm-select-p2p', deck.commanderId);
+      const c = COMMANDERS[deck.commanderId];
+      const p2pCard = document.getElementById('lobby-p2p-card');
+      if (p2pCard && c) {
+        p2pCard.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <strong>${c.name}</strong>
+            <span class="rarity-badge ${c.rarity || 'legendary'}">${RARITY_NAMES[c.rarity || 'legendary']}</span>
+          </div>
+          <div style="font-size: 0.75rem; color: var(--gold-primary); margin-top: 3px;">${c.glyph} PV: ${c.hp} | ATT: ${c.att} | Movimento: ${c.move}</div>
+          <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 3px;"><em>Rito (${c.riteCost}🩸): ${c.riteDesc}</em></div>
+        `;
+      }
     }
 
     function updateLobbyP2Preview() {
       const c = COMMANDERS[document.getElementById('lobby-ai-select').value];
-      document.getElementById('lobby-p2-card').innerHTML = `<strong>${c.name}</strong> [${RARITY_NAMES[c.rarity]}] | PV: ${c.hp} | ATT: ${c.att}`;
+      if (!c) return;
+      document.getElementById('lobby-p2-card').innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <strong>${c.name}</strong>
+          <span class="rarity-badge ${c.rarity || 'legendary'}">${RARITY_NAMES[c.rarity || 'legendary']}</span>
+        </div>
+        <div style="font-size: 0.75rem; color: #ff7675; margin-top: 3px;">${c.glyph} PV: ${c.hp} | ATT: ${c.att} | Movimento: ${c.move}</div>
+        <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 3px;"><em>Rito (${c.riteCost}🩸): ${c.riteDesc}</em></div>
+      `;
     }
 
 
@@ -1832,12 +1985,42 @@
 
       if (battleState.phase === 'placement') {
         if (idx > 7) return showToast("Piazza il tuo comandante sulla prima riga!");
-        battleState.grid[idx] = { owner: 'p1', type: 'commander', name: battleState.p1.commander.name, hp: battleState.p1.commander.hp, att: battleState.p1.commander.att, move: battleState.p1.commander.move, range: 1, glyph: battleState.p1.commander.glyph, rarity: 'legendary', exhausted: false };
+        battleState.grid[idx] = {
+          owner: 'p1',
+          type: 'commander',
+          cardId: battleState.p1.commander.id,
+          name: battleState.p1.commander.name,
+          hp: battleState.p1.commander.hp,
+          att: battleState.p1.commander.att,
+          move: battleState.p1.commander.move,
+          range: 1,
+          glyph: battleState.p1.commander.glyph,
+          rarity: 'legendary',
+          riteDesc: battleState.p1.commander.riteDesc,
+          riteCost: battleState.p1.commander.riteCost,
+          archetype: battleState.p1.commander.archetype,
+          exhausted: false
+        };
         addLog(`P1 piazza Comandante su cella ${idx}`, 'p1');
 
         if (!isP2P) {
           const aiIdx = selectStrategicAIPlacement(idx);
-          battleState.grid[aiIdx] = { owner: 'p2', type: 'commander', name: battleState.p2.commander.name, hp: battleState.p2.commander.hp, att: battleState.p2.commander.att, move: battleState.p2.commander.move, range: 1, glyph: battleState.p2.commander.glyph, rarity: 'legendary', exhausted: false };
+          battleState.grid[aiIdx] = {
+            owner: 'p2',
+            type: 'commander',
+            cardId: battleState.p2.commander.id,
+            name: battleState.p2.commander.name,
+            hp: battleState.p2.commander.hp,
+            att: battleState.p2.commander.att,
+            move: battleState.p2.commander.move,
+            range: 1,
+            glyph: battleState.p2.commander.glyph,
+            rarity: 'legendary',
+            riteDesc: battleState.p2.commander.riteDesc,
+            riteCost: battleState.p2.commander.riteCost,
+            archetype: battleState.p2.commander.archetype,
+            exhausted: false
+          };
           addLog(`IA piazza Comandante su cella ${aiIdx}`, 'p2');
         }
 
@@ -2285,6 +2468,23 @@
       checkWin();
     }
 
+    function showRiteHoverCard(e) {
+      if (!battleState || !battleState.p1 || !battleState.p1.commander) return;
+      const comm = battleState.p1.commander;
+      const blood = battleState.p1.blood;
+      const cost = comm.riteCost;
+      const isReady = blood >= cost;
+      
+      showHoverCard({
+        name: `Rito d'Armi: ${comm.name}`,
+        cost: `${cost} 🩸`,
+        type: isReady ? 'RITO SUPREMO (PRONTO ALL\'USO)' : `RITO SUPREMO (RICHIEDE ${cost} 🩸)`,
+        glyph: comm.glyph || '🩸',
+        rarity: comm.rarity || 'legendary',
+        desc: `⚡ EFFETTO SUPREMO:\n${comm.riteDesc}\n\n🩸 Riserva Sangue: ${blood}/${cost}\n${isReady ? '👉 PRONTO: Clicca sul pulsante per scatenare il Rito!' : '⏳ Ti serve più Sangue (guadagni +2 Sangue eliminando nemici, +1 quando muore un tuo pezzo).'}`
+      }, e);
+    }
+
     function renderPieces() {
       for (let i = 0; i < 64; i++) {
         const sq = document.querySelector(`.square[data-index="${i}"]`);
@@ -2296,16 +2496,20 @@
           const el = document.createElement('div');
           el.className = `piece ${p.owner} ${p.type} ${p.exhausted ? 'exhausted' : ''} ${isBoosted ? 'resonant-boosted' : ''}`;
 
-          el.onmouseenter = (e) => showHoverCard({
-            name: p.name,
-            cost: p.type === 'commander' ? '👑' : (p.type === 'altar' ? 0 : 1),
-            type: p.type === 'commander' ? 'COMANDANTE' : p.type.toUpperCase(),
-            glyph: p.glyph,
-            desc: p.desc || '',
-            att: p.att,
-            hp: p.hp,
-            rarity: p.rarity || 'common'
-          }, e);
+          el.onmouseenter = (e) => {
+            const commData = (p.type === 'commander') ? (p.owner === 'p1' ? battleState.p1.commander : battleState.p2.commander) : null;
+            const descText = p.desc || (commData ? `👑 Leader (${commData.archetype || 'Campione'})\nPasso: ${commData.move}\n🩸 Rito d'Armi (${commData.riteCost}🩸):\n${commData.riteDesc}` : '');
+            showHoverCard({
+              name: p.name,
+              cost: p.type === 'commander' ? '👑' : (p.type === 'altar' ? 0 : 1),
+              type: p.type === 'commander' ? 'COMANDANTE' : p.type.toUpperCase(),
+              glyph: p.glyph,
+              desc: descText,
+              att: p.att,
+              hp: p.hp,
+              rarity: p.rarity || 'common'
+            }, e);
+          };
           el.onmousemove = (e) => updateHoverCardPos(e);
           el.onmouseleave = () => hideHoverCard();
 
@@ -2316,19 +2520,51 @@
     }
 
     function updateHUD() {
-      document.getElementById('hud-p1-name').textContent = battleState.p1.commander.name.split(' ')[0];
+      const comm1 = battleState.p1.commander;
+      const comm2 = battleState.p2.commander;
+
+      const p1El = document.getElementById('hud-p1-name');
+      p1El.textContent = comm1.name.split(' ')[0];
+      p1El.style.cursor = 'pointer';
+      p1El.title = `${comm1.name} — Rito d'Armi (${comm1.riteCost}🩸): ${comm1.riteDesc}`;
+      p1El.onmouseenter = (e) => showHoverCard(comm1, e);
+      p1El.onmousemove = (e) => updateHoverCardPos(e);
+      p1El.onmouseleave = () => hideHoverCard();
+
       document.getElementById('hud-p1-mana').textContent = battleState.p1.mana;
       document.getElementById('hud-p1-blood').textContent = battleState.p1.blood;
       document.getElementById('hud-p1-actions').textContent = battleState.p1.actions;
 
-      document.getElementById('hud-p2-name').textContent = battleState.p2.commander.name.split(' ')[0];
+      const p2El = document.getElementById('hud-p2-name');
+      p2El.textContent = comm2.name.split(' ')[0];
+      p2El.style.cursor = 'pointer';
+      p2El.title = `${comm2.name} — Rito d'Armi (${comm2.riteCost}🩸): ${comm2.riteDesc}`;
+      p2El.onmouseenter = (e) => showHoverCard(comm2, e);
+      p2El.onmousemove = (e) => updateHoverCardPos(e);
+      p2El.onmouseleave = () => hideHoverCard();
+
       document.getElementById('hud-p2-mana').textContent = battleState.p2.mana;
       document.getElementById('hud-p2-blood').textContent = battleState.p2.blood;
       document.getElementById('hud-p2-actions').textContent = battleState.p2.actions;
 
       const riteBtn = document.getElementById('btn-rite-p1');
-      const comm = battleState.p1.commander;
-      riteBtn.textContent = `Rito d'Armi (${comm.riteCost}🩸)`;
+      const blood = battleState.p1.blood;
+      const isReady = blood >= comm1.riteCost;
+
+      riteBtn.textContent = `🩸 Rito (${blood}/${comm1.riteCost}🩸)`;
+      riteBtn.title = `${comm1.name} — Rito d'Armi (${comm1.riteCost} 🩸):\n${comm1.riteDesc}\n\nStato: ${isReady ? 'PRONTO! Clicca per attivare' : 'Sangue insufficiente'}`;
+
+      if (isReady) {
+        riteBtn.style.border = '2px solid #ff7675';
+        riteBtn.style.boxShadow = '0 0 14px rgba(255, 118, 117, 0.8), 0 0 22px rgba(229, 185, 88, 0.5)';
+        riteBtn.style.background = 'linear-gradient(135deg, #c0392b 0%, #e74c3c 100%)';
+        riteBtn.style.color = '#fff';
+      } else {
+        riteBtn.style.border = '1px solid var(--border-frame)';
+        riteBtn.style.boxShadow = 'none';
+        riteBtn.style.background = 'var(--bg-surface)';
+        riteBtn.style.color = 'var(--text-muted)';
+      }
     }
 
     function endTurnP1() {
