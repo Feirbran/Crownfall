@@ -24,6 +24,7 @@
       --text-main: #edf0f8;
       --text-muted: #8b93b0;
 
+      /* COLORI RARITA */
       --rarity-common: #a4b0be;
       --rarity-uncommon: #00d2d3;
       --rarity-rare: #ffd32a;
@@ -277,6 +278,66 @@
     .btn.btn-gold { background: var(--gold-primary); color: #000; border-color: #ffeaa7; }
     .btn.btn-crimson { background: var(--crimson-blood); color: #fff; border-color: #ff7675; }
 
+    .auth-links {
+      display: flex;
+      justify-content: space-around;
+      font-size: 0.78rem;
+      border-top: 1px solid var(--border-frame);
+      padding-top: 16px;
+    }
+
+    .auth-links a {
+      color: var(--gold-primary);
+      text-decoration: none;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .auth-links a:hover { text-decoration: underline; }
+
+    /* LORE & TUTORIAL */
+    .static-content-pane {
+      padding: 40px 20px 80px;
+      max-width: 840px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    .static-content-pane h2 {
+      font-size: 2rem;
+      color: var(--gold-primary);
+      letter-spacing: 2px;
+      border-bottom: 2px solid var(--border-gold);
+      padding-bottom: 12px;
+    }
+
+    .content-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-frame);
+      border-radius: 8px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      line-height: 1.6;
+    }
+
+    .content-box h3 { color: var(--gold-primary); font-size: 1.2rem; }
+    .content-box p { color: #cdd3e6; font-size: 0.92rem; }
+
+    .tutorial-step-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-frame);
+      border-radius: 8px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      line-height: 1.5;
+    }
+    .tutorial-step-box h3 { color: var(--gold-primary); font-size: 1.15rem; }
+
     /* HOME MENU */
     #pane-home {
       align-items: center;
@@ -310,10 +371,13 @@
     .type-pill-btn.active { background: #2b334a; color: var(--text-main); border-color: var(--gold-primary); }
 
     .arena-deck-workspace { flex: 1; display: grid; grid-template-columns: 1fr 320px; overflow: hidden; min-height: 0; }
+    @media (max-width: 900px) { .arena-deck-workspace { grid-template-columns: 1fr 260px; } }
+
     .arena-catalog-area { overflow-y: auto; padding: 18px 22px; display: flex; flex-direction: column; gap: 16px; min-height: 0; }
     .arena-step-banner { display: flex; align-items: center; justify-content: space-between; background: linear-gradient(90deg, rgba(201, 155, 66, 0.2) 0%, transparent 80%); padding: 8px 14px; border-left: 3px solid var(--gold-primary); border-radius: 2px; font-size: 0.82rem; font-weight: 700; }
     .arena-cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 16px; align-content: start; }
 
+    /* CARD DESIGN CON RARITA' */
     .mtg-card {
       width: 170px; height: 245px; background: #111319; border-radius: 8px; border: 2px solid #33384c; display: flex; flex-direction: column; position: relative; cursor: pointer; transition: transform 0.18s, border-color 0.18s, box-shadow 0.18s; overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.7);
     }
@@ -323,6 +387,11 @@
     .mtg-card.rarity-rare { border-color: var(--rarity-rare); box-shadow: 0 0 12px rgba(255, 211, 42, 0.3); }
     .mtg-card.rarity-mythic { border-color: var(--rarity-mythic); box-shadow: 0 0 14px rgba(165, 94, 234, 0.4); }
     .mtg-card.rarity-legendary { border-color: var(--rarity-legendary); box-shadow: 0 0 16px rgba(255, 159, 26, 0.45); }
+
+    .mtg-card.locked { filter: grayscale(100%) opacity(0.4); cursor: not-allowed; }
+    .mtg-card.locked::before {
+      content: '🔒 BLOCCATO (Set 1)'; position: absolute; inset: 0; background: rgba(0,0,0,0.8); color: #fff; font-size: 0.72rem; font-weight: 900; display: flex; align-items: center; justify-content: center; z-index: 20; text-align: center; padding: 10px;
+    }
 
     .mtg-card-header { background: linear-gradient(180deg, #2b3042 0%, #1a1c26 100%); border-bottom: 1px solid #3d435d; padding: 4px 6px; display: flex; align-items: center; justify-content: space-between; height: 26px; flex-shrink: 0; }
     .mtg-card-title { font-size: 0.72rem; font-weight: 800; color: #f1f2f6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -366,6 +435,9 @@
       box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
     }
 
+    /* LOBBY BATTLE PANE */
+    #pane-battle-lobby { overflow-y: auto; background: var(--bg-dark); }
+    
     /* CAMPO 8X8 */
     #pane-battle { height: 100%; background: #050608; }
     .battle-hud { padding: 10px 16px; background: #0d0f16; border-bottom: 2px solid var(--border-frame); display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; flex-shrink: 0; }
@@ -427,6 +499,11 @@
     }
     #card-summon-overlay.active { display: flex; opacity: 1; }
 
+    /* MERCATO BOX */
+    .pack-shop-container { max-width: 600px; width: 100%; margin: 32px auto; display: flex; flex-direction: column; gap: 20px; padding: 0 16px; text-align: center; }
+    .pack-shop-container h2 { font-size: 2rem; color: var(--gold-primary); }
+    .shop-box-card { background: var(--bg-card); border: 2px solid var(--border-gold); border-radius: 12px; padding: 30px; display: flex; flex-direction: column; align-items: center; gap: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
+
     #app-toast {
       position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px);
       background: rgba(18, 21, 31, 0.98); border: 1px solid var(--gold-primary); color: var(--text-main);
@@ -481,8 +558,67 @@
             <input type="password" id="auth-password" required placeholder="Inserisci password...">
           </div>
 
-          <button type="submit" class="btn-gothic-action" id="auth-submit-btn">ACCEDI AL REGNO</button>
+          <button type="submit" class="btn-gothic-action" id="auth-submit-btn">ACCEDI AL REGNO CLOUD</button>
+          
+          <!-- PULSANTE OFFLINE PER BYPASSARE SUPABASE IN CASO DI ERRORI -->
+          <button type="button" class="btn" style="width: 100%; margin-top: 8px; border-color: var(--border-frame);" onclick="playOffline()">🛡️ GIOCA OFFLINE (Senza Cloud)</button>
+          
+          <div class="auth-links">
+            <a href="javascript:void(0)" onclick="showPaneDirect('lore')">📖 Leggi la Lore</a>
+            <a href="javascript:void(0)" onclick="showPaneDirect('tutorial')">⚔️ Accademia Tattica</a>
+          </div>
         </form>
+      </div>
+    </div>
+
+    <!-- LORE -->
+    <div id="pane-lore" class="pane">
+      <div class="static-content-pane">
+        <div class="lore-header">
+          <h1>GLI ANNALI DI VERIDIA</h1>
+          <p style="color: var(--text-muted); font-size: 0.95rem;">Le cronache del mondo spezzato e la guerra per il Demiurgo.</p>
+        </div>
+        <div class="content-box">
+          <h3>1. Il Cataclisma e La Sottrazione</h3>
+          <p>Veridia non è morta lentamente: è stata sventrata in un solo istante. Al centro del continente sorgeva il <strong>Monolito della Corona</strong>, una struttura metafisica immensa che regolava la gravità, i cicli biologici e la coesione della materia.</p>
+          <p>Senza il suo asse centrale, la realtà è entrata in un degrado irreversibile chiamato <strong>La Sottrazione</strong>: la materia decade e si dissolve in polvere grigia se non viene alimentata dall'icore dei caduti.</p>
+        </div>
+        <div class="content-box">
+          <h3>2. Il Demiurgo e i Frammenti</h3>
+          <p>Il fine ultimo è diventare il <strong>Demiurgo</strong>. Ciascuno dei 10 Comandanti ha conficcato nel corpo un frammento del Monolito. Chi unisce i dieci frammenti ottiene il potere di <strong>azzerare la Sottrazione e riscrivere l'esistenza</strong>.</p>
+        </div>
+        <div class="content-box">
+          <h3>3. La Decapitazione</h3>
+          <p>I soldati sul campo non sono individui indipendenti, ma gusci proiettati a distanza dal frammento di Corona del Comandante. Se il Comandante viene ucciso (PV a 0), il campo di forza collassa all'istante e l'intero esercito si dissolve in polvere.</p>
+        </div>
+        <div style="display: flex; gap: 12px; justify-content: center; margin-top: 10px;">
+          <button class="btn btn-gold" onclick="showPane('tutorial')">Vai al Tutorial</button>
+          <button class="btn" onclick="showPane('battle-lobby')">Schiera la Battaglia</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TUTORIAL -->
+    <div id="pane-tutorial" class="pane">
+      <div class="static-content-pane">
+        <h2>Accademia Tattica — Regolamento in 4 Passi</h2>
+        <div class="tutorial-step-box">
+          <h3>1. 👑 Obiettivo: La Decapitazione</h3>
+          <p>Porta a 0 i PV del Comandante nemico per vincere all'istante la partita.</p>
+        </div>
+        <div class="tutorial-step-box">
+          <h3>2. ⚡ Il Turno: 2 Azioni Tattiche</h3>
+          <p>Ogni round hai <strong>2 Azioni</strong> per muovere un pezzo o attaccare un nemico a portata.</p>
+        </div>
+        <div class="tutorial-step-box">
+          <h3>3. 🏛️ Schierare Carte costa 0 Azioni</h3>
+          <p>Gioca truppe e Altari adiacenti al Comandante spendendo Mana. I Sortilegi si lanciano sui bersagli validi a portata! <strong>Regola Altari:</strong> Max 1 Altare per turno e max 4 contemporanei sul campo. Gli altari sono immobili!</p>
+        </div>
+        <div class="tutorial-step-box">
+          <h3>4. 🩸 Sangue e Riti d'Armi</h3>
+          <p>Le unità morte generano Sangue (2 all'uccisore, 1 alla vittima per la rimonta). Usalo per attivare il Rito d'Armi supremo del tuo Comandante.</p>
+        </div>
+        <button class="btn-arena-done" style="max-width: 320px; margin: 0 auto;" onclick="showPane('battle-lobby')">HO CAPITO, VAI ALLA BATTAGLIA</button>
       </div>
     </div>
 
@@ -561,7 +697,7 @@
 
           <div class="tray-footer-actions">
             <button class="btn" style="padding: 6px;" onclick="autoCompleteDeck()">✨ Autocompleta (30)</button>
-            <button class="btn-arena-done" onclick="finishDeckBuilding()">SALVA MAZZO SUL CLOUD</button>
+            <button class="btn-arena-done" onclick="finishDeckBuilding()">SALVA MAZZO E PROCEDI</button>
           </div>
         </aside>
       </div>
@@ -636,6 +772,24 @@
       <div class="battle-hand-bar" id="battle-hand"></div>
     </div>
 
+    <!-- MERCATO BOX -->
+    <div id="pane-packs" class="pane">
+      <div class="pack-shop-container">
+        <h2>Mercato Skirmish Box</h2>
+        <p style="font-size: 0.88rem; color: var(--text-muted);">Spendi l'Oro guadagnato vincendo le battaglie per acquistare i Blind Pack dell'Espansione 1 e sbloccare nuovi Comandanti e miniature!</p>
+        
+        <div class="shop-box-card">
+          <span style="font-size: 0.78rem; color: var(--gold-primary); font-weight: 900;">ESPANSIONE 1 — EREDI DELLA SECESSIONE</span>
+          <div style="font-size: 3.8rem;">📦</div>
+          <p style="font-size: 0.82rem; color: var(--text-muted);">Contiene carte e miniature per il Grimorio del Set 1.</p>
+          <div style="font-size: 1.2rem; font-weight: 900; color: #ffd700;">Costo: 100 🪙</div>
+          <button class="btn-arena-done" onclick="buyExpansion1Pack()">ACQUISTA BOX (100 🪙)</button>
+        </div>
+
+        <div id="pack-results" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; width: 100%;"></div>
+      </div>
+    </div>
+
   </main>
 
   <!-- FLOATING CARD PREVIEW -->
@@ -672,10 +826,12 @@
   <div id="app-toast">Notifica</div>
 
   <script>
-    // --- 1. CONFIGURAZIONE SUPABASE DIRETTA ---
+    // --- 1. CONFIGURAZIONE SUPABASE ---
     const SUPABASE_URL = "https://bvdsmwylswfxfdzobscn.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ2ZHNtd3lsc3dmeGZkem9ic2NuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NDIyMjEsImV4cCI6MjEwNDQxODIyMX0.3NrfBzGJfeJAi7k_sonRdH0EqOICbJL4AddQGf1CzMw";
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    
+    // Inizializzazione sicura nel caso CDN fallisca
+    const supabase = (typeof window.supabase !== 'undefined') ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
     // --- 2. DATABASE DELLE CARTE & COMANDANTI ---
     const RARITY_NAMES = { common: 'Comune', uncommon: 'Non Comune', rare: 'Rara', mythic: 'Mitica', legendary: 'Leggendaria' };
@@ -685,7 +841,13 @@
       malakor: { id: 'malakor', set: 0, rarity: 'legendary', name: 'Malakor del Rogo', hp: 18, att: 1, move: 'omni', glyph: '🔥', archetype: 'fire', riteCost: 4, riteDesc: '3 danni da fuoco ad area a tutti i nemici entro raggio 2.' },
       vespera: { id: 'vespera', set: 0, rarity: 'legendary', name: 'Vespera delle Maree', hp: 20, att: 1, move: 'diag', glyph: '🌊', archetype: 'tides', riteCost: 3, riteDesc: 'Spinge un bersaglio fino a 3 caselle (+2 se urta).' },
       aurelius: { id: 'aurelius', set: 0, rarity: 'legendary', name: 'Aurelius il Giusto', hp: 22, att: 2, move: 'orth', glyph: '⚖️', archetype: 'order', riteCost: 4, riteDesc: 'Prosciuga 2 Mana dalla riserva nemica nel prossimo round.' },
-      vulkan: { id: 'vulkan', set: 0, rarity: 'legendary', name: 'Vulkan il Fabbro', hp: 18, att: 3, move: 'orth', glyph: '⚒️', archetype: 'forge', riteCost: 3, riteDesc: 'Trasforma un proprio Altare in un golem mobile 3/5.' }
+      vulkan: { id: 'vulkan', set: 0, rarity: 'legendary', name: 'Vulkan il Fabbro', hp: 18, att: 3, move: 'orth', glyph: '⚒️', archetype: 'forge', riteCost: 3, riteDesc: 'Trasforma un proprio Altare in un golem mobile 3/5.' },
+
+      garek: { id: 'garek', set: 1, rarity: 'legendary', name: 'Garek lo Spezzatore', hp: 22, att: 2, move: 'knight', glyph: '🔨', archetype: 'breaker', riteCost: 3, riteDesc: 'Ripara un Altare adiacente infondendogli 2 ATT e 3 PV.' },
+      morbida: { id: 'morbida', set: 1, rarity: 'legendary', name: 'Morbida, la Nutrice', hp: 16, att: 2, move: 'diag', glyph: '💀', archetype: 'shadow', riteCost: 4, riteDesc: '3 danni diretti a un bersaglio visibile in linea retta.' },
+      kaelen: { id: 'kaelen', set: 1, rarity: 'legendary', name: 'Kaelen, Occhio del Vortice', hp: 18, att: 1, move: 'orth2', range: 2, glyph: '🌀', archetype: 'vortex', riteCost: 3, riteDesc: 'Scambia di posizione due unità sul campo.' },
+      justiciar_kael: { id: 'justiciar_kael', set: 1, rarity: 'legendary', name: 'Justiciar Kael', hp: 20, att: 2, move: 'orth', glyph: '⚔️', archetype: 'order', riteCost: 4, riteDesc: 'Azzera interamente la riserva Sangue nemica.' },
+      ignis: { id: 'ignis', set: 1, rarity: 'legendary', name: 'Ignis, la Forgia Vivente', hp: 16, att: 3, move: 'orth', glyph: '🌋', archetype: 'fire', riteCost: 3, riteDesc: '3 danni attorno a qualsiasi Altare attivo.' }
     };
 
     const CARDS_DB = {
@@ -704,18 +866,30 @@
       spell_cleave: { id: 'spell_cleave', set: 0, rarity: 'uncommon', name: 'Fendente Spettrale', type: 'spell', cost: 1, glyph: '⚡', desc: '2 danni a truppa nemica a gittata 2 dal Comandante.' },
       spell_fortify: { id: 'spell_fortify', set: 0, rarity: 'rare', name: 'Fortificazione Litica', type: 'spell', cost: 1, glyph: '🧱', desc: '+3 PV ad Altare o +2 PV a truppa alleata.' },
       spell_push: { id: 'spell_push', set: 0, rarity: 'rare', name: 'Onda d\'Urto', type: 'spell', cost: 2, glyph: '💨', desc: 'Spinge un pezzo nemico di 2 caselle (+2 se urta).' },
-      spell_heal: { id: 'spell_heal', set: 0, rarity: 'common', name: 'Grazia del Bastione', type: 'spell', cost: 1, glyph: '💖', desc: 'Ripristina 3 PV al Comandante.' }
+      spell_heal: { id: 'spell_heal', set: 0, rarity: 'common', name: 'Grazia del Bastione', type: 'spell', cost: 1, glyph: '💖', desc: 'Ripristina 3 PV al Comandante.' },
+
+      berserker: { id: 'berserker', set: 1, rarity: 'rare', name: 'Sventratore Rosso', type: 'unit', cost: 3, hp: 2, att: 4, move: 'omni', range: 1, keywords: ['slancio'], glyph: '🪓', desc: 'Slancio. Passo in tutte le 8 direzioni. Danno devastante.' },
+      halberdier: { id: 'halberdier', set: 1, rarity: 'rare', name: 'Alabardiere d\'Élite', type: 'unit', cost: 3, hp: 4, att: 2, move: 'orth', range: 1, glyph: '🔱', desc: 'Immune ad aggiramento: contrattacca sempre in mischia.' },
+      colossus: { id: 'colossus', set: 1, rarity: 'mythic', name: 'Colosso di Basalto', type: 'unit', cost: 4, hp: 6, att: 3, move: 'orth', range: 1, glyph: '🗿', desc: 'Spinge i nemici indietro di 1 casella al colpo (+2 danno urto).' },
+      assassin: { id: 'assassin', set: 1, rarity: 'mythic', name: 'Lama Notturna', type: 'unit', cost: 3, hp: 2, att: 3, move: 'knight', range: 1, keywords: ['slancio'], glyph: '🥷', desc: 'Balzo a L e Slancio immediato.' },
+      pyromancer: { id: 'pyromancer', set: 1, rarity: 'mythic', name: 'Piromante del Vuoto', type: 'unit', cost: 4, hp: 2, att: 3, move: 'orth', range: 3, glyph: '🔮', desc: 'Tiro a lunghissima gittata (3 caselle).' },
+      spell_bloodsurge: { id: 'spell_bloodsurge', set: 1, rarity: 'mythic', name: 'Eruzione di Sangue', type: 'spell', cost: 2, glyph: '🩸', desc: 'Richiede 2 Sangue: 3 danni diretti a qualsiasi bersaglio.' },
+      spell_wrath: { id: 'spell_wrath', set: 1, rarity: 'mythic', name: 'Giudizio Implacabile', type: 'spell', cost: 3, glyph: '💥', desc: '2 danni attorno al proprio Comandante.' }
     };
 
     const defaultBaseDeck = ['altar_iron', 'sentinel', 'sentinel', 'scout', 'crossbowman', 'shieldbearer', 'cleric', 'knight', 'spell_cleave', 'spell_heal'];
 
     // --- 3. STATO UTENTE E MULTIPLAYER ---
+    const STORAGE_KEY = 'CROWNFALL_PROG_V15_FINAL';
+    const SESSION_KEY = 'crownfall_active_session';
+    
     let currentUser = null;
     let userState = {
       gold: 50,
+      unlockedCommanders: ['valeria', 'malakor', 'vespera', 'aurelius', 'vulkan'],
       collection: {},
-      activeDeckName: 'Mazzo Base',
-      decks: { 'Mazzo Base': { commanderId: 'valeria', cards: [...defaultBaseDeck] } }
+      decks: { 'Mazzo Base': { commanderId: 'valeria', cards: [...defaultBaseDeck] } },
+      activeDeckName: 'Mazzo Base'
     };
 
     let peer = null;
@@ -751,7 +925,29 @@
       document.getElementById('tab-login').classList.toggle('active', mode === 'login');
       document.getElementById('tab-register').classList.toggle('active', mode === 'register');
       document.getElementById('field-username').style.display = (mode === 'register') ? 'flex' : 'none';
-      document.getElementById('auth-submit-btn').textContent = (mode === 'login') ? 'ACCEDI AL REGNO' : 'REGISTRATI E CREA GRIMORIO';
+      document.getElementById('auth-submit-btn').textContent = (mode === 'login') ? 'ACCEDI AL REGNO CLOUD' : 'REGISTRATI E CREA GRIMORIO';
+    }
+
+    // NUOVA FUNZIONE: GIOCA OFFLINE
+    function playOffline() {
+      currentUser = { id: 'local_dev', email: 'offline@veridia.com', username: 'Condottiero Offline' };
+      
+      const raw = localStorage.getItem('crownfall_offline_save');
+      if (raw) {
+        userState = JSON.parse(raw);
+      } else {
+        userState = {
+          gold: 50,
+          unlockedCommanders: ['valeria', 'malakor', 'vespera', 'aurelius', 'vulkan'],
+          collection: {},
+          decks: { 'Mazzo Base': { commanderId: 'valeria', cards: [...defaultBaseDeck] } },
+          activeDeckName: 'Mazzo Base'
+        };
+        Object.keys(CARDS_DB).forEach(id => {
+          if (CARDS_DB[id].set === 0) userState.collection[id] = 4;
+        });
+      }
+      onLoginSuccess("Modalità Offline Attiva. Nessun salvataggio Cloud.");
     }
 
     async function handleAuthSubmit(e) {
@@ -759,6 +955,8 @@
       const email = document.getElementById('auth-email').value.trim();
       const pass = document.getElementById('auth-password').value.trim();
       const user = document.getElementById('auth-username').value.trim() || email.split('@')[0];
+
+      if (!supabase) return showToast("Supabase non inizializzato, usa Gioca Offline!");
 
       if (authMode === 'register') {
         const { data, error } = await supabase.auth.signUp({ email, password: pass });
@@ -774,7 +972,7 @@
         };
         await supabase.from('profiles').insert([initialProfile]);
         currentUser = { id: data.user.id, email, username: user };
-        userState = { gold: 100, collection: initialProfile.collection, decks: initialProfile.decks, activeDeckName: 'Mazzo Iniziale' };
+        userState = { gold: 100, unlockedCommanders: ['valeria', 'malakor', 'vespera', 'aurelius', 'vulkan'], collection: initialProfile.collection, decks: initialProfile.decks, activeDeckName: 'Mazzo Iniziale' };
         onLoginSuccess(`Registrato con successo, Condottiero ${user}!`);
       } else {
         const { data, error } = await supabase.auth.signInWithPassword({ email, password: pass });
@@ -785,14 +983,20 @@
 
         currentUser = { id: data.user.id, email, username: profile ? profile.username : user };
         if (profile) {
-          userState = { gold: profile.gold, collection: profile.collection, decks: profile.decks, activeDeckName: profile.active_deck_name };
+          userState = { gold: profile.gold, unlockedCommanders: ['valeria', 'malakor', 'vespera', 'aurelius', 'vulkan'], collection: profile.collection, decks: profile.decks, activeDeckName: profile.active_deck_name };
         }
         onLoginSuccess(`Bentornato sul Cloud, ${currentUser.username}!`);
       }
     }
 
     async function saveCloudState() {
-      if (currentUser) {
+      if (currentUser && currentUser.id === 'local_dev') {
+        localStorage.setItem('crownfall_offline_save', JSON.stringify(userState));
+        showToast("Salvataggio locale completato.");
+        return;
+      }
+
+      if (supabase && currentUser) {
         const { error } = await supabase.from('profiles').update({
           gold: userState.gold,
           decks: userState.decks,
@@ -802,7 +1006,7 @@
         if (error) {
           showToast(`Errore salvataggio: ${error.message}`);
         } else {
-          showToast("Grimorio e collezione sincronizzati nel Cloud!");
+          showToast("Grimorio sincronizzato nel Cloud!");
         }
       }
     }
@@ -818,12 +1022,13 @@
     }
 
     async function handleLogout() {
-      await supabase.auth.signOut();
+      if (supabase) await supabase.auth.signOut();
       currentUser = null;
       document.getElementById('nav-user-label').style.display = 'none';
       document.getElementById('nav-gold-label').style.display = 'none';
       document.getElementById('btn-nav-logout').style.display = 'none';
       showPaneDirect('auth');
+      showToast("Disconnesso.");
     }
 
     function showToast(msg) {
@@ -834,6 +1039,7 @@
     }
 
     function showPaneDirect(id) {
+      hideHoverCard();
       document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
       const target = document.getElementById('pane-' + id);
       if (target) target.classList.add('active');
@@ -842,7 +1048,7 @@
     }
 
     function showPane(id) {
-      if (!currentUser && id !== 'auth') return showToast("Accedi prima di proseguire!");
+      if (!currentUser && id !== 'auth' && id !== 'lore' && id !== 'tutorial') return showToast("Accedi prima di proseguire!");
       showPaneDirect(id);
     }
 
@@ -926,31 +1132,80 @@
       const deck = userState.decks[userState.activeDeckName];
       document.getElementById('arena-step-banner').innerHTML = `Comandante: <strong>${COMMANDERS[deck.commanderId].name}</strong>`;
 
-      Object.values(CARDS_DB).forEach(card => {
-        const currentCopies = deck.cards.filter(id => id === card.id).length;
-        const isMaxed = currentCopies >= 4;
-        const cardEl = document.createElement('div');
-        const r = card.rarity;
-        cardEl.className = `mtg-card rarity-${r}`;
-        if (isMaxed) cardEl.style.opacity = '0.6';
+      if (deckFilters.mode === 'commander_select') {
+        Object.values(COMMANDERS).forEach(comm => {
+          const isUnlocked = userState.unlockedCommanders.includes(comm.id);
+          const cardEl = document.createElement('div');
+          const r = comm.rarity || 'legendary';
+          cardEl.className = `mtg-card rarity-${r} ${isUnlocked ? '' : 'locked'}`;
 
-        cardEl.onclick = () => {
-          if (deck.cards.length >= 30) return showToast("Grimorio al completo (30 carte)!");
-          const count = deck.cards.filter(id => id === card.id).length;
-          if (count >= 4) return showToast(`Limite 4x raggiunto per ${card.name}!`);
-          deck.cards.push(card.id);
-          renderDeckBuilder();
-        };
+          cardEl.onmouseenter = (e) => showHoverCard(comm, e);
+          cardEl.onmousemove = (e) => updateHoverCardPos(e);
+          cardEl.onmouseleave = () => hideHoverCard();
 
-        cardEl.innerHTML = `
-          <div class="mtg-card-header"><span class="mtg-card-title">${card.name}</span><span class="mtg-cost-pip">${card.cost}</span></div>
-          <div class="mtg-card-art">${card.glyph} ${isMaxed ? '<div style="position:absolute;bottom:2px;left:4px;font-size:0.6rem;background:#000;color:#ff7675;padding:1px 4px;">4/4 MAX</div>' : ''}</div>
-          <div class="mtg-type-banner"><span>${card.type}</span><span class="rarity-badge ${r}">${RARITY_NAMES[r]}</span></div>
-          <div class="mtg-text-box">${card.desc}</div>
-          ${card.type === 'unit' ? `<div class="mtg-pt-box">${card.att}/${card.hp}</div>` : ''}
-        `;
-        grid.appendChild(cardEl);
-      });
+          if (isUnlocked) {
+            cardEl.onclick = () => {
+              userState.decks[userState.activeDeckName].commanderId = comm.id;
+              saveCloudState();
+              deckFilters.mode = 'cards';
+              renderDeckBuilder();
+              showToast(`${comm.name} impostato come leader!`);
+            };
+          }
+          cardEl.innerHTML = `
+            <div class="mtg-card-header"><span class="mtg-card-title">${comm.name}</span><span class="mtg-cost-pip gold">Set ${comm.set}</span></div>
+            <div class="mtg-card-art"><div class="mtg-card-art-glyph">${comm.glyph}</div></div>
+            <div class="mtg-type-banner">
+              <span>Campione [Set ${comm.set}]</span>
+              <span class="rarity-badge ${r}">${RARITY_NAMES[r]}</span>
+            </div>
+            <div class="mtg-text-box">${comm.riteDesc}</div>
+            <div class="mtg-pt-box">${comm.att}/${comm.hp}</div>
+          `;
+          grid.appendChild(cardEl);
+        });
+      } else {
+        Object.values(CARDS_DB).forEach(card => {
+          if (deckFilters.type !== 'all' && card.type !== deckFilters.type) return;
+          if (deckFilters.mana !== 'all') {
+            if (deckFilters.mana === '4' && card.cost < 4) return;
+            if (deckFilters.mana !== '4' && card.cost !== parseInt(deckFilters.mana)) return;
+          }
+          if (deckFilters.search && !card.name.toLowerCase().includes(deckFilters.search)) return;
+
+          const owned = userState.collection[card.id] || 0;
+          const isUnlocked = card.set === 0 || owned > 0;
+          const currentCountInDeck = deck.cards.filter(id => id === card.id).length;
+          const isMaxedOut = currentCountInDeck >= 4;
+
+          const cardEl = document.createElement('div');
+          const r = card.rarity || 'common';
+          cardEl.className = `mtg-card rarity-${r} ${isUnlocked ? '' : 'locked'}`;
+          if (isMaxedOut) cardEl.style.opacity = '0.6';
+
+          cardEl.onmouseenter = (e) => showHoverCard(card, e);
+          cardEl.onmousemove = (e) => updateHoverCardPos(e);
+          cardEl.onmouseleave = () => hideHoverCard();
+
+          if (isUnlocked) {
+            cardEl.onclick = () => {
+              if (deck.cards.length >= 30) return showToast("Grimorio al completo (30 carte)!");
+              if (currentCountInDeck >= 4) return showToast(`Limite 4x raggiunto per ${card.name}!`);
+              deck.cards.push(card.id);
+              renderDeckBuilder();
+            };
+          }
+
+          cardEl.innerHTML = `
+            <div class="mtg-card-header"><span class="mtg-card-title">${card.name}</span><span class="mtg-cost-pip">${card.cost}</span></div>
+            <div class="mtg-card-art">${card.glyph} ${isMaxedOut ? '<div style="position:absolute;bottom:2px;left:4px;font-size:0.6rem;background:#000;color:#ff7675;padding:1px 4px;border-radius:3px;">4/4 MAX</div>' : ''}</div>
+            <div class="mtg-type-banner"><span>${card.type} [Set ${card.set}]</span><span class="rarity-badge ${r}">${RARITY_NAMES[r]}</span></div>
+            <div class="mtg-text-box">${card.desc}</div>
+            ${card.type === 'unit' ? `<div class="mtg-pt-box">${card.att}/${card.hp}</div>` : ''}
+          `;
+          grid.appendChild(cardEl);
+        });
+      }
     }
 
     function renderTray() {
@@ -970,6 +1225,9 @@
         const card = CARDS_DB[id];
         const row = document.createElement('div');
         row.className = 'arena-tray-row';
+        row.onmouseenter = (e) => showHoverCard(card, e);
+        row.onmousemove = (e) => updateHoverCardPos(e);
+        row.onmouseleave = () => hideHoverCard();
         row.innerHTML = `
           <div class="tray-row-left"><span class="tray-qty-pill">${grouped[id]}x</span><span class="tray-card-name">${card.name}</span></div>
           <button class="btn-tray-minus" onclick="removeCard('${id}')">−</button>
@@ -989,11 +1247,12 @@
 
     function autoCompleteDeck() {
       const deck = userState.decks[userState.activeDeckName];
-      const keys = Object.keys(CARDS_DB);
+      const baseCards = Object.keys(CARDS_DB).filter(k => CARDS_DB[k].set === 0);
+
       while (deck.cards.length < 30) {
-        const avail = keys.filter(id => deck.cards.filter(c => c === id).length < 4);
-        if (avail.length === 0) break;
-        deck.cards.push(avail[Math.floor(Math.random() * avail.length)]);
+        const eligible = baseCards.filter(id => deck.cards.filter(cId => cId === id).length < 4);
+        if (eligible.length === 0) break;
+        deck.cards.push(eligible[Math.floor(Math.random() * eligible.length)]);
       }
       renderDeckBuilder();
     }
@@ -1015,51 +1274,133 @@
       renderDeckBuilder();
     }
 
-    // --- 7. ARENA 8X8 E GAMEPLAY ---
+    function buyExpansion1Pack() {
+      if ((userState.gold || 0) < 100) return showToast("Oro insufficiente! Vinci altre partite (serve 100 🪙).");
+      userState.gold -= 100;
+      
+      const set1Cards = Object.keys(CARDS_DB).filter(k => CARDS_DB[k].set === 1);
+      const set1Commanders = ['garek', 'morbida', 'kaelen', 'justiciar_kael', 'ignis'];
+      
+      const wonCardId = set1Cards[Math.floor(Math.random() * set1Cards.length)];
+      userState.collection[wonCardId] = (userState.collection[wonCardId] || 0) + 1;
+
+      let wonCommMsg = '';
+      if (Math.random() < 0.45) {
+        const commId = set1Commanders[Math.floor(Math.random() * set1Commanders.length)];
+        if (!userState.unlockedCommanders.includes(commId)) {
+          userState.unlockedCommanders.push(commId);
+          wonCommMsg = ` e hai sbloccato il Comandante ${COMMANDERS[commId].name}!`;
+        }
+      }
+
+      saveCloudState();
+      updateNavGold();
+      showToast(`Box aperto! Trovata: ${CARDS_DB[wonCardId].name} (${RARITY_NAMES[CARDS_DB[wonCardId].rarity]})${wonCommMsg}`);
+      
+      const resContainer = document.getElementById('pack-results');
+      const r = CARDS_DB[wonCardId].rarity || 'common';
+      resContainer.innerHTML = `
+        <div style="background:var(--bg-card); border:2px solid var(--rarity-${r}); border-radius:6px; padding:12px; text-align:center;">
+          <div style="font-size:2rem;">📦</div>
+          <div style="font-size:0.75rem; font-weight:bold; color:var(--gold-primary);">${CARDS_DB[wonCardId].name}</div>
+          <div class="rarity-badge ${r}" style="display:inline-block; margin-top:4px;">${RARITY_NAMES[r]}</div>
+        </div>
+      `;
+    }
+
+    /* PIAZZAMENTO IA E LOBBY */
+    function selectStrategicAIPlacement(p1Idx) {
+      const p1Col = p1Idx % 8;
+      const aiComm = battleState.p2.commander;
+      const candidateCols = [0, 1, 2, 3, 4, 5, 6, 7];
+      let bestCol = 3;
+      let bestScore = -999;
+
+      candidateCols.forEach(col => {
+        let score = 0;
+        const distFromCenter = Math.abs(col - 3.5);
+        const fileDistance = Math.abs(col - p1Col);
+
+        score += (4 - distFromCenter) * 2;
+        if (aiComm.move === 'knight') {
+          if (col === 0 || col === 7) score -= 10;
+          else if (col === 2 || col === 5) score += 6;
+        } else if (aiComm.move === 'diag') {
+          if (fileDistance === 0) score -= 15;
+          else if (fileDistance >= 2 && fileDistance <= 4) score += 8;
+        }
+        score += Math.random() * 3.5;
+        if (score > bestScore) { bestScore = score; bestCol = col; }
+      });
+      return 56 + bestCol;
+    }
+
     function initLobby() {
       const s1 = document.getElementById('lobby-deck-select-ai');
       const s2 = document.getElementById('lobby-deck-select-p2p');
       s1.innerHTML = ''; s2.innerHTML = '';
       Object.keys(userState.decks).forEach(name => {
-        const o1 = document.createElement('option'); o1.value = name; o1.textContent = name;
-        const o2 = document.createElement('option'); o2.value = name; o2.textContent = name;
+        const o1 = document.createElement('option'); o1.value = name; o1.textContent = `${name} (${userState.decks[name].cards.length}/30)`;
+        const o2 = document.createElement('option'); o2.value = name; o2.textContent = `${name} (${userState.decks[name].cards.length}/30)`;
         s1.appendChild(o1); s2.appendChild(o2);
       });
 
       const aiSel = document.getElementById('lobby-ai-select');
       aiSel.innerHTML = '';
       Object.values(COMMANDERS).forEach(c => {
-        const opt = document.createElement('option'); opt.value = c.id; opt.textContent = c.name;
+        const opt = document.createElement('option'); opt.value = c.id; opt.textContent = `${c.name} (Set ${c.set})`;
         aiSel.appendChild(opt);
       });
+      aiSel.value = 'malakor';
+
+      updateLobbyP1Preview();
+      updateLobbyP2Preview();
     }
+
+    function updateLobbyP1Preview() {
+      const deck = userState.decks[document.getElementById('lobby-deck-select-ai').value];
+      if (!deck) return;
+      const c = COMMANDERS[deck.commanderId];
+      document.getElementById('lobby-p1-card').innerHTML = `<strong>${c.name}</strong> [${RARITY_NAMES[c.rarity]}] | PV: ${c.hp} | ATT: ${c.att}`;
+    }
+
+    function updateLobbyP2Preview() {
+      const c = COMMANDERS[document.getElementById('lobby-ai-select').value];
+      document.getElementById('lobby-p2-card').innerHTML = `<strong>${c.name}</strong> [${RARITY_NAMES[c.rarity]}] | PV: ${c.hp} | ATT: ${c.att}`;
+    }
+
+    let battleState = null;
 
     function startBattle(mode) {
       isP2P = (mode === 'p2p');
-      const deck = userState.decks[userState.activeDeckName];
-      const aiId = document.getElementById('lobby-ai-select').value;
+      const deckName = isP2P ? document.getElementById('lobby-deck-select-p2p').value : document.getElementById('lobby-deck-select-ai').value;
+      const deck = userState.decks[deckName];
+      if (deck.cards.length !== 30) return showToast("Il mazzo deve avere 30 carte!");
+
+      const aiCommId = document.getElementById('lobby-ai-select').value;
+
+      battleLogs = [];
+      const logContainer = document.getElementById('log-entries');
+      if (logContainer) logContainer.innerHTML = '';
 
       battleState = {
-        phase: 'active',
+        phase: 'placement',
         turn: 'p1',
-        p1: { commander: COMMANDERS[deck.commanderId], hp: COMMANDERS[deck.commanderId].hp, mana: 1, maxMana: 1, blood: 0, actions: 2, deck: [...deck.cards].sort(() => Math.random() - 0.5), hand: [] },
-        p2: { commander: COMMANDERS[aiId], hp: COMMANDERS[aiId].hp, mana: 1, maxMana: 1, blood: 0, actions: 2, deck: [...defaultBaseDeck].sort(() => Math.random() - 0.5), hand: [] },
+        round: 1,
+        p1: { commander: COMMANDERS[deck.commanderId], hp: COMMANDERS[deck.commanderId].hp, mana: 1, maxMana: 1, blood: 0, actions: 2, altarDeployedThisTurn: false, deck: [...deck.cards].sort(() => Math.random() - 0.5), hand: [] },
+        p2: { commander: COMMANDERS[aiCommId], hp: COMMANDERS[aiCommId].hp, mana: 1, maxMana: 1, blood: 0, actions: 2, altarDeployedThisTurn: false, deck: [...defaultBaseDeck].sort(() => Math.random() - 0.5), hand: [] },
         grid: Array(64).fill(null),
         selectedSquare: null,
-        selectedHandIndex: null
+        selectedHandIndex: null,
+        nextTurnManaDrainP1: 0,
+        nextTurnManaDrainP2: 0
       };
-
-      battleState.grid[3] = { owner: 'p1', type: 'commander', name: battleState.p1.commander.name, hp: battleState.p1.commander.hp, att: battleState.p1.commander.att, move: 'orth', range: 1, glyph: '🛡️', exhausted: false };
-      battleState.grid[60] = { owner: 'p2', type: 'commander', name: battleState.p2.commander.name, hp: battleState.p2.commander.hp, att: battleState.p2.commander.att, move: 'orth', range: 1, glyph: '🔥', exhausted: false };
-
-      for(let i=0; i<4; i++) { drawCard('p1'); drawCard('p2'); }
 
       showPaneDirect('battle');
       createBoard();
-      renderPieces();
-      updateHUD();
-      renderHand();
-      addLog(`Battaglia avviata in modalità: ${isP2P ? 'P2P Online' : 'vs IA'}`);
+      highlightRow1();
+      addLog(`Nuova battaglia avviata: ${isP2P ? 'Multiplayer P2P' : 'Single Player vs IA'}`, 'sys');
+      showToast("Piazza il tuo Comandante sulla prima riga (a1–h1)!");
     }
 
     function createBoard() {
@@ -1077,19 +1418,146 @@
       }
     }
 
-    function drawCard(pl) {
-      if (battleState[pl].deck.length > 0 && battleState[pl].hand.length < 6) {
-        battleState[pl].hand.push(battleState[pl].deck.shift());
+    function highlightRow1() {
+      for (let i = 0; i < 8; i++) {
+        document.querySelector(`.square[data-index="${i}"]`)?.classList.add('highlight-placement');
       }
+    }
+
+    /* REGOLE DI MOVIMENTO E GITTATA */
+    function getValidMoves(idx, piece) {
+      if (!piece || piece.type === 'altar') return { moves: [], attacks: [] };
+
+      const r = Math.floor(idx / 8);
+      const c = idx % 8;
+      const candidateMoves = [];
+      const candidateAttacks = [];
+
+      const bonus = hasResonantBonus(idx, piece) ? 1 : 0;
+      const stepLimit = 1 + bonus;
+      const pattern = piece.move || 'orth';
+      const attackRange = piece.range || 1;
+
+      // Movimenti
+      if (pattern === 'knight') {
+        const knightDeltas = [
+          [-2, -1], [-2, 1], [-1, -2], [-1, 2],
+          [1, -2], [1, 2], [2, -1], [2, 1]
+        ];
+        knightDeltas.forEach(([dr, dc]) => {
+          const nr = r + dr, nc = c + dc;
+          if (nr >= 0 && nr < 8 && nc >= 0 && nc < 8) {
+            const destIdx = nr * 8 + nc;
+            const target = battleState.grid[destIdx];
+            if (!target) candidateMoves.push(destIdx);
+          }
+        });
+      } else {
+        let directions = [];
+        if (pattern === 'orth' || pattern === 'orth2') directions = [[1,0], [-1,0], [0,1], [0,-1]];
+        else if (pattern === 'diag') directions = [[1,1], [1,-1], [-1,1], [-1,-1]];
+        else if (pattern === 'omni') directions = [[1,0], [-1,0], [0,1], [0,-1], [1,1], [1,-1], [-1,1], [-1,-1]];
+
+        const maxSteps = pattern === 'orth2' ? Math.max(2, stepLimit) : stepLimit;
+
+        directions.forEach(([dr, dc]) => {
+          for (let step = 1; step <= maxSteps; step++) {
+            const nr = r + dr * step;
+            const nc = c + dc * step;
+            if (nr < 0 || nr >= 8 || nc < 0 || nc >= 8) break;
+
+            const destIdx = nr * 8 + nc;
+            const target = battleState.grid[destIdx];
+            if (!target) {
+              candidateMoves.push(destIdx);
+            } else {
+              break;
+            }
+          }
+        });
+      }
+
+      // Attacchi
+      if (attackRange === 1) {
+        if (pattern === 'knight') {
+          const knightDeltas = [
+            [-2, -1], [-2, 1], [-1, -2], [-1, 2],
+            [1, -2], [1, 2], [2, -1], [2, 1]
+          ];
+          knightDeltas.forEach(([dr, dc]) => {
+            const nr = r + dr, nc = c + dc;
+            if (nr >= 0 && nr < 8 && nc >= 0 && nc < 8) {
+              const destIdx = nr * 8 + nc;
+              const target = battleState.grid[destIdx];
+              if (target && target.owner !== piece.owner) candidateAttacks.push(destIdx);
+            }
+          });
+        } else {
+          getAdjs(idx).forEach(adj => {
+            const target = battleState.grid[adj];
+            if (target && target.owner !== piece.owner) candidateAttacks.push(adj);
+          });
+        }
+      } else {
+        const orthDirs = [[1,0], [-1,0], [0,1], [0,-1]];
+        orthDirs.forEach(([dr, dc]) => {
+          for (let step = 1; step <= attackRange; step++) {
+            const nr = r + dr * step;
+            const nc = c + dc * step;
+            if (nr < 0 || nr >= 8 || nc < 0 || nc >= 8) break;
+            const destIdx = nr * 8 + nc;
+            const target = battleState.grid[destIdx];
+            if (target) {
+              if (target.owner !== piece.owner) candidateAttacks.push(destIdx);
+              break;
+            }
+          }
+        });
+      }
+
+      return { moves: candidateMoves, attacks: candidateAttacks };
     }
 
     function onSquareClick(idx) {
       if (isP2P && battleState.turn !== myP2PRole) return showToast("Attendi il turno dell'avversario!");
-      if (battleState.selectedHandIndex !== null) return deployCard(idx);
+
+      if (battleState.phase === 'placement') {
+        if (idx > 7) return showToast("Piazza il tuo comandante sulla prima riga!");
+        battleState.grid[idx] = { owner: 'p1', type: 'commander', name: battleState.p1.commander.name, hp: battleState.p1.commander.hp, att: battleState.p1.commander.att, move: battleState.p1.commander.move, range: 1, glyph: battleState.p1.commander.glyph, rarity: 'legendary', exhausted: false };
+        addLog(`P1 piazza Comandante su cella ${idx}`, 'p1');
+
+        if (!isP2P) {
+          const aiIdx = selectStrategicAIPlacement(idx);
+          battleState.grid[aiIdx] = { owner: 'p2', type: 'commander', name: battleState.p2.commander.name, hp: battleState.p2.commander.hp, att: battleState.p2.commander.att, move: battleState.p2.commander.move, range: 1, glyph: battleState.p2.commander.glyph, rarity: 'legendary', exhausted: false };
+          addLog(`IA piazza Comandante su cella ${aiIdx}`, 'p2');
+        }
+
+        battleState.phase = 'active';
+        document.querySelectorAll('.square').forEach(s => s.classList.remove('highlight-placement'));
+        
+        for (let i = 0; i < 4; i++) { drawCard('p1'); if(!isP2P) drawCard('p2'); }
+        renderPieces();
+        updateHUD();
+        renderHand();
+        showToast("Comandanti schierati! Inizia la battaglia.");
+        return;
+      }
+
+      if (battleState.selectedHandIndex !== null) {
+        const cardId = battleState.p1.hand[battleState.selectedHandIndex];
+        const card = CARDS_DB[cardId];
+        if (card.type === 'spell') castSpell(idx);
+        else deployCard(idx);
+        return;
+      }
 
       const p = battleState.grid[idx];
-      if (p && p.owner === battleState.turn) {
-        if (p.type === 'altar') return showToast("Gli altari non possono muoversi!");
+      if (p && p.owner === 'p1') {
+        if (p.type === 'altar') {
+          showToast("Gli altari sono strutture fisse e non possono muoversi!");
+          addLog("P1 ha tentato di muovere un Altare immobile", 'p1');
+          return;
+        }
         battleState.selectedSquare = idx;
         highlightMoves(idx);
         return;
@@ -1098,93 +1566,114 @@
       if (battleState.selectedSquare !== null) {
         const sq = document.querySelector(`.square[data-index="${idx}"]`);
         if (sq.classList.contains('highlight-move')) {
-          executeMove(battleState.selectedSquare, idx);
+          executeMoveAction(battleState.selectedSquare, idx);
         } else if (sq.classList.contains('highlight-attack')) {
-          executeAttack(battleState.selectedSquare, idx);
+          attack(battleState.selectedSquare, idx);
         } else {
-          clearHighlights();
           battleState.selectedSquare = null;
+          clearHighlights();
+          renderPieces();
         }
       }
     }
 
-    function executeMove(from, to) {
-      const piece = battleState.grid[from];
+    function glidePiece(fromIdx, toIdx, onDone) {
+      const fromSq = document.querySelector(`.square[data-index="${fromIdx}"]`);
+      const toSq = document.querySelector(`.square[data-index="${toIdx}"]`);
+      const pEl = fromSq ? fromSq.querySelector('.piece') : null;
+
+      if (!fromSq || !toSq || !pEl) {
+        if (onDone) onDone();
+        return;
+      }
+
+      const rectFrom = fromSq.getBoundingClientRect();
+      const rectTo = toSq.getBoundingClientRect();
+      const dx = rectFrom.left - rectTo.left;
+      const dy = rectFrom.top - rectTo.top;
+
+      toSq.appendChild(pEl);
+      pEl.style.transition = 'none';
+      pEl.style.transform = `translate3d(${dx}px, ${dy}px, 0)`;
+      pEl.offsetHeight;
+
+      pEl.style.transition = 'transform 0.24s cubic-bezier(0.2, 0.8, 0.2, 1)';
+      pEl.style.transform = 'translate3d(0, 0, 0)';
+
+      setTimeout(() => {
+        pEl.style.transition = '';
+        pEl.style.transform = '';
+        if (onDone) onDone();
+      }, 250);
+    }
+
+    function executeMoveAction(fromIdx, toIdx) {
+      const piece = battleState.grid[fromIdx];
+      battleState.selectedSquare = null;
       clearHighlights();
-      glidePiece(from, to, () => {
-        battleState.grid[to] = piece;
-        battleState.grid[from] = null;
+
+      addLog(`P1 muove ${piece.name} da ${fromIdx} a ${toIdx} (Azioni rimaste: ${battleState.p1.actions - 1})`, 'p1');
+
+      glidePiece(fromIdx, toIdx, () => {
+        battleState.grid[toIdx] = piece;
+        battleState.grid[fromIdx] = null;
         piece.exhausted = true;
-        battleState[battleState.turn].actions--;
+        battleState.p1.actions--;
         renderPieces();
         updateHUD();
-        sendP2P({ type: 'ACTION_MOVE', from, to, player: battleState.turn });
+        if (isP2P) sendP2P({ type: 'ACTION_MOVE', from: fromIdx, to: toIdx, player: 'p1' });
         checkWin();
       });
     }
 
-    function executeAttack(from, to) {
-      const att = battleState.grid[from];
-      const def = battleState.grid[to];
-      def.hp -= att.att;
-      addLog(`${att.name} attacca ${def.name} (-${att.att} PV)`);
-      if (def.hp <= 0) {
-        battleState.grid[to] = null;
-        battleState[att.owner].blood += 2;
-      }
-      att.exhausted = true;
-      battleState[battleState.turn].actions--;
-      clearHighlights();
-      renderPieces();
-      updateHUD();
-      checkWin();
-    }
-
-    function deployCard(idx) {
-      const pl = battleState.turn;
-      const card = CARDS_DB[battleState[pl].hand[battleState.selectedHandIndex]];
-      if (battleState[pl].mana < card.cost) return showToast("Mana insufficiente!");
-      const sq = document.querySelector(`.square[data-index="${idx}"]`);
-      if (!sq.classList.contains('highlight-deploy')) return;
-
-      battleState[pl].mana -= card.cost;
-      battleState[pl].hand.splice(battleState.selectedHandIndex, 1);
-      battleState.selectedHandIndex = null;
-
-      const piece = { owner: pl, type: card.type, name: card.name, hp: card.hp, att: card.att, glyph: card.glyph, exhausted: false };
-      battleState.grid[idx] = piece;
-
-      if (card.type === 'altar') {
-        battleState[pl].maxMana = Math.min(4, battleState[pl].maxMana + 1);
-        battleState[pl].mana = Math.min(battleState[pl].maxMana, battleState[pl].mana + 1);
-      }
-
-      sendP2P({ type: 'ACTION_DEPLOY', idx, piece, cost: card.cost, player: pl });
-      clearHighlights();
-      renderPieces();
-      updateHUD();
-      renderHand();
+    function hasResonantBonus(idx, piece) {
+      if (!piece || piece.type === 'altar') return false;
+      return getAdjs(idx).some(adj => {
+        const p = battleState.grid[adj];
+        return p && p.owner === piece.owner && p.type === 'altar' && (p.cardId === 'altar_resonant' || p.name === 'Altare Risonante');
+      });
     }
 
     function highlightMoves(idx) {
       clearHighlights();
       const p = battleState.grid[idx];
-      if (battleState[p.owner].actions <= 0 || p.exhausted) return;
+      if (battleState.p1.actions <= 0 || p.exhausted) {
+        if (p.exhausted) showToast("Questa unità ha già agito in questo turno!");
+        return;
+      }
 
-      const r = Math.floor(idx / 8), c = idx % 8;
-      const dirs = [[1,0], [-1,0], [0,1], [0,-1]];
-      dirs.forEach(([dr, dc]) => {
-        const nr = r + dr, nc = c + dc;
-        if (nr >= 0 && nr < 8 && nc >= 0 && nc < 8) {
-          const dest = nr * 8 + nc;
-          if (!battleState.grid[dest]) document.querySelector(`.square[data-index="${dest}"]`)?.classList.add('highlight-move');
-          else if (battleState.grid[dest].owner !== p.owner) document.querySelector(`.square[data-index="${dest}"]`)?.classList.add('highlight-attack');
-        }
+      const validTargets = getValidMoves(idx, p);
+
+      validTargets.moves.forEach(mIdx => {
+        document.querySelector(`.square[data-index="${mIdx}"]`)?.classList.add('highlight-move');
+      });
+
+      validTargets.attacks.forEach(aIdx => {
+        document.querySelector(`.square[data-index="${aIdx}"]`)?.classList.add('highlight-attack');
       });
     }
 
     function clearHighlights() {
-      document.querySelectorAll('.square').forEach(s => s.classList.remove('highlight-move', 'highlight-attack', 'highlight-deploy'));
+      document.querySelectorAll('.square').forEach(s => s.classList.remove('highlight-move', 'highlight-attack', 'highlight-deploy', 'highlight-spell-target'));
+    }
+
+    function getAdjs(idx) {
+      const r = Math.floor(idx / 8), c = idx % 8;
+      const res = [];
+      [[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]].forEach(([dr, dc]) => {
+        const nr = r + dr, nc = c + dc;
+        if (nr >= 0 && nr < 8 && nc >= 0 && nc < 8) res.push(nr * 8 + nc);
+      });
+      return res;
+    }
+
+    function drawCard(pl) {
+      if (battleState[pl].deck.length > 0 && battleState[pl].hand.length < 6) {
+        const card = battleState[pl].deck.shift();
+        battleState[pl].hand.push(card);
+        const cardObj = CARDS_DB[card];
+        addLog(`${pl.toUpperCase()} pesca ${cardObj?.name || card} [${RARITY_NAMES[cardObj?.rarity] || 'Comune'}]`, pl);
+      }
     }
 
     function renderHand() {
@@ -1193,25 +1682,298 @@
       battleState.p1.hand.forEach((id, i) => {
         const c = CARDS_DB[id];
         const cardEl = document.createElement('div');
+        const r = c.rarity || 'common';
         cardEl.className = `hand-card ${battleState.selectedHandIndex === i ? 'selected' : ''}`;
+        cardEl.style.borderLeft = `3px solid var(--rarity-${r})`;
+
+        cardEl.onmouseenter = (e) => showHoverCard(c, e);
+        cardEl.onmousemove = (e) => updateHoverCardPos(e);
+        cardEl.onmouseleave = () => hideHoverCard();
+
         cardEl.onclick = () => {
-          battleState.selectedHandIndex = (battleState.selectedHandIndex === i) ? null : i;
+          battleState.selectedHandIndex = battleState.selectedHandIndex === i ? null : i;
           renderHand();
           clearHighlights();
           if (battleState.selectedHandIndex !== null) {
-            const cIdx = battleState.grid.findIndex(p => p && p.owner === 'p1' && p.type === 'commander');
-            const r = Math.floor(cIdx / 8), c = cIdx % 8;
-            [[1,0],[-1,0],[0,1],[0,-1]].forEach(([dr,dc]) => {
-              const nr = r+dr, nc = c+dc;
-              if (nr>=0 && nr<8 && nc>=0 && nc<8 && !battleState.grid[nr*8+nc]) {
-                document.querySelector(`.square[data-index="${nr*8+nc}"]`)?.classList.add('highlight-deploy');
-              }
-            });
+            if (c.type === 'spell') highlightSpellTargets(c);
+            else highlightDeploy();
           }
         };
-        cardEl.innerHTML = `<span style="color:var(--mana-cyan); font-weight:bold;">${c.cost}</span> <div>${c.name}</div>`;
+
+        cardEl.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-weight:bold; color:var(--mana-cyan);">${c.cost}</span>
+            <span class="rarity-badge ${r}" style="font-size:0.5rem; padding:0 3px;">${RARITY_NAMES[r].slice(0,3)}</span>
+          </div>
+          <div style="font-size:0.75rem; font-weight:bold; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${c.name}</div>
+        `;
         bar.appendChild(cardEl);
       });
+    }
+
+    function highlightDeploy() {
+      const cIdx = battleState.grid.findIndex(p => p && p.owner === 'p1' && p.type === 'commander');
+      if (cIdx === -1) return;
+      getAdjs(cIdx).forEach(i => {
+        if (!battleState.grid[i]) document.querySelector(`.square[data-index="${i}"]`)?.classList.add('highlight-deploy');
+      });
+    }
+
+    /* GESTIONE SORTILEGI */
+    function highlightSpellTargets(card) {
+      const p1CommIdx = battleState.grid.findIndex(p => p && p.owner === 'p1' && p.type === 'commander');
+      if (p1CommIdx === -1) return;
+      const commR = Math.floor(p1CommIdx / 8);
+      const commC = p1CommIdx % 8;
+
+      for (let i = 0; i < 64; i++) {
+        const target = battleState.grid[i];
+        const r = Math.floor(i / 8);
+        const c = i % 8;
+        const dist = Math.max(Math.abs(r - commR), Math.abs(c - commC));
+
+        if (card.id === 'spell_cleave') {
+          if (target && target.owner === 'p2' && target.type !== 'altar' && dist <= 2) {
+            document.querySelector(`.square[data-index="${i}"]`)?.classList.add('highlight-spell-target');
+          }
+        } else if (card.id === 'spell_fortify') {
+          if (target && target.owner === 'p1') {
+            document.querySelector(`.square[data-index="${i}"]`)?.classList.add('highlight-spell-target');
+          }
+        } else if (card.id === 'spell_push') {
+          if (target && target.owner === 'p2' && target.type !== 'altar') {
+            document.querySelector(`.square[data-index="${i}"]`)?.classList.add('highlight-spell-target');
+          }
+        } else if (card.id === 'spell_heal') {
+          if (i === p1CommIdx) {
+            document.querySelector(`.square[data-index="${i}"]`)?.classList.add('highlight-spell-target');
+          }
+        } else if (card.id === 'spell_bloodsurge') {
+          if (target && target.owner === 'p2') {
+            document.querySelector(`.square[data-index="${i}"]`)?.classList.add('highlight-spell-target');
+          }
+        } else if (card.id === 'spell_wrath') {
+          if (i === p1CommIdx) {
+            document.querySelector(`.square[data-index="${i}"]`)?.classList.add('highlight-spell-target');
+          }
+        }
+      }
+    }
+
+    function castSpell(targetIdx) {
+      const card = CARDS_DB[battleState.p1.hand[battleState.selectedHandIndex]];
+      if (battleState.p1.mana < card.cost) return showToast("Mana insufficiente!");
+
+      if (card.id === 'spell_bloodsurge' && battleState.p1.blood < 2) {
+        return showToast("Eruzione di Sangue richiede almeno 2 Sangue!");
+      }
+
+      const sq = document.querySelector(`.square[data-index="${targetIdx}"]`);
+      if (!sq || !sq.classList.contains('highlight-spell-target')) return;
+
+      battleState.p1.mana -= card.cost;
+      if (card.id === 'spell_bloodsurge') battleState.p1.blood -= 2;
+
+      battleState.p1.hand.splice(battleState.selectedHandIndex, 1);
+      battleState.selectedHandIndex = null;
+
+      addLog(`P1 lancia Sortilegio: ${card.name} [${RARITY_NAMES[card.rarity]}] su cella ${targetIdx}`, 'p1');
+
+      animateCardPlayed(card, () => {
+        const target = battleState.grid[targetIdx];
+
+        if (card.id === 'spell_cleave' && target) {
+          target.hp -= 2;
+          addLog(`${target.name} subisce 2 danni da Fendente Spettrale (PV residui: ${target.hp})`, 'sys');
+          if (target.hp <= 0) handlePieceDefeated(targetIdx, 'p1');
+        } else if (card.id === 'spell_fortify' && target) {
+          const healAmount = target.type === 'altar' ? 3 : 2;
+          target.hp += healAmount;
+          addLog(`${target.name} ottiene +${healAmount} PV da Fortificazione Litica`, 'sys');
+        } else if (card.id === 'spell_push' && target) {
+          pushPiece(targetIdx, 2, 'p1');
+        } else if (card.id === 'spell_heal') {
+          battleState.p1.hp = Math.min(battleState.p1.commander.hp, battleState.p1.hp + 3);
+          const comm = battleState.grid[targetIdx];
+          if (comm) comm.hp = Math.min(battleState.p1.commander.hp, comm.hp + 3);
+          addLog("Grazia del Bastione ripristina 3 PV al Comandante!", 'sys');
+        } else if (card.id === 'spell_bloodsurge' && target) {
+          target.hp -= 3;
+          addLog(`${target.name} subisce 3 danni da Eruzione di Sangue!`, 'sys');
+          if (target.hp <= 0) handlePieceDefeated(targetIdx, 'p1');
+        } else if (card.id === 'spell_wrath') {
+          getAdjs(targetIdx).forEach(adj => {
+            const p = battleState.grid[adj];
+            if (p && p.owner === 'p2') {
+              p.hp -= 2;
+              addLog(`Giudizio Implacabile colpisce ${p.name} (-2 PV)`, 'sys');
+              if (p.hp <= 0) handlePieceDefeated(adj, 'p1');
+            }
+          });
+        }
+
+        clearHighlights();
+        renderPieces();
+        updateHUD();
+        renderHand();
+        checkWin();
+      });
+    }
+
+    function deployCard(idx) {
+      const card = CARDS_DB[battleState.p1.hand[battleState.selectedHandIndex]];
+      if (battleState.p1.mana < card.cost) return showToast("Mana insufficiente!");
+      const sq = document.querySelector(`.square[data-index="${idx}"]`);
+      if (!sq || !sq.classList.contains('highlight-deploy')) return;
+
+      if (card.type === 'altar') {
+        const altarsCount = battleState.grid.filter(p => p && p.owner === 'p1' && p.type === 'altar').length;
+        if (altarsCount >= 4) return showToast("Limite raggiunto: massimo 4 Altari contemporanei!");
+        if (battleState.p1.altarDeployedThisTurn) return showToast("Regola Ufficiale: puoi schierare al massimo 1 Altare per turno!");
+      }
+
+      battleState.p1.mana -= card.cost;
+      battleState.p1.hand.splice(battleState.selectedHandIndex, 1);
+      battleState.selectedHandIndex = null;
+
+      addLog(`P1 schiera ${card.name} [${RARITY_NAMES[card.rarity]}] su cella ${idx}`, 'p1');
+
+      animateCardPlayed(card, () => {
+        const hasSlancio = card.keywords && card.keywords.includes('slancio');
+
+        const piece = {
+          owner: 'p1',
+          type: card.type,
+          cardId: card.id,
+          name: card.name,
+          hp: card.hp,
+          att: card.att,
+          move: card.move || 'orth',
+          range: card.range || 1,
+          glyph: card.glyph,
+          desc: card.desc,
+          rarity: card.rarity || 'common',
+          exhausted: !hasSlancio
+        };
+        
+        battleState.grid[idx] = piece;
+
+        if (card.type === 'altar') {
+          battleState.p1.altarDeployedThisTurn = true;
+          battleState.p1.maxMana = Math.min(4, battleState.p1.maxMana + 1);
+          battleState.p1.mana = Math.min(battleState.p1.maxMana, battleState.p1.mana + 1);
+          showToast("Altare attivo! +1 Mana subito!");
+        }
+
+        if (isP2P) sendP2P({ type: 'ACTION_DEPLOY', idx, piece, cost: card.cost, player: 'p1' });
+
+        clearHighlights();
+        renderPieces();
+        updateHUD();
+        renderHand();
+      });
+    }
+
+    function pushPiece(targetIdx, distance, originatorOwner) {
+      const target = battleState.grid[targetIdx];
+      if (!target) return;
+
+      const commIdx = battleState.grid.findIndex(p => p && p.owner === originatorOwner && p.type === 'commander');
+      const cr = Math.floor(commIdx / 8), cc = commIdx % 8;
+      const tr = Math.floor(targetIdx / 8), tc = targetIdx % 8;
+      const dr = Math.sign(tr - cr), dc = Math.sign(tc - cc);
+
+      let currentPos = targetIdx;
+      for (let s = 1; s <= distance; s++) {
+        const nr = Math.floor(currentPos / 8) + dr;
+        const nc = (currentPos % 8) + dc;
+
+        if (nr < 0 || nr >= 8 || nc < 0 || nc >= 8 || battleState.grid[nr * 8 + nc]) {
+          target.hp -= 2;
+          addLog(`${target.name} sbatte contro un ostacolo/bordo e subisce 2 danni da urto!`, 'sys');
+          if (target.hp <= 0) handlePieceDefeated(currentPos, originatorOwner);
+          return;
+        } else {
+          const nextPos = nr * 8 + nc;
+          battleState.grid[nextPos] = target;
+          battleState.grid[currentPos] = null;
+          currentPos = nextPos;
+        }
+      }
+      addLog(`${target.name} è stato respinto!`, 'sys');
+    }
+
+    function handlePieceDefeated(idx, killerOwner) {
+      const piece = battleState.grid[idx];
+      if (!piece) return;
+
+      battleState.grid[idx] = null;
+      const isAltarBlood = piece.cardId === 'altar_blood' || piece.name === 'Altare del Sangue';
+      const bloodReward = isAltarBlood ? 1 : 2;
+
+      if (killerOwner === 'p1') {
+        battleState.p1.blood += bloodReward;
+        battleState.p2.blood += 1;
+        addLog(`${piece.name} distrutto! P1 ottiene +${bloodReward} Sangue, P2 riceve +1 Sangue`, 'sys');
+      } else {
+        battleState.p2.blood += bloodReward;
+        battleState.p1.blood += 1;
+        addLog(`${piece.name} distrutto! P2 ottiene +${bloodReward} Sangue, P1 riceve +1 Sangue`, 'sys');
+      }
+    }
+
+    function hasIronAltarProtection(idx, piece) {
+      if (!piece || piece.type === 'altar') return false;
+      return getAdjs(idx).some(adj => {
+        const p = battleState.grid[adj];
+        return p && p.owner === piece.owner && p.type === 'altar' && (p.cardId === 'altar_iron' || p.name === 'Altare di Ferro');
+      });
+    }
+
+    function attack(from, to) {
+      const att = battleState.grid[from];
+      const def = battleState.grid[to];
+      if (!att || !def) return;
+
+      let damage = att.att;
+      if (hasIronAltarProtection(to, def)) {
+        damage = Math.max(1, damage - 1);
+        addLog(`Altare di Ferro protegge ${def.name}: -1 danno subito!`, 'sys');
+      }
+
+      addLog(`${att.name} attacca ${def.name} infliggendo ${damage} danni`, 'p1');
+      def.hp -= damage;
+
+      if (att.cardId === 'colossus' || att.name === 'Colosso di Basalto') {
+        pushPiece(to, 1, att.owner);
+      }
+
+      if (def.hp <= 0) {
+        handlePieceDefeated(to, att.owner);
+      } else {
+        const dist = Math.max(Math.abs(Math.floor(from/8) - Math.floor(to/8)), Math.abs((from%8) - (to%8)));
+        const isRangedAttacker = (att.range && att.range > 1) && dist > 1;
+
+        if (!isRangedAttacker || def.cardId === 'halberdier' || def.name === "Alabardiere d'Élite") {
+          let counterDmg = def.att;
+          if (hasIronAltarProtection(from, att)) {
+            counterDmg = Math.max(0, counterDmg - 1);
+          }
+          att.hp -= counterDmg;
+          addLog(`${def.name} contrattacca infliggendo ${counterDmg} danni a ${att.name}`, 'sys');
+          if (att.hp <= 0) {
+            handlePieceDefeated(from, def.owner);
+          }
+        } else {
+          addLog(`${att.name} attacca a distanza senza subire contrattacco!`, 'sys');
+        }
+      }
+
+      if (battleState.grid[from]) battleState.grid[from].exhausted = true;
+      battleState.p1.actions--;
+      renderPieces();
+      updateHUD();
+      checkWin();
     }
 
     function renderPieces() {
@@ -1221,64 +1983,318 @@
         sq.innerHTML = '';
         const p = battleState.grid[i];
         if (p) {
+          const isBoosted = hasResonantBonus(i, p);
           const el = document.createElement('div');
-          el.className = `piece ${p.owner} ${p.type} ${p.exhausted ? 'exhausted' : ''}`;
-          el.innerHTML = `<span>${p.glyph}</span><div class="piece-badges">${p.att}/${p.hp}</div>`;
+          el.className = `piece ${p.owner} ${p.type} ${p.exhausted ? 'exhausted' : ''} ${isBoosted ? 'resonant-boosted' : ''}`;
+
+          el.onmouseenter = (e) => showHoverCard({
+            name: p.name,
+            cost: p.type === 'commander' ? '👑' : (p.type === 'altar' ? 0 : 1),
+            type: p.type === 'commander' ? 'COMANDANTE' : p.type.toUpperCase(),
+            glyph: p.glyph,
+            desc: p.desc || '',
+            att: p.att,
+            hp: p.hp,
+            rarity: p.rarity || 'common'
+          }, e);
+          el.onmousemove = (e) => updateHoverCardPos(e);
+          el.onmouseleave = () => hideHoverCard();
+
+          el.innerHTML = `<span>${p.type === 'commander' ? '👑' : p.type === 'altar' ? '🏛️' : '⚔️'}</span><div class="piece-badges">${p.att}/${p.hp}</div>`;
           sq.appendChild(el);
         }
       }
     }
 
     function updateHUD() {
+      document.getElementById('hud-p1-name').textContent = battleState.p1.commander.name.split(' ')[0];
       document.getElementById('hud-p1-mana').textContent = battleState.p1.mana;
+      document.getElementById('hud-p1-blood').textContent = battleState.p1.blood;
       document.getElementById('hud-p1-actions').textContent = battleState.p1.actions;
-      document.getElementById('hud-p2-mana').textContent = battleState.p2.mana;
-      document.getElementById('hud-p2-actions').textContent = battleState.p2.actions;
-    }
 
-    function glidePiece(from, to, onDone) {
-      const fSq = document.querySelector(`.square[data-index="${from}"]`);
-      const tSq = document.querySelector(`.square[data-index="${to}"]`);
-      const pEl = fSq?.querySelector('.piece');
-      if (!pEl) return onDone && onDone();
-      tSq.appendChild(pEl);
-      if (onDone) onDone();
+      document.getElementById('hud-p2-name').textContent = battleState.p2.commander.name.split(' ')[0];
+      document.getElementById('hud-p2-mana').textContent = battleState.p2.mana;
+      document.getElementById('hud-p2-blood').textContent = battleState.p2.blood;
+      document.getElementById('hud-p2-actions').textContent = battleState.p2.actions;
+
+      const riteBtn = document.getElementById('btn-rite-p1');
+      const comm = battleState.p1.commander;
+      riteBtn.textContent = `Rito d'Armi (${comm.riteCost}🩸)`;
     }
 
     function endTurnP1() {
-      const next = battleState.turn === 'p1' ? 'p2' : 'p1';
-      startTurnFor(next);
-      sendP2P({ type: 'END_TURN', nextTurn: next });
+      addLog("--- FINE TURNO P1 ---", 'p1');
+
+      const p1CommIdx = battleState.grid.findIndex(p => p && p.owner === 'p1' && p.type === 'commander');
+      if (p1CommIdx !== -1) {
+        getAdjs(p1CommIdx).forEach(adj => {
+          const u = battleState.grid[adj];
+          if (u && u.owner === 'p1' && (u.cardId === 'cleric' || u.name === 'Chierico del Crepuscolo')) {
+            battleState.grid[p1CommIdx].hp = Math.min(battleState.p1.commander.hp, battleState.grid[p1CommIdx].hp + 2);
+            addLog("Chierico del Crepuscolo guarisce il Comandante di 2 PV!", 'p1');
+          }
+        });
+      }
+
+      const nextTurn = 'p2';
+      if (isP2P) {
+        sendP2P({ type: 'END_TURN', nextTurn: nextTurn });
+        showToast("Turno avversario...");
+      }
+
+      battleState.turn = 'p2';
+      battleState.p2.actions = 2;
+      battleState.p2.mana = Math.max(0, battleState.p2.maxMana - (battleState.nextTurnManaDrainP2 || 0));
+      battleState.nextTurnManaDrainP2 = 0;
+      battleState.p2.altarDeployedThisTurn = false;
+      
+      battleState.grid.forEach(p => {
+        if (p && p.owner === 'p2') p.exhausted = false;
+      });
+
+      drawCard('p2');
+      updateHUD();
+      
+      if (!isP2P) {
+        showToast("Turno avversario (IA)...");
+        addLog(`Inizio Turno IA: Mana=${battleState.p2.mana}/${battleState.p2.maxMana}, Azioni=${battleState.p2.actions}`, 'p2');
+        setTimeout(runAI, 600);
+      }
     }
 
-    function startTurnFor(player) {
-      battleState.turn = player;
-      battleState[player].actions = 2;
-      battleState[player].mana = battleState[player].maxMana;
-      battleState.grid.forEach(p => { if (p && p.owner === player) p.exhausted = false; });
-      drawCard(player);
+    function runAI() {
+      if (isP2P) return;
+
+      const p2CommIdx = battleState.grid.findIndex(p => p && p.owner === 'p2' && p.type === 'commander');
+      const p1CommIdx = battleState.grid.findIndex(p => p && p.owner === 'p1' && p.type === 'commander');
+
+      if (p2CommIdx === -1) {
+        continueAIActions(p2CommIdx, p1CommIdx);
+        return;
+      }
+
+      if (battleState.p2.hand.length > 0) {
+        const cardId = battleState.p2.hand[0];
+        const card = CARDS_DB[cardId];
+        const currentP2Altars = battleState.grid.filter(p => p && p.owner === 'p2' && p.type === 'altar').length;
+
+        if (card && card.cost <= battleState.p2.mana && !(card.type === 'altar' && (battleState.p2.altarDeployedThisTurn || currentP2Altars >= 4))) {
+          if (card.type !== 'spell') {
+            const free = getAdjs(p2CommIdx).find(i => !battleState.grid[i]);
+            if (free !== undefined) {
+              battleState.p2.mana -= card.cost;
+              battleState.p2.hand.shift();
+              addLog(`IA schiera ${card.name} su cella ${free}`, 'p2');
+              
+              animateCardPlayed(card, () => {
+                const hasSlancio = card.keywords && card.keywords.includes('slancio');
+                battleState.grid[free] = { owner: 'p2', type: card.type, cardId: card.id, name: card.name, hp: card.hp, att: card.att, move: card.move || 'orth', range: 1, glyph: card.glyph, desc: card.desc, rarity: card.rarity || 'common', exhausted: !hasSlancio };
+                if (card.type === 'altar') {
+                  battleState.p2.altarDeployedThisTurn = true;
+                  battleState.p2.maxMana = Math.min(4, battleState.p2.maxMana + 1);
+                  battleState.p2.mana = Math.min(battleState.p2.maxMana, battleState.p2.mana + 1);
+                  addLog("IA attiva Altare: +1 Mana max & istantaneo", 'p2');
+                }
+                renderPieces();
+                updateHUD();
+                continueAIActions(p2CommIdx, p1CommIdx);
+              });
+              return;
+            }
+          }
+        }
+      }
+
+      continueAIActions(p2CommIdx, p1CommIdx);
+    }
+
+    function continueAIActions(p2CommIdx, p1CommIdx) {
+      if (p2CommIdx !== -1 && p1CommIdx !== -1) {
+        const adjs = getAdjs(p2CommIdx);
+        if (adjs.includes(p1CommIdx)) {
+          const attVal = battleState.grid[p2CommIdx].att;
+          battleState.grid[p1CommIdx].hp -= attVal;
+          addLog(`IA attacca Comandante P1: -${attVal} PV (PV residui P1: ${battleState.grid[p1CommIdx].hp})`, 'p2');
+        } else {
+          const p1R = Math.floor(p1CommIdx / 8), p1C = p1CommIdx % 8;
+          let bestSq = null;
+          let minDistance = 999;
+
+          adjs.filter(i => !battleState.grid[i]).forEach(sq => {
+            const r = Math.floor(sq / 8), c = sq % 8;
+            const dist = Math.hypot(p1R - r, p1C - c);
+            if (dist < minDistance) {
+              minDistance = dist;
+              bestSq = sq;
+            }
+          });
+
+          if (bestSq !== null) {
+            addLog(`IA muove Comandante da ${p2CommIdx} a ${bestSq}`, 'p2');
+            battleState.grid[bestSq] = battleState.grid[p2CommIdx];
+            battleState.grid[p2CommIdx] = null;
+          }
+        }
+      }
+
+      renderPieces();
+      checkWin();
+
+      battleState.turn = 'p1';
+      battleState.p1.actions = 2;
+      battleState.p1.mana = Math.max(0, battleState.p1.maxMana - (battleState.nextTurnManaDrainP1 || 0));
+      battleState.nextTurnManaDrainP1 = 0;
+      battleState.p1.altarDeployedThisTurn = false;
+      
+      battleState.grid.forEach(p => {
+        if (p && p.owner === 'p1') p.exhausted = false;
+      });
+
+      drawCard('p1');
       updateHUD();
       renderHand();
-      addLog(`Nuovo Turno per: ${player.toUpperCase()}`);
+      addLog("--- TUO TURNO (P1) --- [Azioni: 2, Unità pronte]", 'p1');
+      showToast("Tuo Turno!");
     }
 
     function checkWin() {
-      const p1Alive = battleState.grid.some(p => p && p.owner === 'p1' && p.type === 'commander');
-      const p2Alive = battleState.grid.some(p => p && p.owner === 'p2' && p.type === 'commander');
-      if (!p2Alive) { alert("VITTORIA! Decapitazione nemica completata!"); showPaneDirect('home'); }
-      if (!p1Alive) { alert("SCONFITTA! Il tuo Comandante è caduto."); showPaneDirect('home'); }
+      const p1Alive = battleState.grid.some(p => p && p.owner === 'p1' && p.type === 'commander' && p.hp > 0);
+      const p2Alive = battleState.grid.some(p => p && p.owner === 'p2' && p.type === 'commander' && p.hp > 0);
+
+      if (!p2Alive) {
+        addLog("BATTAGLIA CONCLUSA: VITTORIA DI P1!", 'sys');
+        userState.gold = (userState.gold || 0) + 100;
+        saveCloudState();
+        alert("VITTORIA! Hai decapitato il nemico. Guadagni +100 Oro 🪙!");
+        showPaneDirect('home');
+      } else if (!p1Alive) {
+        addLog("BATTAGLIA CONCLUSA: SCONFITTA DI P1!", 'sys');
+        alert("SCONFITTA! Il tuo Comandante è caduto.");
+        showPaneDirect('home');
+      }
     }
 
+    /* RITI D'ARMI FEDELI PER CIASCUN COMANDANTE */
+    function useWeaponRiteP1() {
+      const comm = battleState.p1.commander;
+      if (battleState.p1.blood < comm.riteCost) {
+        return showToast(`Sangue insufficiente! Richiede ${comm.riteCost} 🩸.`);
+      }
+
+      const cIdx = battleState.grid.findIndex(p => p && p.owner === 'p1' && p.type === 'commander');
+      if (cIdx === -1) return;
+      const cr = Math.floor(cIdx / 8), cc = cIdx % 8;
+
+      battleState.p1.blood -= comm.riteCost;
+      addLog(`P1 scatena il Rito d'Armi di ${comm.name}!`, 'p1');
+
+      if (comm.id === 'valeria') {
+        for (let i = 0; i < 64; i++) {
+          const p = battleState.grid[i];
+          if (p && p.owner === 'p2') {
+            const dist = Math.max(Math.abs(Math.floor(i/8) - cr), Math.abs((i%8) - cc));
+            if (dist <= 2) {
+              p.hp -= 2;
+              pushPiece(i, 1, 'p1');
+              if (p.hp <= 0) handlePieceDefeated(i, 'p1');
+            }
+          }
+        }
+      } else if (comm.id === 'malakor') {
+        for (let i = 0; i < 64; i++) {
+          const p = battleState.grid[i];
+          if (p && p.owner === 'p2') {
+            const dist = Math.max(Math.abs(Math.floor(i/8) - cr), Math.abs((i%8) - cc));
+            if (dist <= 2) {
+              p.hp -= 3;
+              addLog(`Fiamme colpiscono ${p.name} (-3 PV)`, 'sys');
+              if (p.hp <= 0) handlePieceDefeated(i, 'p1');
+            }
+          }
+        }
+      } else if (comm.id === 'vespera') {
+        const p2CommIdx = battleState.grid.findIndex(p => p && p.owner === 'p2' && p.type === 'commander');
+        if (p2CommIdx !== -1) pushPiece(p2CommIdx, 3, 'p1');
+      } else if (comm.id === 'aurelius') {
+        battleState.nextTurnManaDrainP2 = 2;
+        addLog("Aurelius prosciuga 2 Mana dalla riserva nemica per il prossimo turno!", 'p1');
+      } else if (comm.id === 'vulkan') {
+        const altarIdx = battleState.grid.findIndex(p => p && p.owner === 'p1' && p.type === 'altar');
+        if (altarIdx !== -1) {
+          battleState.grid[altarIdx] = { owner: 'p1', type: 'unit', name: 'Golem di Forgia', hp: 5, att: 3, move: 'orth', range: 1, glyph: '🗿', desc: 'Forgiato dall\'Altare.', rarity: 'rare', exhausted: false };
+          addLog("L'Altare prende vita come Golem di Forgia 3/5!", 'p1');
+        } else {
+          showToast("Nessun Altare attivo da trasformare!");
+        }
+      } else if (comm.id === 'garek') {
+        const adjs = getAdjs(cIdx);
+        const altar = adjs.find(i => battleState.grid[i] && battleState.grid[i].owner === 'p1' && battleState.grid[i].type === 'altar');
+        if (altar !== undefined) {
+          battleState.grid[altar].hp += 3;
+          battleState.grid[altar].att += 2;
+          addLog("Garek infonde l'Altare: +2 ATT e +3 PV!", 'p1');
+        } else {
+          showToast("Nessun Altare adiacente a Garek!");
+        }
+      } else if (comm.id === 'morbida') {
+        const p2CommIdx = battleState.grid.findIndex(p => p && p.owner === 'p2' && p.type === 'commander');
+        if (p2CommIdx !== -1) {
+          battleState.grid[p2CommIdx].hp -= 3;
+          addLog("Morbida infligge 3 danni diretti al Comandante nemico!", 'p1');
+          if (battleState.grid[p2CommIdx].hp <= 0) handlePieceDefeated(p2CommIdx, 'p1');
+        }
+      } else if (comm.id === 'kaelen') {
+        const adjs = getAdjs(cIdx);
+        const friend = adjs.find(i => battleState.grid[i] && battleState.grid[i].owner === 'p1' && battleState.grid[i].type !== 'altar');
+        if (friend !== undefined) {
+          const temp = battleState.grid[friend];
+          battleState.grid[friend] = battleState.grid[cIdx];
+          battleState.grid[cIdx] = temp;
+          addLog("Kaelen scambia di posizione due unità con il Vortice!", 'p1');
+        }
+      } else if (comm.id === 'justiciar_kael') {
+        battleState.p2.blood = 0;
+        addLog("Justiciar Kael azzera la riserva Sangue dell'IA!", 'p1');
+      } else if (comm.id === 'ignis') {
+        for (let i = 0; i < 64; i++) {
+          const p = battleState.grid[i];
+          if (p && p.type === 'altar') {
+            getAdjs(i).forEach(adj => {
+              const target = battleState.grid[adj];
+              if (target && target.owner === 'p2') {
+                target.hp -= 3;
+                addLog(`Forgia Vivente colpisce ${target.name} (-3 PV)`, 'sys');
+                if (target.hp <= 0) handlePieceDefeated(adj, 'p1');
+              }
+            });
+          }
+        }
+      }
+
+      renderPieces();
+      updateHUD();
+      checkWin();
+      showToast("Rito d'Armi attivato con successo!");
+    }
+
+    // GESTIONE CONNESSIONE ALL'AVVIO
     window.addEventListener('DOMContentLoaded', async () => {
       showPaneDirect('auth');
+      
       // Controllo sessione cloud già attiva
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        const { data: profile } = await supabase.from('profiles').select('*').eq('id', session.user.id).single();
-        if (profile) {
-          currentUser = { id: session.user.id, email: session.user.email, username: profile.username };
-          userState = { gold: profile.gold, collection: profile.collection, decks: profile.decks, activeDeckName: profile.active_deck_name };
-          onLoginSuccess(`Sessione Cloud ripristinata: ${profile.username}`);
+      if (supabase) {
+        try {
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session) {
+            const { data: profile } = await supabase.from('profiles').select('*').eq('id', session.user.id).single();
+            if (profile) {
+              currentUser = { id: session.user.id, email: session.user.email, username: profile.username };
+              userState = { gold: profile.gold, unlockedCommanders: ['valeria', 'malakor', 'vespera', 'aurelius', 'vulkan'], collection: profile.collection, decks: profile.decks, activeDeckName: profile.active_deck_name };
+              onLoginSuccess(`Sessione Cloud ripristinata: ${profile.username}`);
+            }
+          }
+        } catch (e) {
+          console.log("Supabase non raggiungibile o non configurato.");
         }
       }
     });
