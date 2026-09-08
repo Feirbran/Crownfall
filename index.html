@@ -956,29 +956,36 @@
       }
     }
 
+    function normalizeUserState(state) {
+      if (!state) state = {};
+      state.gold = state.gold || 100;
+      state.unlockedCommanders = state.unlockedCommanders || ['valeria', 'malakor', 'vespera', 'aurelius', 'vulkan'];
+      state.collection = state.collection || {};
+      state.decks = state.decks || {};
+      state.activeDeckName = state.activeDeckName || 'Mazzo Base';
+      if (!state.decks['Mazzo Base']) {
+        state.decks['Mazzo Base'] = { commanderId: 'valeria', cards: [...defaultBaseDeck] };
+      }
+      Object.keys(CARDS_DB).forEach(id => {
+        if (CARDS_DB[id].set === 0) state.collection[id] = 4;
+      });
+      return state;
+    }
+
     // BYPASS DIRETTO OFFLINE
     function playOffline() {
       currentUser = { id: 'local_dev', email: 'offline@veridia.com', username: 'Condottiero Offline' };
       
+      let parsed = null;
       const raw = localStorage.getItem('crownfall_offline_save');
       if (raw) {
         try {
-          userState = JSON.parse(raw);
+          parsed = JSON.parse(raw);
         } catch (e) {
           console.warn(e);
         }
-      } else {
-        userState = {
-          gold: 100,
-          unlockedCommanders: ['valeria', 'malakor', 'vespera', 'aurelius', 'vulkan'],
-          collection: {},
-          decks: { 'Mazzo Base': { commanderId: 'valeria', cards: [...defaultBaseDeck] } },
-          activeDeckName: 'Mazzo Base'
-        };
-        Object.keys(CARDS_DB).forEach(id => {
-          if (CARDS_DB[id].set === 0) userState.collection[id] = 4;
-        });
       }
+      userState = normalizeUserState(parsed);
       onLoginSuccess("Modalità Offline Attiva. Benvenuto!");
     }
 
@@ -1023,7 +1030,7 @@
         }
 
         currentUser = { id: data.user.id, email, username: user };
-        userState = { gold: 100, unlockedCommanders: ['valeria', 'malakor', 'vespera', 'aurelius', 'vulkan'], collection: initialProfile.collection, decks: initialProfile.decks, activeDeckName: 'Mazzo Iniziale' };
+        userState = normalizeUserState({ gold: 100, collection: initialProfile.collection, decks: initialProfile.decks, activeDeckName: 'Mazzo Iniziale' });
         onLoginSuccess(`Registrato con successo, Condottiero ${user}!`);
         
       } else {
@@ -1040,7 +1047,9 @@
 
         currentUser = { id: data.user.id, email, username: profile ? profile.username : user };
         if (profile) {
-          userState = { gold: profile.gold, unlockedCommanders: ['valeria', 'malakor', 'vespera', 'aurelius', 'vulkan'], collection: profile.collection || {}, decks: profile.decks || {}, activeDeckName: profile.active_deck_name || 'Mazzo Base' };
+          userState = normalizeUserState({ gold: profile.gold, collection: profile.collection, decks: profile.decks, activeDeckName: profile.active_deck_name });
+        } else {
+          userState = normalizeUserState(null);
         }
         onLoginSuccess(`Bentornato sul Cloud, ${currentUser.username}!`);
       }
@@ -2453,7 +2462,7 @@
             const { data: profile } = await sbClient.from('profiles').select('*').eq('id', session.user.id).single();
             if (profile) {
               currentUser = { id: session.user.id, email: session.user.email, username: profile.username };
-              userState = { gold: profile.gold, unlockedCommanders: ['valeria', 'malakor', 'vespera', 'aurelius', 'vulkan'], collection: profile.collection || {}, decks: profile.decks || {}, activeDeckName: profile.active_deck_name || 'Mazzo Base' };
+              userState = normalizeUserState({ gold: profile.gold, collection: profile.collection, decks: profile.decks, activeDeckName: profile.active_deck_name });
               onLoginSuccess(`Sessione Cloud ripristinata: ${profile.username}`);
             }
           }
