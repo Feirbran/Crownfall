@@ -1136,6 +1136,40 @@
       if (el) el.classList.remove('active');
     }
 
+    function animateCardPlayed(card, onComplete) {
+      const overlay = document.getElementById('card-summon-overlay');
+      if (!overlay) {
+        if (onComplete) onComplete();
+        return;
+      }
+      
+      document.getElementById('sc-title').textContent = card.name;
+      document.getElementById('sc-cost').textContent = card.cost !== undefined ? card.cost : '';
+      document.getElementById('sc-art').textContent = card.glyph;
+      document.getElementById('sc-type-text').textContent = (card.type || '').toUpperCase();
+      
+      const rb = document.getElementById('sc-rarity-badge');
+      const r = card.rarity || 'common';
+      rb.className = `rarity-badge ${r}`;
+      rb.textContent = (RARITY_NAMES[r] || 'COMUNE').toUpperCase();
+      
+      document.getElementById('sc-desc').textContent = card.desc || '';
+      const pt = document.getElementById('sc-pt');
+      if (card.att !== undefined && card.hp !== undefined) {
+        pt.style.display = 'block';
+        pt.textContent = `${card.att}/${card.hp}`;
+      } else {
+        pt.style.display = 'none';
+      }
+      
+      overlay.classList.add('active');
+      
+      setTimeout(() => {
+        overlay.classList.remove('active');
+        if (onComplete) onComplete();
+      }, 1000);
+    }
+
     function onArenaFilterChanged() {
       deckFilters.search = document.getElementById('arena-search').value.toLowerCase();
       renderDeckBuilder();
