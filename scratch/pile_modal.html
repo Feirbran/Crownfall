@@ -1,0 +1,56 @@
+    <!-- MODAL ISPETTORE GRIMORIO / CIMITERO IN BATTAGLIA -->
+    <div id="battle-pile-modal" class="battle-modal-backdrop" onclick="onPileBackdropClick(event)">
+      <div class="battle-modal-window" onclick="event.stopPropagation()">
+        
+        <!-- Header -->
+        <div class="battle-modal-header">
+          <div class="bmh-title-wrap">
+            <span class="bmh-icon" id="bpm-icon">📚</span>
+            <div>
+              <h3 class="bmh-title" id="bpm-title">ISPETTORE TATTICO: IL TUO GRIMORIO</h3>
+              <div class="bmh-subtitle" id="bpm-subtitle">Carte Rimanenti da Pescare</div>
+            </div>
+          </div>
+          <button class="btn-close-modal" onclick="closePileModal()">CHIUDI ✕</button>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="bpm-tabs-bar">
+          <button class="bpm-tab-btn active" id="bpm-tab-my-deck" onclick="setPileModalView('my-deck')">
+            📚 Tuo Grimorio (<span id="bpm-badge-my-deck">0</span>)
+          </button>
+          <button class="bpm-tab-btn" id="bpm-tab-my-grave" onclick="setPileModalView('my-grave')">
+            🪦 Tuo Cimitero (<span id="bpm-badge-my-grave">0</span>)
+          </button>
+          <button class="bpm-tab-btn" id="bpm-tab-opp-grave" onclick="setPileModalView('opp-grave')">
+            💀 Cimitero Nemico (<span id="bpm-badge-opp-grave">0</span>)
+          </button>
+          <button class="bpm-tab-btn" id="bpm-tab-opp-deck" onclick="setPileModalView('opp-deck')">
+            👁️ Mazzo Nemico (<span id="bpm-badge-opp-deck">0</span>)
+          </button>
+        </div>
+
+        <!-- Summary & Stats Bar -->
+        <div class="bpm-summary-bar" id="bpm-summary-bar">
+          <div>Rimanenti nel Mazzo: <span style="color:var(--gold-primary); font-weight:800;">0</span></div>
+          <div style="font-size:0.74rem; color:#a4b0be;">Mazzo iniziale completo</div>
+        </div>
+
+        <!-- Filter & Search Controls -->
+        <div class="bpm-filter-bar">
+          <div class="bpm-filter-group">
+            <button class="bpm-filter-btn active" id="bpm-f-all" onclick="setPileTypeFilter('all')">Tutte</button>
+            <button class="bpm-filter-btn" id="bpm-f-unit" onclick="setPileTypeFilter('unit')">⚔️ Miniature</button>
+            <button class="bpm-filter-btn" id="bpm-f-altar" onclick="setPileTypeFilter('altar')">🏛️ Altari</button>
+            <button class="bpm-filter-btn" id="bpm-f-spell" onclick="setPileTypeFilter('spell')">✨ Magie / Reazioni</button>
+          </div>
+          <input type="text" id="bpm-search" class="bpm-search-input" placeholder="Cerca carta..." oninput="onPileSearchInput(this.value)" />
+        </div>
+
+        <!-- Cards Grid Body -->
+        <div class="bpm-cards-body" id="bpm-cards-body">
+          <!-- Popolato dinamicamente da renderPileModal() -->
+        </div>
+
+      </div>
+    </div>

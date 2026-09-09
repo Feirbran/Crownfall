@@ -1,0 +1,365 @@
+const fs = require('fs');
+
+const pileCss = `
+    /* --- BATTLE DECK & GRAVEYARD PILES & MODAL --- */
+    .btn-hud-pile {
+      background: rgba(18, 22, 34, 0.85);
+      border: 1px solid rgba(212, 175, 55, 0.4);
+      color: #d8dce8;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s;
+    }
+    .btn-hud-pile:hover {
+      border-color: var(--gold-primary);
+      color: #fff;
+      background: rgba(212, 175, 55, 0.18);
+      transform: translateY(-1px);
+    }
+    .btn-hud-pile.grave {
+      border-color: rgba(199, 0, 57, 0.4);
+    }
+    .btn-hud-pile.grave:hover {
+      border-color: #ff7675;
+      background: rgba(199, 0, 57, 0.2);
+    }
+
+    .battle-piles-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding-right: 12px;
+      flex-shrink: 0;
+    }
+
+    .pile-slot {
+      width: 66px;
+      height: 94px;
+      background: #0f121b;
+      border: 1px solid var(--border-gold);
+      border-radius: 6px;
+      padding: 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: all 0.2s;
+      user-select: none;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.6);
+      flex-shrink: 0;
+    }
+    .pile-slot:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(212, 175, 55, 0.4);
+      border-color: #fff;
+    }
+    .pile-slot.grave-slot {
+      border-color: rgba(199, 0, 57, 0.5);
+    }
+    .pile-slot.grave-slot:hover {
+      box-shadow: 0 6px 18px rgba(199, 0, 57, 0.5);
+      border-color: #ff7675;
+    }
+
+    .pile-card-back {
+      width: 100%;
+      height: 58px;
+      background: radial-gradient(circle at center, #1f2538 0%, #0c0e15 90%);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      position: relative;
+    }
+    .pile-card-back.grave {
+      background: radial-gradient(circle at center, #2d181c 0%, #0c0809 90%);
+      border-color: rgba(199, 0, 57, 0.3);
+    }
+    .pile-glyph { font-size: 1.2rem; line-height: 1; }
+    .pile-counter {
+      font-size: 0.85rem;
+      font-weight: 900;
+      color: var(--gold-primary);
+      text-shadow: 0 2px 8px rgba(0,0,0,0.9);
+      line-height: 1;
+    }
+    .pile-card-back.grave .pile-counter {
+      color: #ff7675;
+    }
+    .pile-label {
+      font-family: 'Cinzel', serif;
+      font-size: 0.56rem;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .piles-divider {
+      width: 1px;
+      height: 80px;
+      background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+      margin-right: 4px;
+      flex-shrink: 0;
+    }
+
+    .hand-cards-scroll {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      overflow-x: auto;
+      flex: 1;
+      height: 100%;
+    }
+
+    /* MODAL ISPETTORE GRIMORIO / CIMITERO */
+    .battle-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(4, 5, 8, 0.84);
+      backdrop-filter: blur(8px);
+      z-index: 90000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      opacity: 0;
+      transition: opacity 0.2s ease-out;
+    }
+    .battle-modal-backdrop.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    .battle-modal-window {
+      background: #0e111a;
+      border: 2px solid var(--border-gold);
+      border-radius: 10px;
+      width: 100%;
+      max-width: 860px;
+      max-height: 86vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 16px 50px rgba(0,0,0,0.95), 0 0 30px rgba(212, 175, 55, 0.2);
+      animation: modalSlideUp 0.22s ease-out;
+    }
+
+    @keyframes modalSlideUp {
+      from { transform: translateY(16px); opacity: 0.8; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .battle-modal-header {
+      background: #141724;
+      padding: 12px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-frame);
+    }
+    .bmh-title-wrap { display: flex; align-items: center; gap: 10px; }
+    .bmh-icon { font-size: 1.6rem; }
+    .bmh-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.12rem;
+      color: var(--gold-primary);
+      font-weight: 800;
+      letter-spacing: 1px;
+      margin: 0;
+    }
+    .bmh-subtitle {
+      font-size: 0.74rem;
+      color: #9bb1cf;
+      font-style: italic;
+    }
+
+    .btn-close-modal {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #cfd4e8;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-close-modal:hover {
+      background: #c0392b;
+      border-color: #e74c3c;
+      color: #fff;
+    }
+
+    .bpm-tabs-bar {
+      display: flex;
+      gap: 6px;
+      padding: 8px 16px;
+      background: #090b12;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      overflow-x: auto;
+    }
+    .bpm-tab-btn {
+      background: #151928;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #a4b0be;
+      padding: 6px 14px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .bpm-tab-btn:hover {
+      color: #fff;
+      border-color: var(--gold-primary);
+      background: rgba(212, 175, 55, 0.1);
+    }
+    .bpm-tab-btn.active {
+      background: rgba(212, 175, 55, 0.18);
+      border-color: var(--gold-primary);
+      color: #fff;
+      box-shadow: 0 0 10px rgba(212, 175, 55, 0.25);
+    }
+
+    .bpm-summary-bar {
+      padding: 8px 18px;
+      background: rgba(18, 22, 34, 0.85);
+      font-size: 0.78rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      color: #d8dce8;
+    }
+
+    .bpm-filter-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 18px;
+      background: #0b0d15;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      flex-wrap: wrap;
+    }
+    .bpm-search-input {
+      background: #151826;
+      border: 1px solid var(--border-frame);
+      color: #fff;
+      padding: 5px 12px;
+      border-radius: 12px;
+      font-size: 0.76rem;
+      outline: none;
+      width: 170px;
+    }
+    .bpm-filter-group { display: flex; gap: 6px; }
+    .bpm-filter-btn {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #a4b0be;
+      padding: 3px 9px;
+      border-radius: 10px;
+      font-size: 0.7rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .bpm-filter-btn:hover { color: #fff; border-color: var(--gold-primary); }
+    .bpm-filter-btn.active {
+      background: var(--gold-primary);
+      color: #000;
+      font-weight: 800;
+      border-color: #fff;
+    }
+
+    .bpm-cards-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 14px 18px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
+      gap: 10px;
+      align-content: flex-start;
+      min-height: 240px;
+    }
+
+    .bpm-card-chip {
+      background: #141724;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 6px;
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+    .bpm-card-chip:hover {
+      border-color: var(--gold-primary);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.6);
+      background: #1c2133;
+    }
+    .bpm-chip-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .bpm-chip-cost { font-size: 0.72rem; font-weight: 900; }
+    .bpm-chip-count-badge {
+      background: rgba(212, 175, 55, 0.25);
+      border: 1px solid rgba(212, 175, 55, 0.6);
+      color: var(--gold-primary);
+      font-size: 0.65rem;
+      font-weight: 900;
+      padding: 1px 6px;
+      border-radius: 3px;
+    }
+    .bpm-chip-count-badge.grave {
+      background: rgba(199, 0, 57, 0.25);
+      border-color: rgba(199, 0, 57, 0.6);
+      color: #ff7675;
+    }
+    .bpm-chip-title {
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: #f1f2f6;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .bpm-chip-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.65rem;
+      color: #9bb1cf;
+      margin-top: 2px;
+    }
+
+    .bpm-empty-msg {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 36px 16px;
+      color: #718093;
+      font-style: italic;
+      font-size: 0.88rem;
+    }
+`;
+
+fs.writeFileSync('scratch/pile_styles.css', pileCss, 'utf8');
+console.log('Generated pile styles.');
