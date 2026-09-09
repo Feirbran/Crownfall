@@ -1535,9 +1535,12 @@
     }
 
     .mtg-card-header { background: linear-gradient(180deg, #2b3042 0%, #1a1c26 100%); border-bottom: 1px solid #3d435d; padding: 4px 6px; display: flex; align-items: center; justify-content: space-between; height: 26px; flex-shrink: 0; }
-    .mtg-card-title { font-size: 0.72rem; font-weight: 800; color: #f1f2f6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .mtg-card-title { font-size: 0.72rem; font-weight: 800; color: #f1f2f6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 95px; }
 
-    .mtg-cost-pip { width: 18px; height: 18px; border-radius: 50%; background: #0984e3; border: 1px solid #74b9ff; color: #fff; font-size: 0.65rem; font-weight: 900; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .mtg-cost-pips-wrap { display: flex; align-items: center; gap: 3px; flex-shrink: 0; }
+    .mtg-cost-pip { min-width: 19px; height: 19px; padding: 0 4px; border-radius: 10px; background: #0984e3; border: 1px solid #74b9ff; color: #fff; font-size: 0.65rem; font-weight: 900; display: inline-flex; align-items: center; justify-content: center; line-height: 1; box-sizing: border-box; flex-shrink: 0; }
+    .mtg-cost-pip.mana { background: #0984e3; border-color: #74b9ff; }
+    .mtg-cost-pip.blood { background: #8b0000; border-color: #ff4d4d; color: #fff; font-size: 0.6rem; padding: 0 4px; }
     .mtg-cost-pip.gold { background: #b8860b; border-color: #ffd700; color: #000; }
 
     .mtg-card-art { height: 90px; background: #080a0f; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; border-bottom: 1px solid #2d3248; flex-shrink: 0; font-size: 2.2rem; }
@@ -1549,8 +1552,10 @@
     .rarity-badge.mythic { background: rgba(165, 94, 234, 0.2); color: var(--rarity-mythic); border: 1px solid var(--rarity-mythic); }
     .rarity-badge.legendary { background: rgba(255, 159, 26, 0.2); color: var(--rarity-legendary); border: 1px solid var(--rarity-legendary); }
 
-    .mtg-text-box { flex: 1; padding: 5px 6px; background: #0b0d12; font-size: 0.62rem; color: #c2c8de; line-height: 1.25; overflow-y: auto; }
-    .mtg-pt-box { position: absolute; bottom: 4px; right: 4px; background: #161924; border: 1px solid var(--gold-primary); border-radius: 4px; padding: 1px 6px; font-size: 0.68rem; font-weight: 900; color: #fff; }
+    .mtg-text-box { flex: 1; padding: 5px 6px 18px 6px; background: #0b0d12; font-size: 0.62rem; color: #c2c8de; line-height: 1.25; overflow-y: auto; position: relative; }
+    .mtg-text-box em, .hcp-desc em, .reminder-text { font-style: italic; color: #9bb1cf; font-weight: normal; }
+    .mtg-set-badge { position: absolute; bottom: 4px; left: 4px; font-family: 'Cinzel', serif; font-size: 0.72rem; font-weight: 900; color: var(--gold-primary); background: rgba(10, 13, 20, 0.9); border: 1px solid rgba(212, 175, 55, 0.45); border-radius: 4px; padding: 1px 5px; line-height: 1; text-transform: none; box-shadow: 0 2px 5px rgba(0,0,0,0.6); z-index: 5; pointer-events: none; }
+    .mtg-pt-box { position: absolute; bottom: 4px; right: 4px; background: #161924; border: 1px solid var(--gold-primary); border-radius: 4px; padding: 1px 6px; font-size: 0.68rem; font-weight: 900; color: #fff; z-index: 5; }
 
     .arena-deck-tray { background: #0b0d12; border-left: 1px solid var(--border-frame); display: flex; flex-direction: column; overflow: hidden; height: 100%; }
     .tray-header { background: var(--bg-card); border-bottom: 1px solid var(--border-frame); padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; }
@@ -1626,10 +1631,12 @@
     #hover-card-preview.active { display: flex; }
     .hcp-header { background: linear-gradient(180deg, #2b3042 0%, #1a1c26 100%); padding: 6px 10px; border-bottom: 2px solid #3d435c; display: flex; justify-content: space-between; align-items: center; }
     .hcp-title { font-size: 0.85rem; font-weight: 900; color: #fff; }
-    .hcp-cost { width: 22px; height: 22px; border-radius: 50%; background: #0984e3; border: 1px solid #74b9ff; color: #fff; font-size: 0.75rem; font-weight: 900; display: flex; align-items: center; justify-content: center; }
+    .hcp-cost { min-width: 22px; height: 22px; padding: 0 5px; border-radius: 11px; background: #0984e3; border: 1px solid #74b9ff; color: #fff; font-size: 0.75rem; font-weight: 900; display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; }
+    .hcp-footer { display: flex; justify-content: space-between; align-items: center; padding: 4px 8px 6px 8px; margin-top: auto; background: #0b0d12; border-top: 1px solid #232738; }
+    .hcp-set-badge { font-family: 'Cinzel', serif; font-size: 0.85rem; font-weight: 900; color: var(--gold-primary); background: #161924; border: 1px solid rgba(212, 175, 55, 0.45); border-radius: 4px; padding: 2px 8px; line-height: 1; text-transform: none; }
     .hcp-art { height: 130px; background: #08090d; display: flex; align-items: center; justify-content: center; border-bottom: 2px solid #2d3248; font-size: 3rem; }
     .hcp-type { background: #1d212f; padding: 4px 10px; font-size: 0.65rem; font-weight: 800; color: var(--gold-primary); text-transform: uppercase; border-bottom: 1px solid #2d3248; display: flex; justify-content: space-between; align-items: center; }
-    .hcp-desc { flex: 1; padding: 8px 10px; font-size: 0.74rem; color: #cfd4e8; line-height: 1.35; background: #0f1118; }
+    .hcp-desc { flex: 1; padding: 8px 10px; font-size: 0.74rem; color: #cfd4e8; line-height: 1.35; background: #0f1118; overflow-y: auto; white-space: pre-line; }
     .hcp-pt { background: #1c2232; border: 1px solid var(--gold-primary); border-radius: 4px; align-self: flex-end; margin: 0 8px 8px 0; padding: 2px 7px; font-size: 0.8rem; font-weight: 900; color: #fff; }
 
     #card-summon-overlay {
@@ -2495,6 +2502,12 @@
         </div>
 
         <div class="arena-filter-group">
+          <div class="type-pill-btn set-pill-btn active" id="filter-set-all" onclick="setSetFilter('all')">Tutti i Set</div>
+          <div class="type-pill-btn set-pill-btn" id="filter-set-alpha" onclick="setSetFilter('α')">Set α</div>
+          <div class="type-pill-btn set-pill-btn" id="filter-set-beta" onclick="setSetFilter('β')">Set β</div>
+        </div>
+
+        <div class="arena-filter-group">
           <select id="arena-deck-selector" onchange="switchDeck(this.value)" style="padding: 4px 8px; font-size: 0.75rem; background: var(--bg-dark); color: #fff; border: 1px solid var(--border-frame); border-radius: 4px;"></select>
           <button class="btn" style="padding: 4px 8px;" onclick="promptCreateDeck()">+ Nuovo</button>
         </div>
@@ -2632,7 +2645,7 @@
         <p style="font-size: 0.88rem; color: var(--text-muted);">Spendi l'Oro guadagnato vincendo le battaglie per acquistare i Blind Pack dell'Espansione 1 e sbloccare nuovi Comandanti e carte!</p>
         
         <div class="shop-box-card">
-          <span style="font-size: 0.78rem; color: var(--gold-primary); font-weight: 900;">ESPANSIONE 1 — EREDI DELLA SECESSIONE</span>
+          <span style="font-size: 0.78rem; color: var(--gold-primary); font-weight: 900;">SET β — EREDI DELLA SECESSIONE</span>
           <div style="font-size: 3.8rem;">📦</div>
           <p style="font-size: 0.84rem; color: var(--text-muted); line-height: 1.4;">
             Contiene <strong>5 Carte Garantite</strong>:<br>
@@ -2653,7 +2666,9 @@
   <div id="hover-card-preview">
     <div class="hcp-header">
       <span class="hcp-title" id="hcp-title">Nome Carta</span>
-      <span class="hcp-cost" id="hcp-cost">0</span>
+      <div id="hcp-cost-wrap" class="mtg-cost-pips-wrap">
+        <span class="hcp-cost" id="hcp-cost">0</span>
+      </div>
     </div>
     <div class="hcp-art" id="hcp-art">⚔️</div>
     <div class="hcp-type" id="hcp-type">
@@ -2661,14 +2676,19 @@
       <span class="rarity-badge common" id="hcp-rarity-badge">COMUNE</span>
     </div>
     <div class="hcp-desc" id="hcp-desc">Descrizione regole.</div>
-    <div class="hcp-pt" id="hcp-pt">0/0</div>
+    <div class="hcp-footer">
+      <div class="hcp-set-badge" id="hcp-set-badge">α</div>
+      <div class="hcp-pt" id="hcp-pt" style="margin: 0; align-self: center;">0/0</div>
+    </div>
   </div>
 
   <div id="card-summon-overlay">
     <div style="width:260px; height:380px; background:#111319; border:3px solid var(--gold-primary); border-radius:12px; display:flex; flex-direction:column; overflow:hidden;">
       <div class="hcp-header">
         <span class="hcp-title" id="sc-title">Carta</span>
-        <span class="hcp-cost" id="sc-cost">0</span>
+        <div id="sc-cost-wrap" class="mtg-cost-pips-wrap">
+          <span class="hcp-cost" id="sc-cost">0</span>
+        </div>
       </div>
       <div class="hcp-art" id="sc-art" style="font-size:3.5rem; height:150px;">⚔️</div>
       <div class="hcp-type" id="sc-type" style="padding: 4px 10px; font-size: 0.65rem; font-weight: 800; color: var(--gold-primary); border-bottom: 1px solid #2d3248; display: flex; justify-content: space-between;">
@@ -2676,7 +2696,10 @@
         <span class="rarity-badge common" id="sc-rarity-badge">COMUNE</span>
       </div>
       <div class="hcp-desc" id="sc-desc" style="font-size:0.8rem; padding:10px; color:#cfd4e8;">Descrizione.</div>
-      <div class="hcp-pt" id="sc-pt" style="align-self:flex-end; margin:0 10px 10px 0; border:1px solid var(--gold-primary); padding:2px 8px; border-radius:4px;">0/0</div>
+      <div class="hcp-footer">
+        <div class="hcp-set-badge" id="sc-set-badge">α</div>
+        <div class="hcp-pt" id="sc-pt" style="margin: 0; align-self: center;">0/0</div>
+      </div>
     </div>
   </div>
 
@@ -2721,6 +2744,104 @@
 
     const RARITY_MAP = { 'C': 'common', 'U': 'uncommon', 'R': 'rare', 'M': 'mythic', 'L': 'legendary' };
 
+    // Helper per formattare descrizioni con testo esplicativo in corsivo per parole chiave (es. Slancio, Balzo a L) stile Magic
+    const KEYWORD_REMINDERS_MAP = {
+      'slancio': '*(può muoversi e attaccare nello stesso turno in cui entra in gioco)*',
+      'balzo': '*(muove e salta oltre pedine e ostacoli con traiettoria a L)*',
+      'allungo': '*(può colpire a 2 caselle in linea retta senza subire contrattacco)*',
+      'flanking': '*(infligge danni bonus se il bersaglio è ingaggiato anche da un altro alleato)*',
+      'presidio': '*(non compie attacchi attivi; contrattacca solo se ingaggiata in mischia)*',
+      'sfondamento': '*(infligge danni massicci ad Altari e Muri nemici)*',
+      'inamovibile': '*(immune a spinte, urti e Voragini)*',
+      'massiccio': '*(immune a spinte e urti)*',
+      'travolgere': '*(spinge indietro il difensore e occupa la sua casella)*',
+      'interposizione': '*(i tiri a distanza nemici contro alleati adiacenti deviano su questa unità)*'
+    };
+
+    function formatCardDesc(desc) {
+      if (!desc) return '';
+      let res = desc;
+
+      // 1. Converte eventuali markdown *(...)* in <em class="reminder-text">*(...)*</em>
+      res = res.replace(/\*\(([^)]+)\)\*/g, '<em class="reminder-text">*($1)*</em>');
+
+      // 2. Se una parola chiave è presente ma priva di testo esplicativo, lo inserisce automaticamente
+      // SLANCIO
+      if (!res.includes('muoversi e attaccare')) {
+        const slancioRem = `<em class="reminder-text">${KEYWORD_REMINDERS_MAP.slancio}</em>`;
+        res = res.replace(/\bSlancio\s*&\s*Balzo a L\s*:/gi, `Slancio ${slancioRem} & Balzo a L <em class="reminder-text">${KEYWORD_REMINDERS_MAP.balzo}</em>:`);
+        res = res.replace(/\bSlancio\s+(diagonale|omnidirezionale|lineare)\s*:/gi, `Slancio ${slancioRem} ($1):`);
+        res = res.replace(/\bSlancio\s+e\s+volo\s*:/gi, `Slancio ${slancioRem} & Volo <em class="reminder-text">*(scavalca pedine e ostacoli)*</em>:`);
+        res = res.replace(/\bSlancio\s*:(?!\s*<em)/gi, `Slancio ${slancioRem}:`);
+        res = res.replace(/\(\s*1\/1\s+Slancio\s*\)/gi, `(1/1 con Slancio ${slancioRem})`);
+        res = res.replace(/\b(ottiene|conferendole|con|parola chiave)\s+Slancio\b(?!\s*<em)/gi, `$1 Slancio ${slancioRem}`);
+      }
+
+      // BALZO A L
+      if (!res.includes('traiettoria a L')) {
+        const balzoRem = `<em class="reminder-text">${KEYWORD_REMINDERS_MAP.balzo}</em>`;
+        res = res.replace(/\bBalzo a L\s*:(?!\s*<em)/gi, `Balzo a L ${balzoRem}:`);
+        res = res.replace(/\bBalzo a L\s*(&|e)\s*(?!\s*<em)/gi, `Balzo a L ${balzoRem} $1 `);
+        res = res.replace(/\bBalzo a L\s*([;.,])(?!\s*<em)/gi, `Balzo a L ${balzoRem}$1`);
+        res = res.replace(/\b(con|a|da movimenti a)\s+Balzo a L\b(?!\s*<em)/gi, `$1 Balzo a L ${balzoRem}`);
+        res = res.replace(/\bBalzo a L\b(?!\s*<em)/gi, `Balzo a L ${balzoRem}`);
+      }
+
+      // ALLUNGO
+      if (!res.includes('2 caselle in linea retta senza')) {
+        const allungoRem = `<em class="reminder-text">${KEYWORD_REMINDERS_MAP.allungo}</em>`;
+        res = res.replace(/\bAllungo\s*:(?!\s*<em)/gi, `Allungo ${allungoRem}:`);
+        res = res.replace(/\bAllungo\s*&(?!\s*<em)/gi, `Allungo ${allungoRem} &`);
+        res = res.replace(/\bAllungo\s+economico\s*:(?!\s*<em)/gi, `Allungo ${allungoRem}:`);
+        res = res.replace(/\bAllungo\s*\(\s*Gittata\s+2\s*\)\s*:(?!\s*<em)/gi, `Allungo ${allungoRem} (Gittata 2):`);
+        res = res.replace(/\bAllungo\b(?!\s*<em)/gi, `Allungo ${allungoRem}`);
+      }
+
+      // FLANKING
+      if (!res.includes('bersaglio è ingaggiato anche')) {
+        const flankingRem = `<em class="reminder-text">${KEYWORD_REMINDERS_MAP.flanking}</em>`;
+        res = res.replace(/\bFlanking\s*:(?!\s*<em)/gi, `Flanking ${flankingRem}:`);
+        res = res.replace(/\b\(?\s*Flanking\s*\)?(?!\s*<em)/gi, `Flanking ${flankingRem}`);
+        res = res.replace(/\bFlanking\b(?!\s*<em)/gi, `Flanking ${flankingRem}`);
+      }
+
+      // PRESIDIO
+      if (!res.includes('non compie attacchi attivi')) {
+        const presidioRem = `<em class="reminder-text">${KEYWORD_REMINDERS_MAP.presidio}</em>`;
+        res = res.replace(/\bPresidio(\s+solido)?\s*:(?!\s*<em)/gi, `Presidio ${presidioRem}:`);
+      }
+
+      // SFONDAMENTO
+      if (!res.includes('danni massicci ad Altari')) {
+        const sfondamentoRem = `<em class="reminder-text">${KEYWORD_REMINDERS_MAP.sfondamento}</em>`;
+        res = res.replace(/\bSfondamento(\s+devastante)?\s*:(?!\s*<em)/gi, `Sfondamento ${sfondamentoRem}:`);
+      }
+
+      // INAMOVIBILE / MASSICCIO
+      if (!res.includes('immune a spinte, urti')) {
+        const inamovibileRem = `<em class="reminder-text">${KEYWORD_REMINDERS_MAP.inamovibile}</em>`;
+        res = res.replace(/\bInamovibile\s*:(?!\s*<em)/gi, `Inamovibile ${inamovibileRem}:`);
+      }
+      if (!res.includes('immune a spinte e urti')) {
+        const massiccioRem = `<em class="reminder-text">${KEYWORD_REMINDERS_MAP.massiccio}</em>`;
+        res = res.replace(/\bMassiccio\s*:(?!\s*<em)/gi, `Massiccio ${massiccioRem}:`);
+      }
+
+      // TRAVOLGERE
+      if (!res.includes('spinge indietro il difensore')) {
+        const travolgereRem = `<em class="reminder-text">${KEYWORD_REMINDERS_MAP.travolgere}</em>`;
+        res = res.replace(/\bTravolgere\s*:(?!\s*<em)/gi, `Travolgere ${travolgereRem}:`);
+      }
+
+      // INTERPOSIZIONE
+      if (!res.includes('deviano su questa unità')) {
+        const interposizioneRem = `<em class="reminder-text">${KEYWORD_REMINDERS_MAP.interposizione}</em>`;
+        res = res.replace(/\bInterposizione\s*:(?!\s*<em)/gi, `Interposizione ${interposizioneRem}:`);
+      }
+
+      return res;
+    }
+
     const COMMANDER_SET_MAPPING = {
       'Valeria': 'α', 'Malakor': 'α', 'Vespera': 'α', 'Aurelius': 'α', 'Vulkan': 'α',
       'Garek': 'β', 'Morbida': 'β', 'Kaelen': 'β', 'Justiciar Kael': 'β', 'Ignis': 'β'
@@ -2746,8 +2867,8 @@
         rite: raw.rite,
         riteCost: raw.bloodCost || 3,
         bloodCost: raw.bloodCost || 3,
-        riteDesc: raw.desc,
-        desc: raw.desc,
+        riteDesc: formatCardDesc(raw.desc),
+        desc: formatCardDesc(raw.desc),
         set: setNum,
         rarity: 'legendary'
       };
@@ -2765,13 +2886,29 @@
       }
     });
 
-    // ADAPTER COMPATIBILE CARDS_DB (114 carte)
+    // ADAPTER COMPATIBILE CARDS_DB (560 carte uniche Set α e Set β)
     const CARDS_DB = {};
     Object.entries(FULL_CARD_CATALOG).forEach(([key, raw]) => {
-      const isSet0 = (raw.faction === 'Neutral' && raw.rarity === 'C');
-      const setNum = isSet0 ? 'α' : 'β';
+      // Attribuzione corretta del Set:
+      // CARDS_ALPHA (290 carte) appartiene al Set α
+      // Le carte uniche di CARDS_BETA (270 carte) appartengono al Set β
+      // Le 20 carte base neutrali appartengono al Set α
+      const isBetaOnly = (typeof CARDS_BETA !== 'undefined') && (key in CARDS_BETA) && (typeof CARDS_ALPHA === 'undefined' || !(key in CARDS_ALPHA));
+      const setNum = raw.set || (isBetaOnly ? 'β' : 'α');
       const r = RARITY_MAP[raw.rarity] || 'common';
       const moveNorm = (raw.move === 'ortho' ? 'orth' : (raw.move === 'ortho2' ? 'orth2' : (raw.move === 'none' ? 'orth' : raw.move)));
+
+      const isUnit = raw.type === 'unit';
+      const isAltar = raw.type === 'altar';
+      let unitHp = undefined;
+      let unitAtt = undefined;
+      if (isUnit) {
+        unitHp = raw.pv !== undefined ? raw.pv : (raw.hp !== undefined ? raw.hp : 1);
+        unitAtt = raw.att !== undefined ? raw.att : 0;
+      } else if (isAltar) {
+        unitHp = raw.pv !== undefined ? raw.pv : (raw.hp !== undefined ? raw.hp : 5);
+        unitAtt = raw.att !== undefined ? raw.att : 0;
+      }
 
       const card = {
         id: key,
@@ -2779,14 +2916,14 @@
         shortName: raw.shortName || key,
         faction: raw.faction,
         glyph: raw.glyph,
-        cost: raw.cost,
+        cost: raw.cost !== undefined ? raw.cost : 0,
         bloodCost: raw.bloodCost || 0,
         type: raw.type,
         slot: raw.slot,
-        manaGen: raw.manaGen || (raw.type === 'altar' ? 1 : 0),
-        hp: raw.pv !== undefined ? raw.pv : (raw.hp || 1),
-        pv: raw.pv !== undefined ? raw.pv : (raw.hp || 1),
-        att: raw.att !== undefined ? raw.att : 0,
+        manaGen: raw.manaGen || (isAltar ? 1 : 0),
+        hp: unitHp,
+        pv: unitHp,
+        att: unitAtt,
         move: moveNorm,
         rawMove: raw.move,
         range: raw.gittata !== undefined ? raw.gittata : (raw.range !== undefined ? raw.range : 1),
@@ -2797,11 +2934,25 @@
         slancio: !!raw.slancio,
         keywords: raw.slancio ? ['slancio'] : [],
         isCenterOnly: !!raw.isCenterOnly,
-        desc: raw.desc,
+        desc: formatCardDesc(raw.desc),
         set: setNum
       };
       CARDS_DB[key] = card;
     });
+
+    // Helper per renderizzare pips di costo (Mana blu + Sangue rosso)
+    function getCardCostPipsHtml(card) {
+      let html = '';
+      if (card.cost > 0 || (!card.bloodCost && card.cost === 0)) {
+        html += `<span class="mtg-cost-pip mana">${card.cost !== undefined ? card.cost : 0}</span>`;
+      }
+      if (card.bloodCost && card.bloodCost > 0) {
+        html += `<span class="mtg-cost-pip blood">${card.bloodCost}🩸</span>`;
+      }
+      return `<div class="mtg-cost-pips-wrap">${html}</div>`;
+    }
+
+
 
     const LEGACY_CARDS_MAP = {
       'altar_iron': 'Altare',
@@ -2915,7 +3066,7 @@
     let authMode = 'login';
     let battleLogs = [];
     let battleState = null;
-    let deckFilters = { mana: 'all', type: 'all', search: '', mode: 'cards' };
+    let deckFilters = { mana: 'all', type: 'all', set: 'all', search: '', mode: 'cards' };
 
     function addLog(msg, type = 'sys') {
       const text = `[${new Date().toLocaleTimeString().slice(3)}] ${msg}`;
@@ -3252,21 +3403,58 @@
       const el = document.getElementById('hover-card-preview');
       if(!el) return;
       document.getElementById('hcp-title').textContent = card.name;
-      document.getElementById('hcp-cost').textContent = card.cost !== undefined ? card.cost : '';
-      document.getElementById('hcp-art').textContent = card.glyph;
-      document.getElementById('hcp-type-text').textContent = (card.type || '').toUpperCase();
+      
+      const costWrap = document.getElementById('hcp-cost-wrap');
+      if (costWrap) {
+        costWrap.innerHTML = '';
+        if (card.riteDesc && !card.cost && !card.bloodCost) {
+          costWrap.innerHTML = '<span class="mtg-cost-pip gold" style="min-width:22px; height:22px;">👑</span>';
+        } else {
+          if (card.cost > 0 || (!card.bloodCost && card.cost === 0)) {
+            costWrap.innerHTML += `<span class="mtg-cost-pip mana" style="min-width:22px; height:22px; font-size:0.75rem;">${card.cost !== undefined ? card.cost : 0}</span>`;
+          }
+          if (card.bloodCost && card.bloodCost > 0) {
+            costWrap.innerHTML += `<span class="mtg-cost-pip blood" style="min-width:25px; height:22px; font-size:0.7rem;">${card.bloodCost}🩸</span>`;
+          }
+        }
+      }
+
+      document.getElementById('hcp-art').textContent = card.glyph || '⚔️';
+      
+      const typeLabels = {
+        'unit': 'MINIATURA',
+        'altar': 'ALTARE',
+        'spell': 'MAGIA',
+        'reaction': 'REAZIONE'
+      };
+      const isComm = !!card.riteDesc;
+      const typeStr = isComm ? 'CAMPIONE' : (typeLabels[card.type] || (card.type || '').toUpperCase());
+      document.getElementById('hcp-type-text').textContent = typeStr;
+      
       const rb = document.getElementById('hcp-rarity-badge');
       const r = card.rarity || 'common';
       rb.className = `rarity-badge ${r}`;
       rb.textContent = (RARITY_NAMES[r] || 'COMUNE').toUpperCase();
-      document.getElementById('hcp-desc').textContent = card.desc || card.riteDesc || '';
+      
+      document.getElementById('hcp-desc').innerHTML = formatCardDesc(card.desc || card.riteDesc || '');
+
+      const setBadge = document.getElementById('hcp-set-badge');
+      if (setBadge) {
+        setBadge.textContent = card.set || 'α';
+      }
       
       const pt = document.getElementById('hcp-pt');
-      if (card.att !== undefined && card.hp !== undefined) {
-        pt.style.display = 'block';
-        pt.textContent = `${card.att}/${card.hp}`;
-      } else {
-        pt.style.display = 'none';
+      if (pt) {
+        if (card.type === 'unit' || isComm) {
+          pt.style.display = 'block';
+          pt.textContent = `${card.att !== undefined ? card.att : 0}/${card.hp !== undefined ? card.hp : 1}`;
+        } else if (card.type === 'altar') {
+          pt.style.display = 'block';
+          pt.textContent = `${card.att ? card.att + '/' : ''}${card.hp || 5} PV`;
+        } else {
+          // Sortilegi e Reazioni non possiedono PV o ATT
+          pt.style.display = 'none';
+        }
       }
       
       updateHoverCardPos(e);
@@ -3297,22 +3485,45 @@
       }
       
       document.getElementById('sc-title').textContent = card.name;
-      document.getElementById('sc-cost').textContent = card.cost !== undefined ? card.cost : '';
-      document.getElementById('sc-art').textContent = card.glyph;
-      document.getElementById('sc-type-text').textContent = (card.type || '').toUpperCase();
+      
+      const costWrap = document.getElementById('sc-cost-wrap');
+      if (costWrap) {
+        costWrap.innerHTML = '';
+        if (card.cost > 0 || (!card.bloodCost && card.cost === 0)) {
+          costWrap.innerHTML += `<span class="mtg-cost-pip mana" style="min-width:24px; height:24px; font-size:0.8rem;">${card.cost !== undefined ? card.cost : 0}</span>`;
+        }
+        if (card.bloodCost && card.bloodCost > 0) {
+          costWrap.innerHTML += `<span class="mtg-cost-pip blood" style="min-width:27px; height:24px; font-size:0.75rem;">${card.bloodCost}🩸</span>`;
+        }
+      }
+
+      document.getElementById('sc-art').textContent = card.glyph || '⚔️';
+      
+      const typeLabels = { 'unit': 'MINIATURA', 'altar': 'ALTARE', 'spell': 'MAGIA', 'reaction': 'REAZIONE' };
+      const isComm = !!card.riteDesc;
+      document.getElementById('sc-type-text').textContent = isComm ? 'CAMPIONE' : (typeLabels[card.type] || (card.type || '').toUpperCase());
       
       const rb = document.getElementById('sc-rarity-badge');
       const r = card.rarity || 'common';
       rb.className = `rarity-badge ${r}`;
       rb.textContent = (RARITY_NAMES[r] || 'COMUNE').toUpperCase();
       
-      document.getElementById('sc-desc').textContent = card.desc || '';
+      document.getElementById('sc-desc').innerHTML = formatCardDesc(card.desc || '');
+      
+      const setBadge = document.getElementById('sc-set-badge');
+      if (setBadge) setBadge.textContent = card.set || 'α';
+
       const pt = document.getElementById('sc-pt');
-      if (card.att !== undefined && card.hp !== undefined) {
-        pt.style.display = 'block';
-        pt.textContent = `${card.att}/${card.hp}`;
-      } else {
-        pt.style.display = 'none';
+      if (pt) {
+        if (card.type === 'unit' || isComm) {
+          pt.style.display = 'block';
+          pt.textContent = `${card.att !== undefined ? card.att : 0}/${card.hp !== undefined ? card.hp : 1}`;
+        } else if (card.type === 'altar') {
+          pt.style.display = 'block';
+          pt.textContent = `${card.att ? card.att + '/' : ''}${card.hp || 5} PV`;
+        } else {
+          pt.style.display = 'none';
+        }
       }
       
       overlay.classList.add('active');
@@ -3338,9 +3549,18 @@
 
     function setTypeFilter(val) {
       deckFilters.type = val;
-      document.querySelectorAll('.type-pill-btn').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.type-pill-btn:not(.set-pill-btn)').forEach(el => el.classList.remove('active'));
       const activeEl = document.getElementById('filter-type-' + val);
       if (activeEl) activeEl.classList.add('active');
+      renderDeckBuilder();
+    }
+
+    function setSetFilter(val) {
+      deckFilters.set = val;
+      document.querySelectorAll('.set-pill-btn').forEach(el => el.classList.remove('active'));
+      const targetId = 'filter-set-' + (val === 'α' ? 'alpha' : (val === 'β' ? 'beta' : 'all'));
+      const target = document.getElementById(targetId);
+      if (target) target.classList.add('active');
       renderDeckBuilder();
     }
 
@@ -3792,13 +4012,14 @@
           }
 
           cardEl.innerHTML = `
-            <div class="mtg-card-header"><span class="mtg-card-title">${comm.name}</span><span class="mtg-cost-pip gold">Set ${comm.set}</span></div>
+            <div class="mtg-card-header"><span class="mtg-card-title" title="${comm.name}">${comm.name}</span><span class="mtg-cost-pip gold">👑</span></div>
             <div class="mtg-card-art"><div class="mtg-card-art-glyph">${comm.glyph}</div></div>
             <div class="mtg-type-banner">
-              <span>Campione [Set ${comm.set}]</span>
+              <span>CAMPIONE</span>
               <span class="rarity-badge ${r}">${RARITY_NAMES[r]}</span>
             </div>
-            <div class="mtg-text-box">${comm.riteDesc}</div>
+            <div class="mtg-text-box">${comm.desc}</div>
+            <div class="mtg-set-badge">${comm.set || 'α'}</div>
             <div class="mtg-pt-box">${comm.att}/${comm.hp}</div>
           `;
           grid.appendChild(cardEl);
@@ -3824,6 +4045,7 @@
             if (deckFilters.mana !== '4' && card.cost !== parseInt(deckFilters.mana)) return;
           }
           if (deckFilters.search && !card.name.toLowerCase().includes(deckFilters.search)) return;
+          if (deckFilters.set && deckFilters.set !== 'all' && card.set !== deckFilters.set) return;
 
           const isUnlocked = (card.set === 0 || card.set === 'α') || (userState.collection[card.id] || 0) > 0;
           const currentCountInDeck = deck.cards.filter(id => id === card.id).length;
@@ -3848,12 +4070,18 @@
             };
           }
 
+          const typeLabel = card.type === 'unit' ? 'Miniatura' : (card.type === 'altar' ? 'Altare' : (card.type === 'reaction' ? 'Reazione' : 'Magia'));
+          const ptBoxHtml = card.type === 'unit'
+            ? `<div class="mtg-pt-box">${card.att}/${card.hp}</div>`
+            : (card.type === 'altar' ? `<div class="mtg-pt-box">${card.hp} PV</div>` : '');
+
           cardEl.innerHTML = `
-            <div class="mtg-card-header"><span class="mtg-card-title">${card.name}</span><span class="mtg-cost-pip">${card.cost}${card.bloodCost ? ' + ' + card.bloodCost + '🩸' : ''}</span></div>
-            <div class="mtg-card-art">${card.glyph} ${isMaxedOut ? '<div style="position:absolute;bottom:2px;left:4px;font-size:0.6rem;background:#000;color:#ff7675;padding:1px 4px;border-radius:3px;">4/4 MAX</div>' : ''}</div>
-            <div class="mtg-type-banner"><span>${card.type === 'unit' ? 'Miniatura' : (card.type === 'altar' ? 'Altare' : (card.type === 'reaction' ? 'Reazione' : 'Magia'))} [Set ${card.set}]</span><span class="rarity-badge ${r}">${RARITY_NAMES[r]}</span></div>
+            <div class="mtg-card-header"><span class="mtg-card-title" title="${card.name}">${card.name}</span>${getCardCostPipsHtml(card)}</div>
+            <div class="mtg-card-art">${card.glyph} ${isMaxedOut ? '<div style="position:absolute;top:2px;right:4px;font-size:0.6rem;background:#000;color:#ff7675;padding:1px 4px;border-radius:3px;z-index:4;">4/4 MAX</div>' : ''}</div>
+            <div class="mtg-type-banner"><span>${typeLabel}</span><span class="rarity-badge ${r}">${RARITY_NAMES[r]}</span></div>
             <div class="mtg-text-box">${card.desc}</div>
-            ${card.type === 'unit' ? `<div class="mtg-pt-box">${card.att}/${card.hp}</div>` : ''}
+            <div class="mtg-set-badge">${card.set || 'α'}</div>
+            ${ptBoxHtml}
           `;
           grid.appendChild(cardEl);
         });
@@ -4052,15 +4280,16 @@
             👑 COMANDANTE SBLOCCATO
           </div>
           <div class="mtg-card-header">
-            <span class="mtg-card-title">${wonComm.name}</span>
+            <span class="mtg-card-title" title="${wonComm.name}">${wonComm.name}</span>
             <span class="mtg-cost-pip gold">👑</span>
           </div>
           <div class="mtg-card-art"><div class="mtg-card-art-glyph">${wonComm.glyph}</div></div>
           <div class="mtg-type-banner">
-            <span>CAMPIONE [Set ${wonComm.set}]</span>
+            <span>CAMPIONE</span>
             <span class="rarity-badge ${r}">${RARITY_NAMES[r]}</span>
           </div>
-          <div class="mtg-text-box">${wonComm.riteDesc}</div>
+          <div class="mtg-text-box">${wonComm.desc}</div>
+          <div class="mtg-set-badge">${wonComm.set || 'β'}</div>
           <div class="mtg-pt-box">${wonComm.att}/${wonComm.hp}</div>
         `;
         gridEl.appendChild(cEl);
@@ -4082,22 +4311,23 @@
         const typeLabel = card.type === 'unit' ? 'TRUPPA' : (card.type === 'altar' ? 'ALTARE' : (card.type === 'reaction' ? 'REAZIONE' : 'INCANTESIMO'));
         const ptBox = card.type === 'unit'
           ? `<div class="mtg-pt-box">${card.att}/${card.hp}</div>`
-          : (card.type === 'altar' ? `<div class="mtg-pt-box">0/${card.hp}</div>` : '');
+          : (card.type === 'altar' ? `<div class="mtg-pt-box">${card.hp} PV</div>` : '');
 
         cardEl.innerHTML = `
           <div style="background: rgba(0,0,0,0.6); color: var(--gold-primary); font-size: 0.6rem; font-weight: 800; padding: 2px; text-align: center; border-bottom: 1px solid var(--border-frame);">
             ${item.slotName}
           </div>
           <div class="mtg-card-header">
-            <span class="mtg-card-title">${card.name}</span>
-            <span class="mtg-cost-pip">${card.cost}</span>
+            <span class="mtg-card-title" title="${card.name}">${card.name}</span>
+            ${getCardCostPipsHtml(card)}
           </div>
           <div class="mtg-card-art"><div class="mtg-card-art-glyph">${card.glyph}</div></div>
           <div class="mtg-type-banner">
-            <span>${typeLabel} [Set ${card.set}]</span>
+            <span>${typeLabel}</span>
             <span class="rarity-badge ${r}">${RARITY_NAMES[r]}</span>
           </div>
           <div class="mtg-text-box">${card.desc}</div>
+          <div class="mtg-set-badge">${card.set || 'α'}</div>
           ${ptBox}
         `;
         gridEl.appendChild(cardEl);
@@ -4808,12 +5038,23 @@
           }
         };
 
+        const costHtml = (c.bloodCost && c.bloodCost > 0)
+          ? `${c.cost ? c.cost + ' ' : ''}<span style="color:#ff7675;">${c.bloodCost}🩸</span>`
+          : `<span style="font-weight:bold; color:var(--mana-cyan);">${c.cost !== undefined ? c.cost : 0}</span>`;
+        const ptHtml = c.type === 'unit'
+          ? `<span style="font-size:0.65rem; color:#fff; font-weight:800;">${c.att}/${c.hp}</span>`
+          : (c.type === 'altar' ? `<span style="font-size:0.62rem; color:var(--mana-cyan); font-weight:800;">${c.hp} PV</span>` : '');
+
         cardEl.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-weight:bold; color:var(--mana-cyan);">${c.cost}</span>
+            <div style="font-size:0.75rem; font-weight:bold;">${costHtml}</div>
             <span class="rarity-badge ${r}" style="font-size:0.5rem; padding:0 3px;">${(RARITY_NAMES[r] || 'COM').slice(0,3)}</span>
           </div>
-          <div style="font-size:0.75rem; font-weight:bold; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${c.name}</div>
+          <div style="font-size:0.75rem; font-weight:bold; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${c.name}">${c.name}</div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:auto;">
+            <span style="font-family:'Cinzel',serif; font-size:0.72rem; font-weight:900; color:var(--gold-primary); text-transform:none;">${c.set || 'α'}</span>
+            ${ptHtml}
+          </div>
         `;
         bar.appendChild(cardEl);
       });
