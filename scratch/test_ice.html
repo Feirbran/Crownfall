@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head><title>WebRTC ICE Test</title></head>
+<body>
+<pre id="log"></pre>
+<script>
+const log = (m) => {
+  document.getElementById('log').textContent += m + '\n';
+  console.log(m);
+};
+
+const TURN_ICE_SERVERS = [
+  { urls: 'stun:stun.l.google.com:19302' },
+  { urls: 'stun:stun1.l.google.com:19302' },
+  { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' },
+  { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' },
+  { urls: 'turn:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' }
+];
+
+async function testIce() {
+  log('Starting ICE test with configured servers...');
+  try {
+    const pc = new RTCPeerConnection({ iceServers: TURN_ICE_SERVERS });
+    pc.createDataChannel('test');
+    
+    pc.onicecandidate = (e) => {
+      if (e.candidate) {
+        log('CANDIDATE: type=' + e.candidate.type + ' proto=' + e.candidate.protocol + ' address=' + e.candidate.address + ' port=' + e.candidate.port);
+      } else {
+        log('=== ICE GATHERING COMPLETE ===');
+      }
+    };
+    
+    pc.onicecandidateerror = (e) => {
+      log('ICE ERROR: code=' + e.errorCode + ' msg=' + e.errorText + ' url=' + e.url);
+    };
+    
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+  } catch(err) {
+    log('Exception in testIce: ' + err.message);
+  }
+}
+
+testIce();
+</script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Supabase Realtime Multiplayer Simulation</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body style="background: #111; color: #fff; font-family: sans-serif; padding: 20px;">
+  <h2>Simulazione Due Client Multi-Rete (Host & Guest)</h2>
+  <div style="display: flex; gap: 20px;">
+    <div style="flex: 1; border: 1px solid #e5b958; padding: 10px;">
+      <h3>HOST (Client 1)</h3>
+      <pre id="host-log" style="font-size: 11px;"></pre>
+    </div>
+    <div style="flex: 1; border: 1px solid #3498db; padding: 10px;">
+      <h3>GUEST (Client 2 - Torino)</h3>
+      <pre id="guest-log" style="font-size: 11px;"></pre>
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = "https://bvdsmwylswfxfdzobscn.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ2ZHNtd3lsc3dmeGZkem9ic2NuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NDIyMjEsImV4cCI6MjEwNDQxODIyMX0.3NrfBzGJfeJAi7k_sonRdH0EqOICbJL4AddQGf1CzMw";
+
+    const hostLog = (m) => document.getElementById('host-log').textContent += m + '\n';
+    const guestLog = (m) => document.getElementById('guest-log').textContent += m + '\n';
+
+    const testRoom = "cf_sim_" + Math.floor(1000 + Math.random() * 9000);
+
+    // Client 1 (Host)
+    const sbHost = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const hostChannel = sbHost.channel(testRoom, { config: { broadcast: { self: false } } });
+    
+    // Client 2 (Guest - simulating friend from Torino)
+    const sbGuest = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const guestChannel = sbGuest.channel(testRoom, { config: { broadcast: { self: false } } });
+
+    hostChannel.on('broadcast', { event: 'game_msg' }, ({ payload }) => {
+      hostLog("Host RICEVUTO: " + payload.type + " da " + payload.username);
+      if (payload.type === 'HELLO_JOIN') {
+        hostLog("Host invia HELLO_HOST con mazzo mescolato...");
+        hostChannel.send({
+          type: 'broadcast',
+          event: 'game_msg',
+          payload: { type: 'HELLO_HOST', username: 'Condottiero Host', p1Deck: [1,2,3], p2Deck: [4,5,6] }
+        });
+      } else if (payload.type === 'ACTION_MOVE') {
+        hostLog("Host RICEVUTO MOVIMENTO: " + payload.from + " -> " + payload.to);
+        hostLog("=== TEST MULTIPLAYER CLOUD SUPERATO CON SUCCESSO! ===");
+      }
+    });
+
+    guestChannel.on('broadcast', { event: 'game_msg' }, ({ payload }) => {
+      guestLog("Guest RICEVUTO: " + payload.type + " da " + payload.username);
+      if (payload.type === 'HELLO_HOST') {
+        guestLog("Guest collegato con successo! Invia mossa di test ACTION_MOVE...");
+        guestChannel.send({
+          type: 'broadcast',
+          event: 'game_msg',
+          payload: { type: 'ACTION_MOVE', from: 12, to: 20, player: 'p2' }
+        });
+      }
+    });
+
+    hostLog("Host sottoscrive stanza " + testRoom + "...");
+    hostChannel.subscribe((status) => {
+      hostLog("Host status: " + status);
+      if (status === 'SUBSCRIBED') {
+        hostLog("Host pronto e in ascolto. Connessione Guest...");
+        guestLog("Guest sottoscrive stanza " + testRoom + "...");
+        guestChannel.subscribe((gStatus) => {
+          guestLog("Guest status: " + gStatus);
+          if (gStatus === 'SUBSCRIBED') {
+            guestLog("Guest pronto! Invia HELLO_JOIN...");
+            guestChannel.send({
+              type: 'broadcast',
+              event: 'game_msg',
+              payload: { type: 'HELLO_JOIN', username: 'Amico Torino', commanderId: 'malakor' }
+            });
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>

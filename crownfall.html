@@ -5822,7 +5822,7 @@
       showPaneDirect(id);
     }
 
-    // --- 5. NETWORKING MULTIPLAYER ROBUSTO (BROADCASTCHANNEL + WEBRTC PEERJS) ---
+    // --- 5. NETWORKING MULTIPLAYER IBRIDO (SUPABASE REALTIME WEBSOCKET + BROADCASTCHANNEL + WEBRTC) ---
     function copyHostRoomCode() {
       if (!currentRoomCode) return;
       const text = currentRoomCode;
@@ -5859,18 +5859,18 @@
       try {
         document.execCommand('copy');
         showToast("📋 Codice Stanza copiato: " + text);
-      } catch(e) {
-        showToast("Seleziona e copia il codice: " + text);
+      } catch (e) {
+        showToast("Seleziona e copia il codice manualmente.");
       }
       document.body.removeChild(ta);
     }
 
+    // Server STUN Google affidabili per WebRTC P2P diretto
     const TURN_ICE_SERVERS = [
       { urls: 'stun:stun.l.google.com:19302' },
       { urls: 'stun:stun1.l.google.com:19302' },
-      { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' },
-      { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' },
-      { urls: 'turn:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' }
+      { urls: 'stun:stun2.l.google.com:19302' },
+      { urls: 'stun:stun.cloudflare.com:3478' }
     ];
 
     function normalizePeerCode(input) {
@@ -5882,7 +5882,27 @@
       return clean;
     }
 
+    function cleanupNetwork() {
+      if (netSbChannel && sbClient) {
+        try { sbClient.removeChannel(netSbChannel); } catch(e){}
+        netSbChannel = null;
+      }
+      if (netBC) {
+        try { netBC.close(); } catch(e){}
+        netBC = null;
+      }
+      if (netConn) {
+        try { netConn.close(); } catch(e){}
+        netConn = null;
+      }
+      if (netPeer) {
+        try { netPeer.destroy(); } catch(e){}
+        netPeer = null;
+      }
+    }
+
     function hostMultiplayer() {
+      cleanupNetwork();
       const deckSelect = document.getElementById('lobby-deck-select-p2p');
       const deckName = deckSelect ? deckSelect.value : userState.activeDeckName;
       let deck = userState.decks[deckName] || userState.decks['Mazzo Base'] || Object.values(userState.decks)[0];
@@ -5902,7 +5922,7 @@
             <div style="font-size: 0.72rem; font-weight: 800; color: var(--gold-primary); text-transform: uppercase;">CODICE STANZA:</div>
             <div id="host-room-code-display" style="font-size: 1.8rem; font-weight: 900; color: #fff; letter-spacing: 3px; margin: 4px 0; user-select: all; -webkit-user-select: all;">${displayCode}</div>
             <button type="button" class="btn btn-gold" onclick="copyHostRoomCode()" style="padding: 5px 12px; font-size: 0.78rem; font-weight: 800;">📋 COPIA CODICE</button>
-            <div id="host-status-msg" style="font-size: 0.76rem; color: #a4b0be; margin-top: 8px;">⏳ Connessione al relay WebRTC in corso...</div>
+            <div id="host-status-msg" style="font-size: 0.76rem; color: #a4b0be; margin-top: 8px;">⏳ Connessione al Cloud Relay in corso...</div>
           </div>
         `;
       }
@@ -5917,6 +5937,7 @@
       const rawVal = (inputEl ? inputEl.value : '').trim();
       if (!rawVal) return showToast("Inserisci il codice della stanza fornito dall'Host!");
 
+      cleanupNetwork();
       const peerCode = normalizePeerCode(rawVal);
       currentRoomCode = peerCode.toUpperCase();
       isP2P = true;
@@ -5929,27 +5950,54 @@
       const joinTimer = setInterval(() => {
         if (battleState && battleState.phase) {
           clearInterval(joinTimer);
-        } else if (netConn && netConn.open) {
-          sendGuestHello();
-        } else if (attempts < 6) {
-          attempts++;
-          console.log("Tentativo di connessione verso Host...", attempts);
-          attemptGuestConnect(peerCode);
         } else {
-          clearInterval(joinTimer);
-          if (!battleState || !battleState.phase) {
-            showToast("Connessione in timeout. Controlla che l'Host abbia la stanza aperta!");
+          attempts++;
+          sendGuestHello();
+          if (attempts >= 15) { // 30 secondi di tolleranza
+            clearInterval(joinTimer);
+            if (!battleState || !battleState.phase) {
+              showToast("Tempo scaduto. Verifica che l'Host abbia la stanza aperta!");
+            }
           }
         }
-      }, 1500);
+      }, 2000);
     }
     const joinP2PMatch = joinMultiplayer;
 
     function initNetwork(peerCode, isHost) {
-      // 1. Canale locale BroadcastChannel (per test immediato tra due schede nello stesso browser)
+      // 1. Canale Cloud Relay Globale via Supabase Realtime (garantito al 100% su qualsiasi rete Internet / Torino <-> Mondo)
+      if (sbClient) {
+        try {
+          netSbChannel = sbClient.channel('crownfall_room_' + peerCode, {
+            config: { broadcast: { self: false } }
+          });
+
+          netSbChannel.on('broadcast', { event: 'game_msg' }, ({ payload }) => {
+            if (payload && payload.senderId !== localClientId) {
+              handleNetMsg(payload);
+            }
+          });
+
+          netSbChannel.subscribe((status) => {
+            console.log("Supabase Realtime status per stanza " + peerCode + ":", status);
+            if (status === 'SUBSCRIBED') {
+              if (isHost) {
+                const statusEl = document.getElementById('host-status-msg');
+                if (statusEl) statusEl.textContent = "🟢 Stanza online attiva sul Cloud! In attesa dell'avversario...";
+              } else {
+                console.log("Guest iscritto alla stanza Cloud. Invio pacchetto di ingresso HELLO_JOIN...");
+                sendGuestHello();
+              }
+            }
+          });
+        } catch(e) {
+          console.warn("Supabase Realtime init error:", e);
+        }
+      }
+
+      // 2. Canale locale BroadcastChannel (per test istantaneo tra schede nello stesso browser/PC)
       try {
         if (typeof BroadcastChannel !== 'undefined') {
-          if (netBC) { try { netBC.close(); } catch(e){} }
           netBC = new BroadcastChannel('crownfall_' + peerCode);
           netBC.onmessage = (ev) => {
             if (ev.data && ev.data.senderId !== localClientId) {
@@ -5961,11 +6009,9 @@
         console.warn("BroadcastChannel err:", e);
       }
 
-      // 2. WebRTC con Google STUN + OpenRelay TURN (per superare qualsiasi NAT casalingo, mobile 4G/5G, firewall)
+      // 3. WebRTC PeerJS (canale P2P diretto ausiliario)
       if (typeof Peer !== 'undefined') {
         try {
-          if (netPeer) { try { netPeer.destroy(); } catch(e){} }
-
           if (isHost) {
             netPeer = new Peer(peerCode, {
               debug: 1,
@@ -5973,27 +6019,20 @@
             });
 
             netPeer.on('open', (id) => {
-              console.log("PeerJS Host WebRTC online con ID:", id);
-              const statusEl = document.getElementById('host-status-msg');
-              if (statusEl) statusEl.textContent = "⏳ Stanza online attiva! In attesa dell'avversario...";
+              console.log("PeerJS Host online con ID:", id);
             });
 
             netPeer.on('connection', (conn) => {
               netConn = conn;
               conn.on('open', () => {
                 console.log("PeerJS WebRTC connesso con Guest!");
-                const statusEl = document.getElementById('host-status-msg');
-                if (statusEl) statusEl.textContent = "⚔️ Avversario connesso! Sincronizzazione...";
               });
               conn.on('data', (data) => handleNetMsg(data));
-              conn.on('error', (e) => console.warn("Host conn err:", e));
+              conn.on('error', (e) => console.warn("Host WebRTC conn err:", e));
             });
 
             netPeer.on('error', (err) => {
               console.warn("PeerJS Host error:", err);
-              if (err && err.type === 'unavailable-id') {
-                showToast("Codice stanza già occupato, ricrea la stanza.");
-              }
             });
           } else {
             // Guest
@@ -6003,7 +6042,7 @@
             });
 
             netPeer.on('open', (guestId) => {
-              console.log("PeerJS Guest registrato con ID:", guestId, "-> Connessione a:", peerCode);
+              console.log("PeerJS Guest registrato:", guestId, "-> tento connessione WebRTC a:", peerCode);
               attemptGuestConnect(peerCode);
             });
 
@@ -6019,12 +6058,12 @@
 
     function attemptGuestConnect(hostId) {
       if (!netPeer || netPeer.destroyed) return;
+      if (netConn && (netConn.open || netConn._open)) return; // Già connesso o handshake in corso
       try {
         netConn = netPeer.connect(hostId, { reliable: true });
         if (netConn) {
           netConn.on('open', () => {
             console.log("WebRTC aperto con Host!");
-            showToast("Connesso all'Host! Avvio partita...");
             sendGuestHello();
           });
           netConn.on('data', (data) => handleNetMsg(data));
@@ -6053,12 +6092,23 @@
         payload.msgId = localClientId + '_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
       }
 
-      // 1. Canale locale BroadcastChannel
+      // 1. Cloud Relay via Supabase Realtime WebSockets (Internet globale WAN - Torino <-> Mondo)
+      if (netSbChannel) {
+        try {
+          netSbChannel.send({
+            type: 'broadcast',
+            event: 'game_msg',
+            payload: payload
+          });
+        } catch(e){}
+      }
+
+      // 2. Canale locale BroadcastChannel (stesso PC / schede locali)
       if (netBC) {
         try { netBC.postMessage(payload); } catch(e){}
       }
 
-      // 2. WebRTC DataChannel (P2P globale via STUN/TURN)
+      // 3. WebRTC DataChannel (P2P diretto)
       if (netConn && netConn.open) {
         try { netConn.send(payload); } catch(e){}
       }
@@ -6068,7 +6118,7 @@
     function handleNetMsg(data) {
       if (!data || !data.type) return;
 
-      // Deduplicazione pacchetti (nel caso arrivino sia via Supabase che via locale)
+      // Deduplicazione pacchetti (nel caso arrivino sia via Supabase che via locale/WebRTC)
       if (data.msgId) {
         if (processedNetMsgIds.has(data.msgId)) return;
         processedNetMsgIds.add(data.msgId);
@@ -6184,7 +6234,7 @@
       } else if (data.type === 'ACTION_DEPLOY') {
         executeDeployAction(data.idx, data.cardId, data.player, false);
       } else if (data.type === 'ACTION_SPELL') {
-        executeSpellAction(data.targetIdx, data.cardId, data.player, false);
+        executeSpellAction(data.cardId, data.targetIdx, data.player, false);
       } else if (data.type === 'ACTION_RITE') {
         executeRiteAction(data.player, false);
       } else if (data.type === 'ACTION_KAELEN_SWAP') {

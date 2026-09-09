@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Supabase Realtime Test</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<pre id="log"></pre>
+<script>
+const log = (m) => {
+  document.getElementById('log').textContent += m + '\n';
+  console.log(m);
+};
+
+const SUPABASE_URL = "https://bvdsmwylswfxfdzobscn.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ2ZHNtd3lsc3dmeGZkem9ic2NuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NDIyMjEsImV4cCI6MjEwNDQxODIyMX0.3NrfBzGJfeJAi7k_sonRdH0EqOICbJL4AddQGf1CzMw";
+
+async function test() {
+  log("Initializing Supabase client...");
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  
+  log("Creating realtime channel 'test_room_123'...");
+  const ch = sb.channel('test_room_123', {
+    config: { broadcast: { self: true } }
+  });
+  
+  ch.on('broadcast', { event: 'test_event' }, (payload) => {
+    log("RECEIVED BROADCAST: " + JSON.stringify(payload));
+  });
+  
+  ch.subscribe((status) => {
+    log("Channel subscription status: " + status);
+    if (status === 'SUBSCRIBED') {
+      log("Successfully SUBSCRIBED to Supabase Realtime WebSocket!");
+      log("Sending test broadcast message...");
+      ch.send({
+        type: 'broadcast',
+        event: 'test_event',
+        payload: { text: "Hello from Crownfall Multiplayer Test!", timestamp: Date.now() }
+      }).then((res) => {
+        log("Send result: " + res);
+      }).catch((err) => {
+        log("Send error: " + err);
+      });
+    }
+  });
+}
+
+test();
+</script>
+</body>
+</html>
