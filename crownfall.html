@@ -397,7 +397,7 @@
 
     .mtg-card.locked { filter: grayscale(100%) opacity(0.4); cursor: not-allowed; }
     .mtg-card.locked::before {
-      content: '🔒 BLOCCATO (Set 1)'; position: absolute; inset: 0; background: rgba(0,0,0,0.8); color: #fff; font-size: 0.72rem; font-weight: 900; display: flex; align-items: center; justify-content: center; z-index: 20; text-align: center; padding: 10px;
+      content: '🔒 BLOCCATO (Set β)'; position: absolute; inset: 0; background: rgba(0,0,0,0.8); color: #fff; font-size: 0.72rem; font-weight: 900; display: flex; align-items: center; justify-content: center; z-index: 20; text-align: center; padding: 10px;
     }
 
     .mtg-card-header { background: linear-gradient(180deg, #2b3042 0%, #1a1c26 100%); border-bottom: 1px solid #3d435d; padding: 4px 6px; display: flex; align-items: center; justify-content: space-between; height: 26px; flex-shrink: 0; }
@@ -653,7 +653,7 @@
           </div>
           <div class="menu-btn" onclick="openDeckBuilder()">
             <span class="title">📜 Deckbuilder Arena</span>
-            <span class="desc">Costruisci il tuo grimorio a 30 carte (max 4x)</span>
+            <span class="desc">Costruisci il tuo grimorio Standard (30–40 carte, max 4x)</span>
           </div>
         </div>
       </div>
@@ -697,7 +697,7 @@
           <div class="tray-header">
             <div class="tray-deck-title-row">
               <span class="tray-deck-name" id="tray-deck-name">Mazzo Base</span>
-              <span class="tray-card-counter invalid" id="tray-counter-badge">0/30</span>
+              <span class="tray-card-counter invalid" id="tray-counter-badge">0/40 (min 30)</span>
             </div>
 
             <div class="tray-commander-banner" onclick="startCommanderSelectionMode()">
@@ -824,7 +824,7 @@
           <p style="font-size: 0.84rem; color: var(--text-muted); line-height: 1.4;">
             Contiene <strong>5 Carte Garantite</strong>:<br>
             <span style="color: var(--gold-primary); font-weight: 700;">⚔️ 2 Miniature</span> • <span style="color: var(--mana-cyan); font-weight: 700;">🏛️ 1 Altare</span> • <span style="color: #ffd32a; font-weight: 700;">✨ 2 Incantesimi</span><br>
-            <span style="font-size: 0.78rem; color: #a55eea;">+ Possibilità di risvegliare un Comandante Set 1!</span>
+            <span style="font-size: 0.78rem; color: #a55eea;">+ Possibilità di risvegliare un Comandante Set β!</span>
           </p>
           <div style="font-size: 1.2rem; font-weight: 900; color: #ffd700;">Costo: 100 🪙</div>
           <button class="btn-arena-done" onclick="buyExpansion1Pack()">ACQUISTA BOX (100 🪙)</button>
@@ -909,15 +909,15 @@
     const RARITY_MAP = { 'C': 'common', 'U': 'uncommon', 'R': 'rare', 'M': 'mythic', 'L': 'legendary' };
 
     const COMMANDER_SET_MAPPING = {
-      'Valeria': 0, 'Malakor': 0, 'Vespera': 0, 'Aurelius': 0, 'Vulkan': 0,
-      'Garek': 1, 'Morbida': 1, 'Kaelen': 1, 'Justiciar Kael': 1, 'Ignis': 1
+      'Valeria': 'α', 'Malakor': 'α', 'Vespera': 'α', 'Aurelius': 'α', 'Vulkan': 'α',
+      'Garek': 'β', 'Morbida': 'β', 'Kaelen': 'β', 'Justiciar Kael': 'β', 'Ignis': 'β'
     };
 
     // ADAPTER COMPATIBILE COMMANDERS
     const COMMANDERS = {};
     Object.entries(COMMANDERS_POOL).forEach(([key, raw]) => {
       const id = key.toLowerCase().replace(/\s+/g, '_');
-      const setNum = COMMANDER_SET_MAPPING[key] ?? (['valeria', 'malakor', 'vespera', 'aurelius', 'vulkan'].includes(id) ? 0 : 1);
+      const setNum = COMMANDER_SET_MAPPING[key] ?? (['valeria', 'malakor', 'vespera', 'aurelius', 'vulkan'].includes(id) ? 'α' : 'β');
       const moveNorm = (raw.move === 'ortho' ? 'orth' : (raw.move === 'ortho2' ? 'orth2' : raw.move));
       const comm = {
         id: id,
@@ -956,7 +956,7 @@
     const CARDS_DB = {};
     Object.entries(FULL_CARD_CATALOG).forEach(([key, raw]) => {
       const isSet0 = (raw.faction === 'Neutral' && raw.rarity === 'C');
-      const setNum = isSet0 ? 0 : 1;
+      const setNum = isSet0 ? 'α' : 'β';
       const r = RARITY_MAP[raw.rarity] || 'common';
       const moveNorm = (raw.move === 'ortho' ? 'orth' : (raw.move === 'ortho2' ? 'orth2' : (raw.move === 'none' ? 'orth' : raw.move)));
 
@@ -1036,9 +1036,11 @@
       'Marcia Forzata', 'Marcia Forzata'
     ];
 
-    function ensureDeck30Cards(deck) {
+    function ensureDeckStandardCards(deck) {
       if (!deck || !Array.isArray(deck.cards)) return [...defaultBaseDeck];
-      if (deck.cards.length >= 30) return deck.cards.slice(0, 30);
+      // Formato Standard: minimo 30 carte, massimo 40 carte
+      if (deck.cards.length >= 30 && deck.cards.length <= 40) return [...deck.cards];
+      if (deck.cards.length > 40) return deck.cards.slice(0, 40);
       const cards = [...deck.cards];
       for (const c of defaultBaseDeck) {
         if (cards.length >= 30) break;
@@ -1046,6 +1048,28 @@
         if (count < 4) cards.push(c);
       }
       return cards;
+    }
+    const ensureDeck30Cards = ensureDeckStandardCards;
+
+    // --- UTILITY: SHUFFLE CASUALE UNIFORME (FISHER-YATES / KNUTH CON ENTROPIA CRITTOGRAFICA) ---
+    function shuffleDeck(deck) {
+      if (!deck || !Array.isArray(deck)) return [];
+      const arr = [...deck];
+      for (let i = arr.length - 1; i > 0; i--) {
+        let rand;
+        if (typeof window !== 'undefined' && window.crypto && window.crypto.getRandomValues) {
+          const uintArr = new Uint32Array(1);
+          window.crypto.getRandomValues(uintArr);
+          rand = uintArr[0] / (0xFFFFFFFF + 1);
+        } else {
+          rand = Math.random();
+        }
+        const j = Math.floor(rand * (i + 1));
+        const temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+      }
+      return arr;
     }
 
     // --- 3. STATO UTENTE E MULTIPLAYER ---
@@ -1141,7 +1165,7 @@
         state.decks['Mazzo Base'] = { commanderId: 'valeria', cards: [...defaultBaseDeck] };
       }
       Object.keys(CARDS_DB).forEach(id => {
-        if (CARDS_DB[id].set === 0) {
+        if (CARDS_DB[id].set === 0 || CARDS_DB[id].set === 'α') {
           if (typeof state.collection[id] !== 'number') state.collection[id] = 4;
         }
       });
@@ -1795,8 +1819,8 @@
           const statusEl = document.getElementById('host-status-msg');
           if (statusEl) statusEl.textContent = `⚔️ ${data.username} è entrato nella stanza! Avvio duello...`;
 
-          const p1Cards = [...hostDeck.cards].sort(() => Math.random() - 0.5);
-          const p2Cards = [...ensureDeck30Cards({ cards: data.cards })].sort(() => Math.random() - 0.5);
+          const p1Cards = shuffleDeck(hostDeck.cards);
+          const p2Cards = shuffleDeck(ensureDeck30Cards({ cards: data.cards }));
 
           sendNetMsg({
             type: 'HELLO_HOST',
@@ -1927,7 +1951,7 @@
         `;
 
         Object.values(COMMANDERS).forEach(comm => {
-          const isUnlocked = comm.set === 0 || (userState.unlockedCommanders && userState.unlockedCommanders.includes(comm.id));
+          const isUnlocked = (comm.set === 0 || comm.set === 'α') || (userState.unlockedCommanders && userState.unlockedCommanders.includes(comm.id));
           const cardEl = document.createElement('div');
           const r = comm.rarity || 'legendary';
           cardEl.className = `mtg-card rarity-${r} ${isUnlocked ? '' : 'locked'}`;
@@ -1950,7 +1974,7 @@
             };
           } else {
             cardEl.onclick = () => {
-              showToast(`🔒 ${comm.name} è bloccato (Set 1). Sbloccalo nel Mercato Box!`);
+              showToast(`🔒 ${comm.name} è bloccato (Set β). Sbloccalo nel Mercato Box!`);
             };
           }
 
@@ -1988,7 +2012,7 @@
           }
           if (deckFilters.search && !card.name.toLowerCase().includes(deckFilters.search)) return;
 
-          const isUnlocked = card.set === 0 || (userState.collection[card.id] || 0) > 0;
+          const isUnlocked = (card.set === 0 || card.set === 'α') || (userState.collection[card.id] || 0) > 0;
           const currentCountInDeck = deck.cards.filter(id => id === card.id).length;
           const isMaxedOut = currentCountInDeck >= 4;
 
@@ -2003,7 +2027,7 @@
 
           if (isUnlocked) {
             cardEl.onclick = () => {
-              if (deck.cards.length >= 30) return showToast("Grimorio al completo (30 carte)!");
+              if (deck.cards.length >= 40) return showToast("Grimorio al completo (massimo 40 carte per lo Standard)!");
               if (currentCountInDeck >= 4) return showToast(`Limite 4x raggiunto per ${card.name}!`);
               deck.cards.push(card.id);
               renderDeckBuilder();
@@ -2027,8 +2051,9 @@
       const deck = userState.decks[userState.activeDeckName];
       document.getElementById('tray-deck-name').textContent = userState.activeDeckName;
       const count = document.getElementById('tray-counter-badge');
-      count.textContent = `${deck.cards.length}/30`;
-      count.className = `tray-card-counter ${deck.cards.length === 30 ? 'valid' : 'invalid'}`;
+      const isValid = deck.cards.length >= 30 && deck.cards.length <= 40;
+      count.textContent = `${deck.cards.length}/40 (min 30)`;
+      count.className = `tray-card-counter ${isValid ? 'valid' : 'invalid'}`;
       document.getElementById('tray-comm-name').textContent = COMMANDERS[deck.commanderId].name;
 
       const stack = document.getElementById('tray-cards-stack');
@@ -2060,7 +2085,11 @@
 
     function autoCompleteDeck() {
       const deck = userState.decks[userState.activeDeckName];
-      const baseCards = Object.keys(CARDS_DB).filter(k => CARDS_DB[k].set === 0);
+      const baseCards = Object.keys(CARDS_DB).filter(k => CARDS_DB[k].set === 0 || CARDS_DB[k].set === 'α');
+
+      if (deck.cards.length >= 30) {
+        return showToast("Il mazzo ha già raggiunto la soglia minima legale (30 carte)!");
+      }
 
       while (deck.cards.length < 30) {
         const eligible = baseCards.filter(id => deck.cards.filter(cId => cId === id).length < 4);
@@ -2073,7 +2102,7 @@
 
     function finishDeckBuilding() {
       const deck = userState.decks[userState.activeDeckName];
-      if (deck.cards.length !== 30) return showToast("Il mazzo deve avere 30 carte!");
+      if (deck.cards.length < 30 || deck.cards.length > 40) return showToast("Il mazzo deve avere tra 30 e 40 carte per il formato Standard!");
       saveCloudState();
       showPane('battle-lobby');
     }
@@ -2110,11 +2139,11 @@
       userState.gold -= 100;
       
       // Separazione categorie dal database carte
-      const set1Units = Object.keys(CARDS_DB).filter(k => CARDS_DB[k].type === 'unit' && CARDS_DB[k].set === 1);
-      const set0Units = Object.keys(CARDS_DB).filter(k => CARDS_DB[k].type === 'unit' && CARDS_DB[k].set === 0);
+      const set1Units = Object.keys(CARDS_DB).filter(k => CARDS_DB[k].type === 'unit' && (CARDS_DB[k].set === 1 || CARDS_DB[k].set === 'β'));
+      const set0Units = Object.keys(CARDS_DB).filter(k => CARDS_DB[k].type === 'unit' && (CARDS_DB[k].set === 0 || CARDS_DB[k].set === 'α'));
       const allAltars = Object.keys(CARDS_DB).filter(k => CARDS_DB[k].type === 'altar');
-      const set1Spells = Object.keys(CARDS_DB).filter(k => (CARDS_DB[k].type === 'spell' || CARDS_DB[k].type === 'reaction') && CARDS_DB[k].set === 1);
-      const set0Spells = Object.keys(CARDS_DB).filter(k => (CARDS_DB[k].type === 'spell' || CARDS_DB[k].type === 'reaction') && CARDS_DB[k].set === 0);
+      const set1Spells = Object.keys(CARDS_DB).filter(k => (CARDS_DB[k].type === 'spell' || CARDS_DB[k].type === 'reaction') && (CARDS_DB[k].set === 1 || CARDS_DB[k].set === 'β'));
+      const set0Spells = Object.keys(CARDS_DB).filter(k => (CARDS_DB[k].type === 'spell' || CARDS_DB[k].type === 'reaction') && (CARDS_DB[k].set === 0 || CARDS_DB[k].set === 'α'));
 
       // Helper estrazione distinta con priorità Set 1
       function pickWeightedDistinct(set1List, set0List, count) {
@@ -2296,8 +2325,10 @@
       const s2 = document.getElementById('lobby-deck-select-p2p');
       s1.innerHTML = ''; s2.innerHTML = '';
       Object.keys(userState.decks).forEach(name => {
-        const o1 = document.createElement('option'); o1.value = name; o1.textContent = `${name} (${userState.decks[name].cards.length}/30)`;
-        const o2 = document.createElement('option'); o2.value = name; o2.textContent = `${name} (${userState.decks[name].cards.length}/30)`;
+        const len = userState.decks[name].cards.length;
+        const status = (len >= 30 && len <= 40) ? `${len} carte` : `${len}/30-40 ⚠️`;
+        const o1 = document.createElement('option'); o1.value = name; o1.textContent = `${name} (${status})`;
+        const o2 = document.createElement('option'); o2.value = name; o2.textContent = `${name} (${status})`;
         if (name === userState.activeDeckName) { o1.selected = true; o2.selected = true; }
         s1.appendChild(o1); s2.appendChild(o2);
       });
@@ -2345,7 +2376,7 @@
       if (!sel) return;
       sel.innerHTML = '';
       Object.values(COMMANDERS).forEach(c => {
-        const isUnlocked = c.set === 0 || (userState.unlockedCommanders && userState.unlockedCommanders.includes(c.id));
+        const isUnlocked = (c.set === 0 || c.set === 'α') || (userState.unlockedCommanders && userState.unlockedCommanders.includes(c.id));
         const opt = document.createElement('option');
         opt.value = c.id;
         opt.textContent = `${c.name} [Set ${c.set}] ${isUnlocked ? '' : '🔒 (Bloccato)'}`;
@@ -2445,7 +2476,7 @@
           blood: 0,
           actions: 2,
           altarDeployedThisTurn: false,
-          deck: [...deck.cards].sort(() => Math.random() - 0.5),
+          deck: shuffleDeck(deck.cards),
           hand: []
         },
         p2: {
@@ -2457,7 +2488,7 @@
           blood: 0,
           actions: 2,
           altarDeployedThisTurn: false,
-          deck: [...defaultBaseDeck].sort(() => Math.random() - 0.5),
+          deck: shuffleDeck(defaultBaseDeck),
           hand: []
         },
         grid: Array(64).fill(null),
@@ -2503,7 +2534,7 @@
           blood: 0,
           actions: 2,
           altarDeployedThisTurn: false,
-          deck: (hostData.shuffledDeck && hostData.shuffledDeck.length) ? [...hostData.shuffledDeck] : [...ensureDeck30Cards({ cards: hostData.cards })].sort(() => Math.random() - 0.5),
+          deck: (hostData.shuffledDeck && hostData.shuffledDeck.length) ? [...hostData.shuffledDeck] : shuffleDeck(ensureDeck30Cards({ cards: hostData.cards })),
           hand: []
         },
         p2: {
@@ -2515,7 +2546,7 @@
           blood: 0,
           actions: 2,
           altarDeployedThisTurn: false,
-          deck: (guestData.shuffledDeck && guestData.shuffledDeck.length) ? [...guestData.shuffledDeck] : [...ensureDeck30Cards({ cards: guestData.cards })].sort(() => Math.random() - 0.5),
+          deck: (guestData.shuffledDeck && guestData.shuffledDeck.length) ? [...guestData.shuffledDeck] : shuffleDeck(ensureDeck30Cards({ cards: guestData.cards })),
           hand: []
         },
         grid: Array(64).fill(null),
