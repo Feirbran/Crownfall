@@ -3736,7 +3736,7 @@
                   <span class="glyph">💀</span>
                   <div class="info">
                     <div class="name">Malakor (IA Nemica)</div>
-                    <div class="stat-bar"><span class="hp-fill" style="width: 75%;"></span><span class="hp-text">18 / 18 PV</span></div>
+                    <div class="stat-bar"><span class="hp-fill" style="width: 75%;"></span><span class="hp-text">35 / 35 PV</span></div>
                   </div>
                 </div>
                 <div class="hud-center-turn">
@@ -3747,7 +3747,7 @@
                   <span class="glyph">🛡️</span>
                   <div class="info">
                     <div class="name">Valeria (Comandante Alleato)</div>
-                    <div class="stat-bar"><span class="hp-fill" style="width: 100%;"></span><span class="hp-text">24 / 24 PV</span></div>
+                    <div class="stat-bar"><span class="hp-fill" style="width: 100%;"></span><span class="hp-text">42 / 42 PV</span></div>
                   </div>
                 </div>
               </div>
@@ -4763,16 +4763,16 @@
     // --- 2. DATABASE DELLE CARTE & COMANDANTI ---
         // === REGISTRO COMPLETO DEI 10 COMANDANTI UFFICIALI ===
     const COMMANDERS_POOL = {
-      "Valeria": { faction: "Ferro", glyph: "🛡️", shortName: "VALERIA", hp: 24, att: 2, move: "ortho", rite: "Schianto Sismico", bloodCost: 3, desc: "Aura: Alleati e Altari adiacenti subiscono -1 danno; non scavalcabile da balzi a L. Rito (3S, 1Az): 2 danni ad area e respinta di 1 casella (+1 danno urto)." },
-      "Garek": { faction: "Ferro", glyph: "♞", shortName: "GAREK", hp: 22, att: 2, move: "knight", rite: "Ruggito del Bastione", bloodCost: 3, desc: "Aura: Le truppe nemiche adiacenti non possono muoversi. Rito (3S, 1Az): Ripara 4 PV a un Altare alleato e gli conferisce 2 ATT di contrattacco." },
-      "Malakor": { faction: "Ceneri", glyph: "💀", shortName: "MALAKOR", hp: 18, att: 1, move: "omni", rite: "Vincolo di Carne", bloodCost: 4, desc: "Aura: Ottiene 2 Sangue a perdita; evoca truppe adiacenti anche ai propri Altari. Rito (4S, 1Az): Riflette il 50% dei danni subiti sul bersaglio per 1 round." },
-      "Morbida": { faction: "Ceneri", glyph: "🪱", shortName: "MORBIDA", hp: 16, att: 2, move: "diag", rite: "Masticazione", bloodCost: 4, desc: "Aura: I caduti alleati creano Cimiteri (1 danno ai nemici che transitano). Rito (4S, 1Az): Consuma un Cimitero per infliggere 3 danni diretti a vista." },
-      "Vespera": { faction: "Marea", glyph: "🌌", shortName: "VESPERA", hp: 20, att: 1, move: "diag", rite: "Ritorno di Marea", bloodCost: 3, desc: "Aura: Trascina di 1 casella un nemico entro 3 passi a inizio turno. Rito (3S, 1Az): Spinge un pezzo fino a 3 caselle in linea retta (+2 danni se urta ostacoli)." },
-      "Kaelen": { faction: "Marea", glyph: "🌀", shortName: "KAELEN", hp: 18, att: 1, move: "ortho2", rite: "Faglia Gravitazionale", bloodCost: 3, desc: "Aura: Respinge di 1 chi entra adiacente. Rito (3S, 1Az): Scambia di posizione due unità qualsiasi entro 4 passi." },
-      "Aurelius": { faction: "Silenzio", glyph: "⚖️", shortName: "AURELIUS", hp: 22, att: 2, move: "ortho", rite: "Decima di Ferro", bloodCost: 4, desc: "Aura: Chi muore entro 2 caselle da lui non genera Sangue per nessuno. Rito (4S, 1Az): Se il nemico attacca paga 1 Mana o subisce 2 danni." },
-      "Justiciar Kael": { faction: "Silenzio", glyph: "📜", shortName: "J. KAEL", hp: 20, att: 2, move: "ortho", rite: "Sigillo della Legge", bloodCost: 4, desc: "Aura: L'avversario subisce 1 danno diretto se accumula 3+ Sangue in un turno. Rito (4S, 1Az): Blocca abilità [1 Azione] e Riti nemici per 1 turno." },
-      "Vulkan": { faction: "Forgia", glyph: "🌋", shortName: "VULKAN", hp: 18, att: 3, move: "ortho", rite: "Altare Semovente", bloodCost: 3, desc: "Aura: Può sacrificare un Altare adiacente per curarsi 4 PV o dare +2/+2 a un automa. Rito (3S, 1Az): Anima un Altare in truppa 3/5 che attacca subito." },
-      "Ignis": { faction: "Forgia", glyph: "🔥", shortName: "IGNIS", hp: 16, att: 3, move: "ortho", rite: "Eruzione di Scorie", bloodCost: 3, desc: "Aura: Guadagna permanentemente +1 ATT ogni volta che cade un Altare alleato. Rito (3S, 1Az): Sacrifica un Altare per infliggere 3 danni ad area ortogonale." }
+      "Valeria": { faction: "Ferro", glyph: "🛡️", shortName: "VALERIA", hp: 42, att: 3, move: "ortho", rite: "Schianto Sismico", bloodCost: 3, desc: "Aura: Alleati e Altari adiacenti subiscono -1 danno; non scavalcabile da balzi a L. Rito (3S, 1Az): 2 danni ad area e respinta di 1 casella (+1 danno urto)." },
+      "Garek": { faction: "Ferro", glyph: "♞", shortName: "GAREK", hp: 38, att: 3, move: "knight", rite: "Ruggito del Bastione", bloodCost: 3, desc: "Aura: Le truppe nemiche adiacenti non possono muoversi. Rito (3S, 1Az): Ripara 4 PV a un Altare alleato e gli conferisce 2 ATT di contrattacco." },
+      "Malakor": { faction: "Ceneri", glyph: "💀", shortName: "MALAKOR", hp: 35, att: 2, move: "omni", rite: "Vincolo di Carne", bloodCost: 4, desc: "Aura: Ottiene 2 Sangue a perdita; evoca truppe adiacenti anche ai propri Altari. Rito (4S, 1Az): Riflette il 50% dei danni subiti sul bersaglio per 1 round." },
+      "Morbida": { faction: "Ceneri", glyph: "🪱", shortName: "MORBIDA", hp: 32, att: 3, move: "diag", rite: "Masticazione", bloodCost: 4, desc: "Aura: I caduti alleati creano Cimiteri (1 danno ai nemici che transitano). Rito (4S, 1Az): Consuma un Cimitero per infliggere 3 danni diretti a vista." },
+      "Vespera": { faction: "Marea", glyph: "🌌", shortName: "VESPERA", hp: 35, att: 2, move: "diag", rite: "Ritorno di Marea", bloodCost: 3, desc: "Aura: Trascina di 1 casella un nemico entro 3 passi a inizio turno. Rito (3S, 1Az): Spinge un pezzo fino a 3 caselle in linea retta (+2 danni se urta ostacoli)." },
+      "Kaelen": { faction: "Marea", glyph: "🌀", shortName: "KAELEN", hp: 34, att: 2, move: "ortho2", rite: "Faglia Gravitazionale", bloodCost: 3, desc: "Aura: Respinge di 1 chi entra adiacente. Rito (3S, 1Az): Scambia di posizione due unità qualsiasi entro 4 passi." },
+      "Aurelius": { faction: "Silenzio", glyph: "⚖️", shortName: "AURELIUS", hp: 38, att: 3, move: "ortho", rite: "Decima di Ferro", bloodCost: 4, desc: "Aura: Chi muore entro 2 caselle da lui non genera Sangue per nessuno. Rito (4S, 1Az): Se il nemico attacca paga 1 Mana o subisce 2 danni." },
+      "Justiciar Kael": { faction: "Silenzio", glyph: "📜", shortName: "J. KAEL", hp: 36, att: 3, move: "ortho", rite: "Sigillo della Legge", bloodCost: 4, desc: "Aura: L'avversario subisce 1 danno diretto se accumula 3+ Sangue in un turno. Rito (4S, 1Az): Blocca abilità [1 Azione] e Riti nemici per 1 turno." },
+      "Vulkan": { faction: "Forgia", glyph: "🌋", shortName: "VULKAN", hp: 36, att: 4, move: "ortho", rite: "Altare Semovente", bloodCost: 3, desc: "Aura: Può sacrificare un Altare adiacente per curarsi 4 PV o dare +2/+2 a un automa. Rito (3S, 1Az): Anima un Altare in truppa 3/5 che attacca subito." },
+      "Ignis": { faction: "Forgia", glyph: "🔥", shortName: "IGNIS", hp: 32, att: 4, move: "ortho", rite: "Eruzione di Scorie", bloodCost: 3, desc: "Aura: Guadagna permanentemente +1 ATT ogni volta che cade un Altare alleato. Rito (3S, 1Az): Sacrifica un Altare per infliggere 3 danni ad area ortogonale." }
     };
 
     // === DATABASE COMPLETO CARTE: SET ALPHA & BETA (560 CARTE UNICHE) ===
