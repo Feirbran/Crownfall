@@ -10,6 +10,9 @@
   <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
   <script src="cards_alpha.js"></script>
   <script src="cards_beta.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Cinzel+Decorative:wght@700;900&family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     :root {
@@ -147,6 +150,1137 @@
 
     .pane.active {
       display: flex !important;
+    }
+
+
+    /* ==========================================================================
+       CROWNFALL — LORE & WORLD ARCHITECTURE (DARK FANTASY / GRIMDARK STYLING)
+       ========================================================================== */
+    .lore-content-pane {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 30px 20px 90px;
+      display: flex;
+      flex-direction: column;
+      gap: 36px;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: #d8dce8;
+      line-height: 1.7;
+    }
+
+    /* Hero & Manifesto */
+    .lore-hero {
+      text-align: center;
+      padding: 44px 28px;
+      background: radial-gradient(ellipse at 50% 15%, rgba(199, 0, 57, 0.22) 0%, rgba(10, 11, 16, 0.96) 75%),
+                  linear-gradient(180deg, #151824 0%, #08090d 100%);
+      border: 1px solid var(--border-gold);
+      border-radius: 12px;
+      box-shadow: 0 12px 45px rgba(0,0,0,0.85), inset 0 0 35px rgba(138, 3, 3, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .lore-eyebrow {
+      font-family: 'Cinzel', serif;
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 4px;
+      color: #ff7675;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .lore-hero-title {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(2rem, 4vw, 2.75rem);
+      font-weight: 900;
+      color: var(--gold-primary);
+      letter-spacing: 3px;
+      text-shadow: 0 3px 12px rgba(0,0,0,0.9), 0 0 24px var(--gold-glow);
+      margin-bottom: 8px;
+      line-height: 1.2;
+    }
+
+    .lore-hero-subtitle {
+      font-size: 1.05rem;
+      color: #a4b0be;
+      font-style: italic;
+      margin-bottom: 24px;
+      letter-spacing: 0.5px;
+    }
+
+    /* Manifesto Ornato */
+    .lore-manifesto {
+      background: rgba(14, 16, 25, 0.88);
+      border-left: 5px solid #c70039;
+      border-right: 1px solid rgba(201, 155, 66, 0.35);
+      border-top: 1px solid rgba(201, 155, 66, 0.35);
+      border-bottom: 1px solid rgba(201, 155, 66, 0.35);
+      border-radius: 8px;
+      padding: 24px 30px;
+      margin: 12px auto 0;
+      max-width: 900px;
+      text-align: left;
+      position: relative;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.7), inset 0 0 20px rgba(0,0,0,0.5);
+    }
+
+    .lore-manifesto blockquote {
+      font-family: 'Crimson Pro', Georgia, serif;
+      font-size: 1.22rem;
+      font-style: italic;
+      line-height: 1.65;
+      color: #f7f1e3;
+    }
+
+    .lore-manifesto-author {
+      margin-top: 10px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--gold-primary);
+      text-align: right;
+    }
+
+    /* Indice Rapido */
+    .lore-nav-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      background: rgba(13, 15, 22, 0.92);
+      border: 1px solid var(--border-frame);
+      border-radius: 8px;
+      padding: 10px 14px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+    }
+
+    .lore-nav-link {
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      background: var(--bg-surface);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .lore-nav-link:hover {
+      color: var(--gold-primary);
+      border-color: var(--gold-primary);
+      background: #1d2133;
+      transform: translateY(-2px);
+    }
+
+    /* Sezioni */
+    .lore-section {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      scroll-margin-top: 70px;
+    }
+
+    .lore-section-header {
+      border-bottom: 2px solid #3c425c;
+      padding-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .lore-section-num {
+      font-family: 'Cinzel', serif;
+      font-size: 1.45rem;
+      font-weight: 900;
+      color: #ff7675;
+      background: rgba(199, 0, 57, 0.15);
+      border: 1px solid rgba(199, 0, 57, 0.45);
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      flex-shrink: 0;
+      box-shadow: 0 0 12px rgba(199, 0, 57, 0.2);
+    }
+
+    .lore-section-title {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(1.3rem, 3vw, 1.6rem);
+      font-weight: 800;
+      color: var(--gold-primary);
+      letter-spacing: 1.5px;
+    }
+
+    /* Schede e Contenitori */
+    .lore-card {
+      background: linear-gradient(150deg, #131622 0%, #0c0d15 100%);
+      border: 1px solid var(--border-frame);
+      border-radius: 10px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.7);
+      transition: all 0.25s ease;
+    }
+
+    .lore-card:hover {
+      border-color: #5b648c;
+      box-shadow: 0 10px 32px rgba(0,0,0,0.85);
+    }
+
+    .lore-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .lore-card-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.22rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Badge tematici */
+    .lore-badge {
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.8px;
+    }
+
+    .lore-badge-crimson { background: rgba(199, 0, 57, 0.25); color: #ff7675; border: 1px solid #c70039; }
+    .lore-badge-gold { background: rgba(229, 185, 88, 0.2); color: var(--gold-primary); border: 1px solid var(--border-gold); }
+    .lore-badge-cyan { background: rgba(0, 229, 255, 0.15); color: var(--mana-cyan); border: 1px solid rgba(0, 229, 255, 0.4); }
+    .lore-badge-purple { background: rgba(165, 94, 234, 0.2); color: #d2a8ff; border: 1px solid #a55eea; }
+
+    /* Callout & Evidenze Meccaniche */
+    .lore-callout {
+      background: rgba(10, 12, 18, 0.75);
+      border-left: 3px solid var(--gold-primary);
+      border-radius: 0 6px 6px 0;
+      padding: 12px 16px;
+      margin: 6px 0;
+      font-size: 0.92rem;
+    }
+
+    .lore-callout.blood {
+      border-left-color: #c70039;
+      background: rgba(138, 3, 3, 0.12);
+    }
+
+    .lore-callout-title {
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--gold-primary);
+      margin-bottom: 4px;
+    }
+
+    .lore-callout.blood .lore-callout-title {
+      color: #ff7675;
+    }
+
+    /* Griglie Comandanti */
+    .lore-grid-commanders {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 18px;
+    }
+
+    .lore-commander-box {
+      background: #11131c;
+      border: 1px solid #353b52;
+      border-radius: 8px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+      transition: all 0.2s;
+    }
+
+    .lore-commander-box:hover {
+      border-color: var(--gold-primary);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.7);
+    }
+
+    .lore-commander-box.set0 { border-top: 3px solid var(--gold-primary); }
+    .lore-commander-box.set1 { border-top: 3px solid #ff7675; }
+
+    .lore-comm-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.18rem;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .lore-attr-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 0.88rem;
+    }
+
+    .lore-attr-item {
+      background: rgba(0, 0, 0, 0.35);
+      border-left: 2px solid #4d5573;
+      padding: 6px 10px;
+      border-radius: 4px;
+    }
+
+    .lore-attr-item strong {
+      color: var(--gold-primary);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    /* Diagramma Relazioni */
+    .lore-ascii-card {
+      background: #08090d;
+      border: 1px solid #33384c;
+      border-radius: 8px;
+      padding: 16px;
+      overflow-x: auto;
+      text-align: center;
+    }
+
+    .lore-ascii-art {
+      font-family: 'Courier New', Courier, monospace;
+      color: var(--gold-primary);
+      font-size: 0.9rem;
+      font-weight: 700;
+      line-height: 1.4;
+      display: inline-block;
+      text-align: left;
+    }
+
+    .lore-rivalry-item {
+      background: rgba(16, 18, 27, 0.7);
+      border-left: 3px solid #c70039;
+      padding: 10px 14px;
+      border-radius: 0 6px 6px 0;
+      margin-top: 8px;
+      font-size: 0.92rem;
+    }
+
+    .lore-rivalry-item strong {
+      color: #fff;
+    }
+
+    /* Tabella Comparativa */
+    .lore-table-wrap {
+      overflow-x: auto;
+      border-radius: 8px;
+      border: 1px solid #3c425c;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+      margin: 10px 0;
+    }
+
+    .lore-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.88rem;
+      min-width: 620px;
+    }
+
+    .lore-table th {
+      background: linear-gradient(180deg, #252a3d 0%, #151824 100%);
+      color: var(--gold-primary);
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      letter-spacing: 1px;
+      padding: 12px 16px;
+      border-bottom: 2px solid var(--border-gold);
+    }
+
+    .lore-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid #252a3d;
+      color: #c7cde2;
+      line-height: 1.5;
+      vertical-align: top;
+    }
+
+    .lore-table tr:nth-child(even) {
+      background: rgba(18, 20, 30, 0.6);
+    }
+
+    .lore-table tr:hover {
+      background: rgba(229, 185, 88, 0.05);
+    }
+
+    /* Grimorio & Carte con Flavor Text */
+    .lore-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .lore-grimoire-box {
+      background: #0d0f17;
+      border: 1px solid #373c54;
+      border-radius: 8px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+      position: relative;
+    }
+
+    .lore-grimoire-box.aurelius { border-top: 3px solid #74b9ff; }
+    .lore-grimoire-box.malakor { border-top: 3px solid #ff7675; }
+
+    .lore-grimoire-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      border-bottom: 1px solid #24293a;
+      padding-bottom: 8px;
+    }
+
+    .lore-grimoire-name {
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: #fff;
+    }
+
+    .lore-grimoire-meta {
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--gold-primary);
+      background: rgba(229, 185, 88, 0.12);
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid rgba(229, 185, 88, 0.3);
+    }
+
+    .lore-grimoire-desc {
+      font-size: 0.88rem;
+      color: #c8cde0;
+      line-height: 1.5;
+    }
+
+    .lore-flavor-text {
+      font-family: 'Crimson Pro', Georgia, serif;
+      font-style: italic;
+      font-size: 0.98rem;
+      color: #a4b0be;
+      border-left: 2px solid #8a0303;
+      padding-left: 10px;
+      margin-top: 4px;
+      line-height: 1.45;
+    }
+
+    /* Altari */
+    .lore-altars-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 16px;
+    }
+
+    .lore-altar-card {
+      background: radial-gradient(circle at 50% 10%, rgba(25, 29, 44, 0.9) 0%, rgba(10, 11, 16, 0.95) 100%);
+      border: 1px solid #3c425c;
+      border-radius: 8px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    }
+
+    .lore-altar-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--gold-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Footer Azioni */
+    .lore-actions-footer {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      justify-content: center;
+      padding-top: 20px;
+      border-top: 1px solid #3c425c;
+    }
+
+
+/* ==========================================================================
+       CROWNFALL — LORE & WORLD ARCHITECTURE (UPGRADED DARK FANTASY UI)
+       ========================================================================== */
+    .lore-content-pane {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 30px 20px 90px;
+      display: flex;
+      flex-direction: column;
+      gap: 36px;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: #d8dce8;
+      line-height: 1.7;
+    }
+
+    /* Hero & Manifesto */
+    .lore-hero {
+      text-align: center;
+      padding: 44px 28px;
+      background: radial-gradient(ellipse at 50% 15%, rgba(199, 0, 57, 0.22) 0%, rgba(10, 11, 16, 0.96) 75%),
+                  linear-gradient(180deg, #151824 0%, #08090d 100%);
+      border: 1px solid var(--border-gold);
+      border-radius: 12px;
+      box-shadow: 0 12px 45px rgba(0,0,0,0.85), inset 0 0 35px rgba(138, 3, 3, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .lore-eyebrow {
+      font-family: 'Cinzel', serif;
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 4px;
+      color: #ff7675;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .lore-hero-title {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(2rem, 4vw, 2.75rem);
+      font-weight: 900;
+      color: var(--gold-primary);
+      letter-spacing: 3px;
+      text-shadow: 0 3px 12px rgba(0,0,0,0.9), 0 0 24px var(--gold-glow);
+      margin-bottom: 8px;
+      line-height: 1.2;
+    }
+
+    .lore-hero-subtitle {
+      font-size: 1.05rem;
+      color: #a4b0be;
+      font-style: italic;
+      margin-bottom: 24px;
+      letter-spacing: 0.5px;
+    }
+
+    /* Manifesto Ornato */
+    .lore-manifesto {
+      background: rgba(14, 16, 25, 0.88);
+      border-left: 5px solid #c70039;
+      border-right: 1px solid rgba(201, 155, 66, 0.35);
+      border-top: 1px solid rgba(201, 155, 66, 0.35);
+      border-bottom: 1px solid rgba(201, 155, 66, 0.35);
+      border-radius: 8px;
+      padding: 24px 30px;
+      margin: 12px auto 0;
+      max-width: 900px;
+      text-align: left;
+      position: relative;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.7), inset 0 0 20px rgba(0,0,0,0.5);
+    }
+
+    .lore-manifesto blockquote {
+      font-family: 'Crimson Pro', Georgia, serif;
+      font-size: 1.22rem;
+      font-style: italic;
+      line-height: 1.65;
+      color: #f7f1e3;
+    }
+
+    .lore-manifesto-author {
+      margin-top: 10px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--gold-primary);
+      text-align: right;
+    }
+
+    /* Indice Rapido */
+    .lore-nav-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      background: rgba(13, 15, 22, 0.92);
+      border: 1px solid var(--border-frame);
+      border-radius: 8px;
+      padding: 10px 14px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+    }
+
+    .lore-nav-link {
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      background: var(--bg-surface);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .lore-nav-link:hover {
+      color: var(--gold-primary);
+      border-color: var(--gold-primary);
+      background: #1d2133;
+      transform: translateY(-2px);
+    }
+
+    /* Sezioni */
+    .lore-section {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      scroll-margin-top: 70px;
+    }
+
+    .lore-section-header {
+      border-bottom: 2px solid #3c425c;
+      padding-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .lore-section-num {
+      font-family: 'Cinzel', serif;
+      font-size: 1.45rem;
+      font-weight: 900;
+      color: #ff7675;
+      background: rgba(199, 0, 57, 0.15);
+      border: 1px solid rgba(199, 0, 57, 0.45);
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      flex-shrink: 0;
+      box-shadow: 0 0 12px rgba(199, 0, 57, 0.2);
+    }
+
+    .lore-section-title {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(1.3rem, 3vw, 1.6rem);
+      font-weight: 800;
+      color: var(--gold-primary);
+      letter-spacing: 1.5px;
+    }
+
+    /* Schede e Contenitori */
+    .lore-card {
+      background: linear-gradient(150deg, #131622 0%, #0c0d15 100%);
+      border: 1px solid var(--border-frame);
+      border-radius: 10px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.7);
+      transition: all 0.25s ease;
+    }
+
+    .lore-card:hover {
+      border-color: #5b648c;
+      box-shadow: 0 10px 32px rgba(0,0,0,0.85);
+    }
+
+    .lore-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .lore-card-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.22rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Sub-headings */
+    .lore-subhead {
+      font-family: 'Cinzel', serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--gold-primary);
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid rgba(60, 66, 92, 0.6);
+      padding-bottom: 6px;
+    }
+
+    /* Badge tematici */
+    .lore-badge {
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.8px;
+    }
+
+    .lore-badge-crimson { background: rgba(199, 0, 57, 0.25); color: #ff7675; border: 1px solid #c70039; }
+    .lore-badge-gold { background: rgba(229, 185, 88, 0.2); color: var(--gold-primary); border: 1px solid var(--border-gold); }
+    .lore-badge-cyan { background: rgba(0, 229, 255, 0.15); color: var(--mana-cyan); border: 1px solid rgba(0, 229, 255, 0.4); }
+    .lore-badge-purple { background: rgba(165, 94, 234, 0.2); color: #d2a8ff; border: 1px solid #a55eea; }
+
+    /* Callout & Evidenze Meccaniche */
+    .lore-callout {
+      background: rgba(10, 12, 18, 0.75);
+      border-left: 3px solid var(--gold-primary);
+      border-radius: 0 6px 6px 0;
+      padding: 12px 16px;
+      margin: 6px 0;
+      font-size: 0.92rem;
+    }
+
+    .lore-callout.blood {
+      border-left-color: #c70039;
+      background: rgba(138, 3, 3, 0.12);
+    }
+
+    .lore-callout-title {
+      font-size: 0.82rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--gold-primary);
+      margin-bottom: 4px;
+    }
+
+    .lore-callout.blood .lore-callout-title {
+      color: #ff7675;
+    }
+
+    /* ==========================================================================
+       MAPPA RELAZIONALE VISIVA DEI CINQUE (SET ALPHA)
+       ========================================================================== */
+    .lore-relations-nexus {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      background: #090a10;
+      border: 1px solid #2e3347;
+      border-radius: 8px;
+      padding: 16px;
+      margin: 10px 0;
+    }
+
+    .lore-nexus-node {
+      background: #141724;
+      border: 1px solid #3c425c;
+      border-radius: 6px;
+      padding: 10px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .lore-nexus-node:hover {
+      border-color: var(--gold-primary);
+      transform: translateY(-2px);
+    }
+
+    .lore-nexus-node.ferro { border-top: 3px solid #74b9ff; }
+    .lore-nexus-node.ceneri { border-top: 3px solid #ff7675; }
+    .lore-nexus-node.marea { border-top: 3px solid #00e5ff; }
+    .lore-nexus-node.silenzio { border-top: 3px solid #f5cd79; }
+    .lore-nexus-node.forgia { border-top: 3px solid #e17055; }
+
+    .lore-nexus-name {
+      font-family: 'Cinzel', serif;
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .lore-nexus-role {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Schede Dettagliate di Duello / Confronto Relazionale */
+    .lore-relations-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-top: 10px;
+    }
+
+    .lore-duel-card {
+      background: linear-gradient(135deg, #111420 0%, #0c0d14 100%);
+      border: 1px solid #373c52;
+      border-radius: 8px;
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.6);
+      transition: all 0.2s;
+    }
+
+    .lore-duel-card:hover {
+      border-color: #555d82;
+      transform: translateY(-1px);
+    }
+
+    .lore-duel-card.alliance {
+      border-left: 4px solid #2ecc71;
+    }
+
+    .lore-duel-card.rivalry {
+      border-left: 4px solid #c70039;
+    }
+
+    .lore-duel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      border-bottom: 1px solid #252a3b;
+      padding-bottom: 8px;
+    }
+
+    .lore-duel-combatants {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Cinzel', serif;
+      font-size: 1rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .lore-duel-vs {
+      font-size: 0.72rem;
+      font-weight: 900;
+      padding: 2px 6px;
+      border-radius: 3px;
+      background: #c70039;
+      color: #fff;
+      letter-spacing: 1px;
+    }
+
+    .lore-duel-vs.peace {
+      background: #27ae60;
+    }
+
+    .lore-duel-theme {
+      font-family: 'Cinzel', serif;
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--gold-primary);
+    }
+
+    .lore-duel-desc {
+      font-size: 0.92rem;
+      color: #c7cde2;
+      line-height: 1.6;
+    }
+
+    /* Griglie Comandanti */
+    .lore-grid-commanders {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 18px;
+    }
+
+    .lore-commander-box {
+      background: #11131c;
+      border: 1px solid #353b52;
+      border-radius: 8px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+      transition: all 0.2s;
+    }
+
+    .lore-commander-box:hover {
+      border-color: var(--gold-primary);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.7);
+    }
+
+    .lore-commander-box.set-alpha,
+    .lore-commander-box.set0 { border-top: 3px solid var(--gold-primary); }
+
+    .lore-commander-box.set-beta,
+    .lore-commander-box.set1 { border-top: 3px solid #ff7675; }
+
+    .lore-comm-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.18rem;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .lore-attr-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 0.88rem;
+    }
+
+    .lore-attr-item {
+      background: rgba(0, 0, 0, 0.35);
+      border-left: 2px solid #4d5573;
+      padding: 6px 10px;
+      border-radius: 4px;
+    }
+
+    .lore-attr-item strong {
+      color: var(--gold-primary);
+      font-size: 0.8rem;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    /* Tabella Comparativa */
+    .lore-table-wrap {
+      overflow-x: auto;
+      border-radius: 8px;
+      border: 1px solid #3c425c;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+      margin: 10px 0;
+    }
+
+    .lore-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.88rem;
+      min-width: 620px;
+    }
+
+    .lore-table th {
+      background: linear-gradient(180deg, #252a3d 0%, #151824 100%);
+      color: var(--gold-primary);
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      letter-spacing: 1px;
+      padding: 12px 16px;
+      border-bottom: 2px solid var(--border-gold);
+    }
+
+    .lore-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid #252a3d;
+      color: #c7cde2;
+      line-height: 1.5;
+      vertical-align: top;
+    }
+
+    .lore-table tr:nth-child(even) {
+      background: rgba(18, 20, 30, 0.6);
+    }
+
+    .lore-table tr:hover {
+      background: rgba(229, 185, 88, 0.05);
+    }
+
+    /* Grimorio & Carte con Flavor Text */
+    .lore-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .lore-grimoire-box {
+      background: #0d0f17;
+      border: 1px solid #373c54;
+      border-radius: 8px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+      position: relative;
+    }
+
+    .lore-grimoire-box.aurelius { border-top: 3px solid #74b9ff; }
+    .lore-grimoire-box.malakor { border-top: 3px solid #ff7675; }
+
+    .lore-grimoire-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      border-bottom: 1px solid #24293a;
+      padding-bottom: 8px;
+    }
+
+    .lore-grimoire-name {
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: #fff;
+    }
+
+    .lore-grimoire-meta {
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--gold-primary);
+      background: rgba(229, 185, 88, 0.12);
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid rgba(229, 185, 88, 0.3);
+    }
+
+    .lore-grimoire-desc {
+      font-size: 0.88rem;
+      color: #c8cde0;
+      line-height: 1.5;
+    }
+
+    .lore-flavor-text {
+      font-family: 'Crimson Pro', Georgia, serif;
+      font-style: italic;
+      font-size: 0.98rem;
+      color: #a4b0be;
+      border-left: 2px solid #8a0303;
+      padding-left: 10px;
+      margin-top: 4px;
+      line-height: 1.45;
+    }
+
+    /* Altari & Espansioni */
+    .lore-altars-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 16px;
+    }
+
+    .lore-altar-card {
+      background: radial-gradient(circle at 50% 10%, rgba(25, 29, 44, 0.9) 0%, rgba(10, 11, 16, 0.95) 100%);
+      border: 1px solid #3c425c;
+      border-radius: 8px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    }
+
+    .lore-altar-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--gold-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .lore-faction-tag {
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 1px 6px;
+      border-radius: 3px;
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+    }
+
+    /* Sezioni d'Espansione Database */
+    .lore-db-showcase {
+      background: rgba(8, 10, 15, 0.85);
+      border: 1px solid #2e344a;
+      border-radius: 8px;
+      padding: 20px;
+      margin-top: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .lore-db-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 12px;
+    }
+
+    .lore-db-item {
+      background: #111420;
+      border: 1px solid #282d42;
+      border-radius: 6px;
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 0.86rem;
+    }
+
+    .lore-db-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      color: var(--gold-primary);
+    }
+
+    /* Footer Azioni */
+    .lore-actions-footer {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      justify-content: center;
+      padding-top: 20px;
+      border-top: 1px solid #3c425c;
     }
 
     /* AUTH PANE */
@@ -582,30 +1716,709 @@
       </div>
     </div>
 
-    <!-- LORE -->
+<!-- LORE & WORLD ARCHITECTURE (CANONE UFFICIALE INTEGRALE) -->
     <div id="pane-lore" class="pane">
-      <div class="static-content-pane">
-        <div class="lore-header">
-          <h1 style="color: var(--gold-primary); font-size: 2.2rem; margin-bottom: 6px;">GLI ANNALI DI VERIDIA</h1>
-          <p style="color: var(--text-muted); font-size: 0.95rem;">Le cronache del mondo spezzato e la guerra per il Demiurgo.</p>
-        </div>
-        <div class="content-box">
-          <h3>1. Il Cataclisma e La Sottrazione</h3>
-          <p>Veridia non è morta lentamente: è stata sventrata in un solo istante. Al centro del continente sorgeva il <strong>Monolito della Corona</strong>, una struttura metafisica immensa che regolava la gravità, i cicli biologici e la coesione della materia.</p>
-          <p>Senza il suo asse centrale, la realtà è entrata in un degrado irreversibile chiamato <strong>La Sottrazione</strong>: la materia decade e si dissolve in polvere grigia se non viene alimentata dall'icore dei caduti.</p>
-        </div>
-        <div class="content-box">
-          <h3>2. Il Demiurgo e i Frammenti</h3>
-          <p>Il fine ultimo è diventare il <strong>Demiurgo</strong>. Ciascuno dei 10 Comandanti ha conficcato nel corpo un frammento del Monolito. Chi unisce i dieci frammenti ottiene il potere di <strong>azzerare la Sottrazione e riscrivere l'esistenza</strong>.</p>
-        </div>
-        <div class="content-box">
-          <h3>3. La Decapitazione</h3>
-          <p>I soldati sul campo non sono individui indipendenti, ma gusci proiettati a distanza dal frammento di Corona del Comandante. Se il Comandante viene ucciso (PV a 0), il campo di forza collassa all'istante e l'intero esercito si dissolve in polvere.</p>
-        </div>
-        <div style="display: flex; gap: 12px; justify-content: center; margin-top: 10px;">
-          <button class="btn btn-gold" onclick="showPaneDirect('tutorial')">Vai al Tutorial</button>
-          <button class="btn" onclick="showPane('battle-lobby')">Schiera la Battaglia</button>
-        </div>
+      <div class="lore-content-pane">
+        
+        <!-- HERO / MANIFESTO -->
+        <header class="lore-hero">
+          <div class="lore-eyebrow">GLI ANNALI DI VERIDIA</div>
+          <h1 class="lore-hero-title">CROWNFALL: LORE & ARCHITETTURA DEL MONDO</h1>
+          <p class="lore-hero-subtitle">La Trinità del Mito, il Timer Biologico dell'Assoluto e la Guerra per il Demiurgo</p>
+
+          <div class="lore-manifesto">
+            <blockquote>
+              "Non state combattendo per la gloria, per una nazione o per un pezzo di terra. State combattendo per continuare ad esistere. Quando il Monolito della Corona è esploso, il mondo è entrato in un timer biologico. Chi vince non conquista un trono: diventa il Demiurgo che deciderà se questo universo dovrà bruciare, congelarsi o dissolversi per sempre."
+            </blockquote>
+            <div class="lore-manifesto-author">— Prologo agli Eredi della Corona</div>
+          </div>
+        </header>
+
+        <!-- INDICE DI NAVIGAZIONE RAPIDA -->
+        <nav class="lore-nav-bar" aria-label="Indice dei Capitoli">
+          <a class="lore-nav-link" href="#lore-trinita">1. La Trinità del Mito Fondativo</a>
+          <a class="lore-nav-link" href="#lore-motore">2. Il Motore del Conflitto</a>
+          <a class="lore-nav-link" href="#lore-set0">3. Set α: La Frattura dei Cinque</a>
+          <a class="lore-nav-link" href="#lore-dottrina">4. Confronto di Dottrina</a>
+          <a class="lore-nav-link" href="#lore-gusci-altari">5. Gusci & Altari (Espansione DB)</a>
+          <a class="lore-nav-link" href="#lore-secessione">6. Set β: Gli Eredi della Secessione</a>
+          <a class="lore-nav-link" href="#lore-roadmap">7. Espansioni Future</a>
+          <a class="lore-nav-link" href="#lore-regola">8. Regola d'Ingresso</a>
+        </nav>
+
+        <!-- 1. LA TRINITÀ DEL MITO FONDATIVO -->
+        <section class="lore-section" id="lore-trinita">
+          <div class="lore-section-header">
+            <div class="lore-section-num">1</div>
+            <h2 class="lore-section-title">LA TRINITÀ DEL MITO FONDATIVO</h2>
+          </div>
+
+          <!-- I. La Caduta delle Corone: La Decapitazione dell'Assoluto -->
+          <article class="lore-card">
+            <div class="lore-card-header">
+              <h3 class="lore-card-title">👑 I. La Caduta delle Corone: La Decapitazione dell'Assoluto</h3>
+              <span class="lore-badge lore-badge-gold">Origine Metafisica</span>
+            </div>
+            <p>Nel crepuscolo dell'Era Primordiale, il continente di Veridia non era governato da mortali, ma retto da una singola, colossale impalcatura di volontà divina: il Monolito della Corona. Non era un ornamento d'oro, ma una giunzione metafisica ancorata all'asse del mondo che garantiva continuità alla fisica, alla carne e alla vita.</p>
+            <p>La "Caduta" avvenne quando i capostipiti delle dinastie tentarono di estrarre la Corona dalla crosta terrestre per fonderla nelle proprie anime: l'artefatto si frantumò in dieci frammenti senzienti.</p>
+            
+            <div class="lore-callout">
+              <div class="lore-callout-title">Il Vincolo di Corona</div>
+              <p><strong>Il Vincolo di Corona:</strong> Ognuno dei 10 Comandanti porta uno di questi frammenti fuso direttamente nella propria scatola cranica o innestato nel torace. Essi non guidano le armate: le proiettano.</p>
+            </div>
+
+            <div class="lore-callout blood">
+              <div class="lore-callout-title">La Dissoluzione (Condizione di Vittoria)</div>
+              <p><strong>La Dissoluzione (Condizione di Vittoria):</strong> Le truppe sul campo non sono semplici soldati di leva, ma gusci d'argilla, carne e metallo tenuti insieme esclusivamente dalla presenza radiante della Corona del Comandante. Se il Comandante cade decapitato, il campo di forza collassa all'istante: i fanti si polverizzano in cenere e armature vuote, i costrutti si spengono come lanterne soffocate. La morte del Re è la fine istantanea della realtà per chiunque lo serva.</p>
+            </div>
+          </article>
+
+          <!-- II. Il Sangue Bifronte: La Legge del Macello e del Debito -->
+          <article class="lore-card">
+            <div class="lore-card-header">
+              <h3 class="lore-card-title">🩸 II. Il Sangue Bifronte: La Legge del Macello e del Debito</h3>
+              <span class="lore-badge lore-badge-crimson">Valuta Primordiale</span>
+            </div>
+            <p>Il sangue in CROWNFALL non è solo fluido biologico; è la valuta primordiale della Fessura, la cicatrice aperta nel tessuto del mondo che brama costantemente il tributo della violenza. Quando una lama recide una gola, il sangue si vaporizza in gocce di icore luminescente che rispondono a due leggi ancestrali opposte:</p>
+
+            <div class="lore-grid-2col">
+              <div class="lore-callout blood">
+                <div class="lore-callout-title">Le 2 Gocce all'Uccisore (L'Estorsione del Predatore)</div>
+                <p><strong>Le 2 Gocce all'Uccisore (L'Estorsione del Predatore):</strong> La violenza cinetica strappa via la forza vitale residua della vittima. Chi compie il colpo assorbe l'energia dello strappo: l'adrenalina nera della carneficina, il banchetto immediato che premia l'aggressività tattica e consente al Comandante vincente di alimentare sortilegi d'assalto.</p>
+              </div>
+              <div class="lore-callout">
+                <div class="lore-callout-title">La 1 Goccia alla Vittima (Il Debito del Lutto - Anti-Snowball)</div>
+                <p><strong>La 1 Goccia alla Vittima (Il Debito del Lutto - Anti-Snowball):</strong> Prima che la connessione vitale si dissolva, l'ultimo rantolo del morente funge da maledizione e anatema. Per legge ontologica del mondo frantumato, ogni sacrificio impone un debito di sangue all'universo: la vittima devolve il proprio ultimo soffio al proprio Comandante caduto in disgrazia. Non è pietà, è combustibile di vendetta. Più la tua linea viene massacrata, più sale la pressione del sangue compresso nel tuo grimorio, pronto a scatenare la punizione contro chi ha osato avanzare troppo.</p>
+              </div>
+            </div>
+          </article>
+
+          <!-- III. Le Zolle del Giudizio: Il Campo 8x8 e gli Altari Ancestrali -->
+          <article class="lore-card">
+            <div class="lore-card-header">
+              <h3 class="lore-card-title">🏛️ III. Le Zolle del Giudizio: Il Campo 8x8 e gli Altari Ancestrali</h3>
+              <span class="lore-badge lore-badge-cyan">Vettori Cristallizzati</span>
+            </div>
+            <p>Lo spazio di scontro non è una pianura qualunque: è una Zolla del Giudizio, una faglia tettonica dove le leggi fisiche si sono cristallizzate in vettori rigidi dopo il cataclisma. La terra è percorsa da faglie invisibili ma invalicabili che costringono la materia a muoversi solo lungo assi ortogonali, diagonali o traiettorie d'impatto ad angolo retto (la tensione a "L").</p>
+
+            <div class="lore-callout">
+              <div class="lore-callout-title">Gli Altari</div>
+              <p><strong>Gli Altari:</strong> Sono le radici esposte del mondo pre-cataclisma. Pilastri monolitici indistruttibili che spuntano dal terreno come vertebre di una divinità sepolta. Bloccano la linea di vista e il movimento. Non donano potere passivo: fungono da valvole geologiche. Soltanto la presenza fisica di un corpo senziente posta sulla casella adiacente può schiacciare le vene telluriche sottostanti e pompare il Mana Territoriale (Pietra, Ferro, Sangue, Risonanza) direttamente nelle pagine del Grimorio.</p>
+            </div>
+
+            <div class="lore-callout">
+              <div class="lore-callout-title">I Gusci e il Grimorio (WYSIWYG)</div>
+              <p><strong>I Gusci e il Grimorio (WYSIWYG):</strong> Il Comandante a bordo campo dispone di simulacri inattivi (le miniature fisiche bordocampo). Le carte nel mazzo sono gli Echi di Volontà: formule mnemoniche che, spese attraverso il mana degli altari, soffiano l'anima marziale dentro un guscio e lo forzano ad apparire sulla scacchiera. Se il guscio non è pronto ai margini della zolla, la magia non trova materia in cui attecchire.</p>
+            </div>
+          </article>
+        </section>
+
+        <!-- 2. IL MOTORE DEL CONFLITTO: LA LEGGE DELLA MASSA CRITICA -->
+        <section class="lore-section" id="lore-motore">
+          <div class="lore-section-header">
+            <div class="lore-section-num">2</div>
+            <h2 class="lore-section-title">IL MOTORE DEL CONFLITTO: LA LEGGE DELLA MASSA CRITICA</h2>
+          </div>
+
+          <article class="lore-card">
+            <p>Quando il Monolito della Corona si è frantumato nel giorno della Caduta, non si è limitato a rompersi in dieci pezzi: si è esaurito.</p>
+            <p>L'universo di Veridia è entrato in un loop di decadimento termodinamico e spirituale chiamato <strong>La Sottrazione</strong>. Senza il Monolito centrale a fare da generatore universale, la realtà sta letteralmente svanendo. I pezzi sul campo — i fanti, le fortificazioni, persino i corpi dei Comandanti — sono gusci instabili che, se lasciati a se stessi, nel giro di poche lune si dissolvono in polvere grigia e silenzio.</p>
+            <p>L'umanità sopravvissuta non nasce più dal grembo materno; viene "stampata" ed evocata attraverso gusci di carne e ardesia legati al sangue dei Cinque Eredi Primordiali.</p>
+
+            <div class="lore-callout">
+              <div class="lore-callout-title">Esistono solo due modi per ritardare la propria dissoluzione e nutrire il proprio frammento di Corona:</div>
+              <ol style="margin-left: 20px; margin-top: 6px;">
+                <li><strong>Assorbire Mana Territoriale</strong> (prosciugando le zolle attraverso gli altari).</li>
+                <li><strong>Consumare Schegge Esterne</strong> (strappando il frammento di Corona dal cranio di un altro Comandante).</li>
+              </ol>
+            </div>
+
+            <div class="lore-callout blood">
+              <h3 class="lore-subhead" style="margin-top: 0; color: #ff7675;">La Logica della Decapitazione</h3>
+              <p>Un frammento di Corona isolato è come un carbone ardente che si sta spegnendo. Ma se un Comandante riesce a decapitarne un altro e a riassorbirne il frammento, la sua Corona raddoppia di massa, avvicinandosi alla soglia critica della Ricreazione.</p>
+              <p>Non è una guerra di conquista politica: è una corsa disperata a somma zero. Chi arriva a raccogliere per primo un certo numero di frammenti (o l'ultimo rimasto) otterrà abbastanza massa energetica per riscrivere le leggi fisiche del mondo e diventare l'unico Architetto della nuova realtà. Gli altri non muoiono semplicemente: vengono cancellati dalla memoria del tempo.</p>
+            </div>
+
+            <div class="lore-callout">
+              <h3 class="lore-subhead" style="margin-top: 0;">Il Fine Ultimo: L'Architettura e il Demiurgo</h3>
+              <p>Il fine ultimo è racchiuso in una parola: <strong>L'Architettura</strong>.</p>
+              <p>Chiunque riesca a sterminare i rivali, a raccogliere tutti i frammenti sparsi e a ricomporre il Monolito della Corona ottiene la facoltà di diventare il <strong>Demiurgo</strong>: azzerare il codice della realtà e riscriverlo da zero.</p>
+              <p>Il vincitore sale sul trono di cenere, fonde i frammenti della Corona e impone la sua personale visione ontologica:</p>
+              <ul style="margin-left: 20px; margin-top: 6px;">
+                <li>Se vince <strong>Aurelius</strong>, il nuovo mondo sarà una teocrazia di pietra geometrica e silenziosa, priva di passioni e di sangue.</li>
+                <li>Se vince <strong>Malakor</strong>, l'universo sarà una forgia permanente in cui ogni atomo brucia di energia perpetua.</li>
+              </ul>
+            </div>
+
+            <div class="lore-callout">
+              <h3 class="lore-subhead" style="margin-top: 0;">Il Metagioco Narrativo</h3>
+              <p>Ogni partita non è una battaglia isolata, ma un tentativo storico fallito o riuscito. Ogni era creata dai dieci Comandanti ha avuto un difetto strutturale, un errore di calcolo che ha generato crepe, nuovi mostri e nuove fazioni, spalancando le porte alle espansioni venture.</p>
+            </div>
+          </article>
+        </section>
+
+        <!-- 3. SET α: LA FRATTURA DEI CINQUE -->
+        <section class="lore-section" id="lore-set0">
+          <div class="lore-section-header">
+            <div class="lore-section-num">3</div>
+            <h2 class="lore-section-title">SET α: LA FRATTURA DEI CINQUE</h2>
+          </div>
+
+          <article class="lore-card">
+            <p>I cinque Comandanti del Set α erano i cinque generali seduti allo stesso tavolo quando il Monolito crollò. Ciascuno raccolse un frammento di quella sostanza e se lo piantò nel corpo per non svanire nel nulla.</p>
+
+            <h3 class="lore-subhead">La Rete di Relazioni (I 5 Poli Fondatori)</h3>
+            <p style="font-size: 0.9rem; color: #a4b0be;">Mappa interattiva delle tensioni primordiali tra le cinque casate del Set α:</p>
+
+            <!-- MAPPA VISIVA DEI CINQUE COMANDANTI -->
+            <div class="lore-relations-nexus">
+              <div class="lore-nexus-node ferro">
+                <div style="font-size: 1.5rem;">🛡️</div>
+                <div class="lore-nexus-name">Valeria</div>
+                <span class="lore-faction-tag" style="background:#2980b9;">Ferro</span>
+                <div class="lore-nexus-role">Bastione Difensivo</div>
+              </div>
+              <div class="lore-nexus-node marea">
+                <div style="font-size: 1.5rem;">🌊</div>
+                <div class="lore-nexus-name">Vespera</div>
+                <span class="lore-faction-tag" style="background:#0984e3;">Marea</span>
+                <div class="lore-nexus-role">Controllo Cinetico</div>
+              </div>
+              <div class="lore-nexus-node silenzio">
+                <div style="font-size: 1.5rem;">⚖️</div>
+                <div class="lore-nexus-name">Aurelius</div>
+                <span class="lore-faction-tag" style="background:#d4af37; color:#000;">Silenzio</span>
+                <div class="lore-nexus-role">Inquisizione & Mana</div>
+              </div>
+              <div class="lore-nexus-node ceneri">
+                <div style="font-size: 1.5rem;">💀</div>
+                <div class="lore-nexus-name">Malakor</div>
+                <span class="lore-faction-tag" style="background:#c0392b;">Ceneri</span>
+                <div class="lore-nexus-role">Carneficina & Sangue</div>
+              </div>
+              <div class="lore-nexus-node forgia">
+                <div style="font-size: 1.5rem;">⚒️</div>
+                <div class="lore-nexus-name">Vulkan</div>
+                <span class="lore-faction-tag" style="background:#e67e22;">Forgia</span>
+                <div class="lore-nexus-role">Creazione & Altari</div>
+              </div>
+            </div>
+
+            <!-- SCHEDE DI DUELLO E TENSIONE CHIARISSIME -->
+            <div class="lore-relations-grid">
+              <!-- Valeria vs Vespera -->
+              <div class="lore-duel-card rivalry">
+                <div class="lore-duel-header">
+                  <div class="lore-duel-combatants">
+                    <span>🛡️ Valeria del Bastione</span>
+                    <span class="lore-duel-vs">RIVALITÀ</span>
+                    <span>🌊 Vespera delle Maree</span>
+                  </div>
+                  <div class="lore-duel-theme">Il Dovere contro l'Abbandono</div>
+                </div>
+                <div class="lore-duel-desc">
+                  <p><strong>Valeria vs Vespera (Il Dovere contro l'Abbandono):</strong> Vespera era il primo scudo di Valeria. Quando la marea nera travolse le coste meridionali, Vespera aprì le paratoie annegando tre città pur di salvarsi, abbracciando il frammento d'abisso. Per Valeria, Vespera è la vergogna vivente dell'onore militare.</p>
+                </div>
+              </div>
+
+              <!-- Aurelius vs Malakor -->
+              <div class="lore-duel-card rivalry">
+                <div class="lore-duel-header">
+                  <div class="lore-duel-combatants">
+                    <span>⚖️ Aurelius il Giusto</span>
+                    <span class="lore-duel-vs">FANATISMO vs ERESIA</span>
+                    <span>💀 Malakor del Rogo</span>
+                  </div>
+                  <div class="lore-duel-theme">La Mannaia contro l'Infezione</div>
+                </div>
+                <div class="lore-duel-desc">
+                  <p><strong>Aurelius vs Malakor (La Mannaia contro l'Infezione):</strong> Aurelius considera Malakor una bestia idrofoba che profana i cadaveri. Malakor vede in Aurelius un cadavere ambulante che si rifiuta di accettare che l'universo brucia e va nutrito.</p>
+                </div>
+              </div>
+
+              <!-- Malakor vs Vulkan -->
+              <div class="lore-duel-card rivalry">
+                <div class="lore-duel-header">
+                  <div class="lore-duel-combatants">
+                    <span>💀 Malakor del Rogo</span>
+                    <span class="lore-duel-vs">DISTRUZIONE vs FORGIA</span>
+                    <span>⚒️ Vulkan il Fabbro</span>
+                  </div>
+                  <div class="lore-duel-theme">L'Incendio contro la Forgia</div>
+                </div>
+                <div class="lore-duel-desc">
+                  <p><strong>Malakor vs Vulkan (L'Incendio contro la Forgia):</strong> Vulkan forgia altari e corpi per dare forma al caos; Malakor calpesta le opere di Vulkan unicamente per farne brace e schegge da scagliare addosso ai nemici.</p>
+                </div>
+              </div>
+
+              <!-- Valeria vs Vulkan -->
+              <div class="lore-duel-card alliance">
+                <div class="lore-duel-header">
+                  <div class="lore-duel-combatants">
+                    <span>🛡️ Valeria del Bastione</span>
+                    <span class="lore-duel-vs peace">TREGUA AMARA</span>
+                    <span>⚒️ Vulkan il Fabbro</span>
+                  </div>
+                  <div class="lore-duel-theme">L'Acciaio Riconoscente</div>
+                </div>
+                <div class="lore-duel-desc">
+                  <p><strong>Valeria vs Vulkan (L'Acciaio Riconoscente):</strong> L'unica tregua apparente. Vulkan ha fuso le armature del Bastione di Valeria prima della Caduta. C’è un rispetto amaro tra i due: sanno che uno dovrà smontare l'armatura dell'altro.</p>
+                </div>
+              </div>
+            </div>
+
+            <h3 class="lore-subhead" style="margin-top: 18px;">I Cinque Comandanti del Set α</h3>
+
+            <div class="lore-grid-commanders">
+              <!-- Valeria del Bastione -->
+              <div class="lore-commander-box set-alpha">
+                <div class="lore-comm-title">🛡️ 1. Valeria del Bastione</div>
+                <div class="lore-attr-list">
+                  <div class="lore-attr-item"><strong>Ruolo Tattico:</strong> Il Muro Difensivo (Tank / Protezione).</div>
+                  <div class="lore-attr-item"><strong>Meccanica Chiave:</strong> Bastione Vivente. Gli alleati ortogonalmente adiacenti subiscono -1 danno. Se carica, abbatte le formazioni.</div>
+                  <div class="lore-attr-item"><strong>Movimento:</strong> Ortogonale (Torre).</div>
+                  <div class="lore-attr-item"><strong>Frammento:</strong> La Corona delle Tre Porte (tre piastre d'acciaio fuse nelle costole e nello sterno).</div>
+                </div>
+              </div>
+
+              <!-- Malakor del Rogo -->
+              <div class="lore-commander-box set-alpha">
+                <div class="lore-comm-title">💀 2. Malakor del Rogo</div>
+                <div class="lore-attr-list">
+                  <div class="lore-attr-item"><strong>Ruolo Tattico:</strong> L'Assalitore Frenetico (Aggro puro).</div>
+                  <div class="lore-attr-item"><strong>Meccanica Chiave:</strong> Sciacallo di Brace. Raccoglie i token Sangue calpestandoli per guadagnare passi extra o scatenare fiammate.</div>
+                  <div class="lore-attr-item"><strong>Movimento:</strong> Omnidirezionale 1 casella (Re).</div>
+                  <div class="lore-attr-item"><strong>Frammento:</strong> La Zanna di Scoria (un corno di ferro incandescente conficcato nella nuca che rilascia ferro fuso lungo la spina dorsale).</div>
+                </div>
+              </div>
+
+              <!-- Vespera delle Maree -->
+              <div class="lore-commander-box set-alpha">
+                <div class="lore-comm-title">🌊 3. Vespera delle Maree</div>
+                <div class="lore-attr-list">
+                  <div class="lore-attr-item"><strong>Ruolo Tattico:</strong> Il Burattinaio (Controllo del campo).</div>
+                  <div class="lore-attr-item"><strong>Meccanica Chiave:</strong> Flusso e Risacca. Trascina o spinge miniature nemiche sulle linee diagonali, gettandole contro muri o altari.</div>
+                  <div class="lore-attr-item"><strong>Movimento:</strong> Diagonale (Alfiere).</div>
+                  <div class="lore-attr-item"><strong>Frammento:</strong> L'Anello Abissale (un cerchio d'ossidiana umida che le serra la gola togliendole la voce).</div>
+                </div>
+              </div>
+
+              <!-- Aurelius il Giusto -->
+              <div class="lore-commander-box set-alpha">
+                <div class="lore-comm-title">⚖️ 4. Aurelius il Giusto</div>
+                <div class="lore-attr-list">
+                  <div class="lore-attr-item"><strong>Ruolo Tattico:</strong> L'Inquisitore (Anti-Magia / Castigo).</div>
+                  <div class="lore-attr-item"><strong>Meccanica Chiave:</strong> Silenzio del Piombo. Annulla l'attivazione del sangue nemico nelle caselle adiacenti; distrugge il mana avversario.</div>
+                  <div class="lore-attr-item"><strong>Movimento:</strong> Ortogonale 2 caselle.</div>
+                  <div class="lore-attr-item"><strong>Frammento:</strong> Il Sigillo degli Occhi / Corona di Cenere Cieca (bende cerate d'argento martellate direttamente sulle orbite per una visione tassonomica).</div>
+                </div>
+              </div>
+
+              <!-- Vulkan il Fabbro -->
+              <div class="lore-commander-box set-alpha">
+                <div class="lore-comm-title">⚒️ 5. Vulkan il Fabbro</div>
+                <div class="lore-attr-list">
+                  <div class="lore-attr-item"><strong>Ruolo Tattico:</strong> Il Costruttore (Sacrificio e Rinascita).</div>
+                  <div class="lore-attr-item"><strong>Meccanica Chiave:</strong> Rifusione Litica. Distrugge gli Altari presidiati per curarsi completamente o animare un Golem d'Ardesia.</div>
+                  <div class="lore-attr-item"><strong>Movimento:</strong> Ortogonale 1 / Salto a L.</div>
+                  <div class="lore-attr-item"><strong>Frammento:</strong> Il Cuore d'Incudine (una placca di basalto vivo incastonata nella cassa toracica).</div>
+                </div>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <!-- 4. CONFRONTO DI DOTTRINA: AURELIUS VS MALAKOR -->
+        <section class="lore-section" id="lore-dottrina">
+          <div class="lore-section-header">
+            <div class="lore-section-num">4</div>
+            <h2 class="lore-section-title">CONFRONTO DI DOTTRINA: AURELIUS VS MALAKOR</h2>
+          </div>
+
+          <article class="lore-card">
+            <p>Il conflitto tra Aurelius e Malakor è uno scisma sulla natura stessa della piaga di Veridia. Per Aurelius, il Sangue è corruzione che deforma la geometria del creato (L'Ordine del Vetro Cieco predica la sterilizzazione rituale per ridurre la realtà a pura obbedienza). Per Malakor (I Martiri della Brace), il Sangue è l'unico combustibile primordiale: la Fessura va alimentata fino a forzare una conflagrazione finale.</p>
+
+            <h3 class="lore-subhead">Anatomia delle Miniature</h3>
+
+            <div class="lore-table-wrap">
+              <table class="lore-table">
+                <thead>
+                  <tr>
+                    <th>Dettaglio</th>
+                    <th>Aurelius il Giusto (Base 40mm)</th>
+                    <th>Malakor del Rogo (Base 40mm)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Posa Tattica</strong></td>
+                    <td>Statica, ieratica, piantato su lastra di marmo spezzata. Spada d'esecuzione piantata a terra a due mani.</td>
+                    <td>Flessa, sbilanciata in avanti nello scatto. Ascia sacrificale in una mano, l'altra nel fango.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Materiali & Texture</strong></td>
+                    <td>Armatura a piastre spigolose senza fregi, cotta di maglia serrata, bende di lino cerato sugli occhi.</td>
+                    <td>Piastre di ferro grezzo arrugginite e ribattute a caldo con catene roventi; pelle bruciata a vivo.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Simbolo Corona</strong></td>
+                    <td>Raggi d'argento opaco dalla nuca a formare una mandorla rigida e spoglia.</td>
+                    <td>Corna asimmetriche di metallo deformato con fumo nero raggrumato in resina.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Effetto Zolla</strong></td>
+                    <td>Terreno crepato, privo di vegetazione, tinto di grigio cenere sterile.</td>
+                    <td>Pozze di sangue ribollenti con scorie incandescenti dipinte a contrasto termico.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3 class="lore-subhead" style="margin-top: 14px;">Carte Grimorio</h3>
+
+            <div class="lore-cards-grid">
+              <!-- Aurelius: Liturgia del Giudice -->
+              <div class="lore-grimoire-box aurelius">
+                <div class="lore-grimoire-head">
+                  <div class="lore-grimoire-name">Aurelius: Liturgia del Giudice</div>
+                  <div class="lore-grimoire-meta">Costo: 2 Mana di Pietra | Sortilegio</div>
+                </div>
+                <div class="lore-grimoire-desc">Rimuovi fino a 2 segnalini Sangue adiacenti ad Aurelius. Il controllore della casella bersaglio non può attivare abilità di movimento fino al termine del prossimo turno.</div>
+                <div class="lore-flavor-text">
+                  <blockquote>"La carne urla per attirare pietà. Il piombo tace e rimette ogni peccato."</blockquote>
+                  — Epistole della Cera Chiusa
+                </div>
+              </div>
+
+              <!-- Aurelius: Sentinella Senz'Occhi -->
+              <div class="lore-grimoire-box aurelius">
+                <div class="lore-grimoire-head">
+                  <div class="lore-grimoire-name">Aurelius: Sentinella Senz'Occhi</div>
+                  <div class="lore-grimoire-meta">Costo: 3 Mana di Ferro | Guscio: Fante Pesante</div>
+                </div>
+                <div class="lore-grimoire-desc">Movimento: Ortogonale 1. Non genera Sangue per l'uccisore se abbattuto da un attacco frontale.</div>
+                <div class="lore-flavor-text">
+                  <blockquote>"I loro elmi non hanno feritoie. Vedono le zolle unicamente attraverso la voce del loro Re, e non conoscono la paura del vuoto."</blockquote>
+                </div>
+              </div>
+
+              <!-- Malakor: Cannibalismo di Scoria -->
+              <div class="lore-grimoire-box malakor">
+                <div class="lore-grimoire-head">
+                  <div class="lore-grimoire-name">Malakor: Cannibalismo di Scoria</div>
+                  <div class="lore-grimoire-meta">Costo: 1 Sangue | Reazione</div>
+                </div>
+                <div class="lore-grimoire-desc">Attiva quando un pezzo alleato viene distrutto entro 2 caselle. Malakor assorbe la goccia di Sangue della vittima: muovi Malakor di 1 casella in qualsiasi direzione e infliggi 1 ferita al pezzo nemico più vicino.</div>
+                <div class="lore-flavor-text">
+                  <blockquote>"Non versare lacrime sul martire. Bevi il suo fumo prima che il vento lo disperda."</blockquote>
+                  — Malakor, all'alba della Zolla d'Ebano
+                </div>
+              </div>
+
+              <!-- Malakor: Falciatore della Fornace -->
+              <div class="lore-grimoire-box malakor">
+                <div class="lore-grimoire-head">
+                  <div class="lore-grimoire-name">Malakor: Falciatore della Fornace</div>
+                  <div class="lore-grimoire-meta">Costo: 2 Sangue, 1 Mana di Sangue | Guscio: Cavaliere Scorticato</div>
+                </div>
+                <div class="lore-grimoire-desc">Movimento: Passo a L (Balzo). Se termina il movimento su una casella con segnalini Sangue, guadagna Fendente ad Area.</div>
+                <div class="lore-flavor-text">
+                  <blockquote>"Hanno cavato i propri tendini per sostituirli con fili d'ottone ritorto. Saltano le mura non per grazia, ma per pura violenza d'impatto."</blockquote>
+                </div>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <!-- 5. IL KIT DEI GUSCI COMUNI & GLI ALTARI (CON ESPANSIONE CARD DB) -->
+        <section class="lore-section" id="lore-gusci-altari">
+          <div class="lore-section-header">
+            <div class="lore-section-num">5</div>
+            <h2 class="lore-section-title">IL KIT DEI GUSCI COMUNI & GLI ALTARI</h2>
+          </div>
+
+          <article class="lore-card">
+            <h3 class="lore-subhead">I Tre Gusci Comuni Archetipici (WYSIWYG)</h3>
+
+            <div class="lore-grid-3col">
+              <!-- La Falange Cenerina (Il Fante) -->
+              <div class="lore-grimoire-box">
+                <div class="lore-grimoire-head">
+                  <div class="lore-grimoire-name">⚔️ 1. La Falange Cenerina (Il Fante)</div>
+                </div>
+                <div class="lore-grimoire-desc">
+                  <ul style="margin-left: 18px;">
+                    <li><strong>Movimento:</strong> 1 casella in avanti; colpisce solo in diagonale frontale.</li>
+                    <li><strong>Meccanica:</strong> Se avanza in coppia spalla a spalla, blocca il passaggio a qualsiasi nemico.</li>
+                  </ul>
+                </div>
+                <div class="lore-flavor-text">
+                  <strong>Flavor Text:</strong> <em>"Non hanno occhi per guardare indietro. Hanno solo un giuramento inciso sulle nocche e ferro abbastanza spesso da ritardare l'inevitabile."</em>
+                </div>
+              </div>
+
+              <!-- Lo Scudiero d'Ardesia (La Guardia dell'Altare) -->
+              <div class="lore-grimoire-box">
+                <div class="lore-grimoire-head">
+                  <div class="lore-grimoire-name">🛡️ 2. Lo Scudiero d'Ardesia (La Guardia dell'Altare)</div>
+                </div>
+                <div class="lore-grimoire-desc">
+                  <ul style="margin-left: 18px;">
+                    <li><strong>Movimento:</strong> Ortogonale 1 casella.</li>
+                    <li><strong>Meccanica:</strong> Se termina il turno su una casella adiacente a un Altare, genera +1 Mana aggiuntivo per il Comandante.</li>
+                  </ul>
+                </div>
+                <div class="lore-flavor-text">
+                  <strong>Flavor Text:</strong> <em>"Poggiano la fronte sulla pietra fredda e ne ascoltano le pulsazioni. Quando si rialzano, le loro vene colano ferro liquido."</em>
+                </div>
+              </div>
+
+              <!-- Il Balestriere della Faglia (L'Unità da Tiro) -->
+              <div class="lore-grimoire-box">
+                <div class="lore-grimoire-head">
+                  <div class="lore-grimoire-name">🏹 3. Il Balestriere della Faglia (L'Unità da Tiro)</div>
+                </div>
+                <div class="lore-grimoire-desc">
+                  <ul style="margin-left: 18px;">
+                    <li><strong>Movimento:</strong> 1 casella. <strong>Gittata:</strong> 3 caselle ortogonali in linea retta senza ostacoli.</li>
+                    <li><strong>Meccanica:</strong> Se non muove durante il turno, il tiro trafigge la prima armatura e infligge sanguinamento.</li>
+                  </ul>
+                </div>
+                <div class="lore-flavor-text">
+                  <strong>Flavor Text:</strong> <em>"Prendere la mira sulle Zolle è una scienza geometrica: non si calcola il vento, ma la curvatura della colpa del bersaglio."</em>
+                </div>
+              </div>
+            </div>
+
+            <!-- ESPANSIONE OPERATIVA: IL GRIMORIO DELLE TRUPPE BASE (CARD DB) -->
+            <div class="lore-db-showcase">
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
+                <h4 style="font-family: 'Cinzel', serif; color: var(--gold-primary); font-size: 1.05rem; margin: 0;">L'Arsenale delle Truppe Base nel Grimorio (Card DB)</h4>
+                <span class="lore-badge lore-badge-gold">Catalogo Operativo Standard</span>
+              </div>
+              <p style="font-size: 0.88rem; color: #a4b0be; margin: 0;">Oltre agli archetipi della tradizione orale, le legioni di Veridia schierano sulla scacchiera i gusci comuni forgiati nel catalogo base:</p>
+              
+              <div class="lore-db-grid">
+                <div class="lore-db-item">
+                  <div class="lore-db-item-header"><span>Recluta di Leva</span> <span>1 Mana | 2/2</span></div>
+                  <div>Truppa da scontro rapido. La fanteria sacrificale che assorbe la prima ondata nemica.</div>
+                </div>
+                <div class="lore-db-item">
+                  <div class="lore-db-item-header"><span>Scudiero Rovinato</span> <span>1 Mana | 1/3</span></div>
+                  <div>Scudo pesante di prima linea; trattiene le cariche d'urto a protezione degli altari.</div>
+                </div>
+                <div class="lore-db-item">
+                  <div class="lore-db-item-header"><span>Segugio Randagio</span> <span>1 Mana | 2/1</span></div>
+                  <div>Predatore veloce a 1 Mana. Schierato per contestare caselle e raccogliere gocce di Sangue.</div>
+                </div>
+                <div class="lore-db-item">
+                  <div class="lore-db-item-header"><span>Mercenario Veterano</span> <span>2 Mana | 2/4</span></div>
+                  <div>Colonna vertebrale delle formazioni avanzate; resistente a fendenti e magie dirette.</div>
+                </div>
+                <div class="lore-db-item">
+                  <div class="lore-db-item-header"><span>Giavellottiere Cieco</span> <span>2 Mana | 2/2</span></div>
+                  <div>Tiratore ortogonale con gittata 2. Scaglia dardi seguendo il peso del metallo calpestato.</div>
+                </div>
+                <div class="lore-db-item">
+                  <div class="lore-db-item-header"><span>Esploratore delle Cripte</span> <span>1 Mana | 1/2</span></div>
+                  <div>Incursore agile per aggiramenti su fianchi non presidiati.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- I QUATTRO ALTARI FONDATIVI -->
+            <h3 class="lore-subhead" style="margin-top: 18px;">I Quattro Altari Litici Fondativi</h3>
+
+            <div class="lore-altars-grid">
+              <!-- Altare di Pietra (Stabilità) -->
+              <div class="lore-altar-card">
+                <div class="lore-altar-title">🏛️ Altare di Pietra (Stabilità)</div>
+                <div style="font-size: 0.88rem; color: #cdd3e6;"><strong>Altare di Pietra (Stabilità):</strong> Presidiarlo fortifica le truppe, riducendo i danni subiti da chi difende le prime linee.</div>
+              </div>
+
+              <!-- Altare di Ferro (Offensiva) -->
+              <div class="lore-altar-card">
+                <div class="lore-altar-title">⚙️ Altare di Ferro (Offensiva)</div>
+                <div style="font-size: 0.88rem; color: #cdd3e6;"><strong>Altare di Ferro (Offensiva):</strong> Converte la linfa tellurica in impatto, fornendo carte attacco e maggiore gittata d'urto.</div>
+              </div>
+
+              <!-- Altare di Sangue (Transmutazione) -->
+              <div class="lore-altar-card">
+                <div class="lore-altar-title">🩸 Altare di Sangue (Transmutazione)</div>
+                <div style="font-size: 0.88rem; color: #cdd3e6;"><strong>Altare di Sangue (Transmutazione):</strong> Permette di bruciare salute del Comandante per pescare carte o generare sangue immediato.</div>
+              </div>
+
+              <!-- Altare di Risonanza (Cinetica) -->
+              <div class="lore-altar-card">
+                <div class="lore-altar-title">🌀 Altare di Risonanza (Cinetica)</div>
+                <div style="font-size: 0.88rem; color: #cdd3e6;"><strong>Altare di Risonanza (Cinetica):</strong> Nodo di piegatura spaziale; permette di traslare pedine a sorpresa o scambiare la posizione di due alleati.</div>
+              </div>
+            </div>
+
+            <!-- ESPANSIONE STRUTTURE TELLURICHE CARD DB -->
+            <div class="lore-db-showcase">
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
+                <h4 style="font-family: 'Cinzel', serif; color: var(--gold-primary); font-size: 1.05rem; margin: 0;">L'Ecologia Espansa degli Altari di Fazione (Set α & Set β)</h4>
+                <span class="lore-badge lore-badge-cyan">50+ Monoliti Unici nel Card DB</span>
+              </div>
+              <p style="font-size: 0.88rem; color: #a4b0be; margin: 0;">Con l'esplosione della Corona, la materia delle Zolle si è specializzata nei pilastri tellurici di ciascuna Fazione:</p>
+
+              <div class="lore-db-grid">
+                <div class="lore-db-item" style="border-top: 2px solid #74b9ff;">
+                  <div class="lore-db-item-header"><span>Altari del Ferro</span> <span class="lore-faction-tag" style="background:#2980b9;">Ferro</span></div>
+                  <div><em>Monolito di Granito Nero, Faglia d'Ossidiana, Torre degli Arpioni, Muro di Piastre Fuso, Redotta del Cavaliere.</em> Specializzati in difesa d'acciaio, ancoraggio delle pedine e immunità al flanking.</div>
+                </div>
+
+                <div class="lore-db-item" style="border-top: 2px solid #ff7675;">
+                  <div class="lore-db-item-header"><span>Altari delle Ceneri</span> <span class="lore-faction-tag" style="background:#c0392b;">Ceneri</span></div>
+                  <div><em>Cimitero Putrescente, Nido della Nutrice, Calderone di Pece, Altare dei Vermi, Tumulo d'Ossa.</em> Trasformano le zolle dei caduti in trappole necrosanti e rilasciano Sangue immediato al sacrificio.</div>
+                </div>
+
+                <div class="lore-db-item" style="border-top: 2px solid #00e5ff;">
+                  <div class="lore-db-item-header"><span>Altari della Marea</span> <span class="lore-faction-tag" style="background:#0984e3;">Marea</span></div>
+                  <div><em>Occhio del Vortice, Singolarità Stabile, Faro delle Maree, Barriera di Rifrazione, Condotto di Kaelen.</em> Piegatura gravitazionale: attirano o respingono nemici e ampliano la gittata dei proiettili.</div>
+                </div>
+
+                <div class="lore-db-item" style="border-top: 2px solid #f5cd79;">
+                  <div class="lore-db-item-header"><span>Altari del Silenzio</span> <span class="lore-faction-tag" style="background:#d4af37; color:#000;">Silenzio</span></div>
+                  <div><em>Sigillo della Legge, Cella di Giudizio, Tassa di Pietra, Colonna dell'Inquisizione, Cattedrale Sbarrata.</em> Sanzioni doganali sul mana nemico, interdizione di Riti avversari e castigo su accumulo Sangue.</div>
+                </div>
+
+                <div class="lore-db-item" style="border-top: 2px solid #e17055;">
+                  <div class="lore-db-item-header"><span>Altari della Forgia</span> <span class="lore-faction-tag" style="background:#e67e22;">Forgia</span></div>
+                  <div><em>Fornace di Magma Vivo, Calderone di Scorie Fuso, Incudine di Faglia, Muro di Scorie Incandescenti.</em> Risveglio di automi, potenziamento ATT e deflagrazioni laviche ad area alla distruzione.</div>
+                </div>
+
+                <div class="lore-db-item" style="border-top: 2px solid #a4b0be;">
+                  <div class="lore-db-item-header"><span>Monoliti della Frattura</span> <span class="lore-faction-tag" style="background:#57606f;">Neutrali</span></div>
+                  <div><em>Monolito della Frattura (+2 Mana), Altare dell'Ossidiana Nera (Riflesso danni), Faro di Guerra, Trincea Scavata, Altare del Salasso.</em> Antiche vestigia che erogano fino a 2 Mana a turno a fronte di gravi drawback fisici.</div>
+                </div>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <!-- 6. SET β: GLI EREDI DELLA SECESSIONE -->
+        <section class="lore-section" id="lore-secessione">
+          <div class="lore-section-header">
+            <div class="lore-section-num">6</div>
+            <h2 class="lore-section-title">SET β: GLI EREDI DELLA SECESSIONE</h2>
+          </div>
+
+          <article class="lore-card">
+            <p>Mentre i cinque fondatori si dissanguavano nelle zolle primarie, la pressione del sangue nel terreno ha rotto i sigilli delle province esterne e delle prigioni sotterranee. I secessionisti emergono per divorare i resti dei fondatori indeboliti nel <strong>Set β</strong>.</p>
+
+            <div class="lore-grid-commanders">
+              <!-- 1. Garek lo Spezzatore (L'Incudine del Confine) -->
+              <div class="lore-commander-box set-beta">
+                <div class="lore-comm-title">♞ 1. Garek lo Spezzatore (L'Incudine del Confine)</div>
+                <div class="lore-attr-list">
+                  <div class="lore-attr-item"><strong>Ruolo:</strong> Spaccatore di Linee / Balzo a L.</div>
+                  <div class="lore-attr-item"><strong>Meccanica:</strong> Inchioda i nemici all'atterraggio impedendone il movimento nel turno successivo; anima gli altari facendoli diventare incudini d'impatto.</div>
+                  <div class="lore-attr-item"><strong>Visione:</strong> La terra va spaccata e ridotta in polvere finché non rimane solo chi sa reggere il peso del ferro.</div>
+                </div>
+              </div>
+
+              <!-- 2. Morbida, la Nutrice (La Regina dei Tumuli) -->
+              <div class="lore-commander-box set-beta">
+                <div class="lore-comm-title">🪦 2. Morbida, la Nutrice (La Regina dei Tumuli)</div>
+                <div class="lore-attr-list">
+                  <div class="lore-attr-item"><strong>Ruolo:</strong> Necrosi Spaziale e Cimiteri-Trappola.</div>
+                  <div class="lore-attr-item"><strong>Meccanica:</strong> Passo diagonale; converte le caselle dei caduti in Tumuli che feriscono e intrappolano chi vi transita.</div>
+                  <div class="lore-attr-item"><strong>Visione:</strong> Il lutto non è debolezza: ogni corpo che cade è un seme che germoglia per soffocare i vivi.</div>
+                </div>
+              </div>
+
+              <!-- 3. Kaelen, Occhio del Vortice (Il Signore della Faglia) -->
+              <div class="lore-commander-box set-beta">
+                <div class="lore-comm-title">🌀 3. Kaelen, Occhio del Vortice (Il Signore della Faglia)</div>
+                <div class="lore-attr-list">
+                  <div class="lore-attr-item"><strong>Ruolo:</strong> Mobilità Estrema / Balzo di Faglia.</div>
+                  <div class="lore-attr-item"><strong>Meccanica:</strong> Doppio passo, gittata 2, abilità di scambiare la propria posizione con quella di un'altra unità allineata.</div>
+                  <div class="lore-attr-item"><strong>Visione:</strong> La stabilità è morte; il mondo appartiene a chi sa muoversi dove le leggi della geometria crollano.</div>
+                </div>
+              </div>
+
+              <!-- 4. Justiciar Kael (Il Boia della Bilancia) -->
+              <div class="lore-commander-box set-beta">
+                <div class="lore-comm-title">⚔️ 4. Justiciar Kael (Il Boia della Bilancia)</div>
+                <div class="lore-attr-list">
+                  <div class="lore-attr-item"><strong>Ruolo:</strong> Castigo Istantaneo sul Sangue.</div>
+                  <div class="lore-attr-item"><strong>Meccanica:</strong> Monitora l'accumulo di sangue nemico ed esegue sentenze a distanza che trapassano qualsiasi armatura.</div>
+                  <div class="lore-attr-item"><strong>Visione:</strong> Non c'è redenzione nella carne: chi accumula potere sporco merita la sentenza assoluta.</div>
+                </div>
+              </div>
+
+              <!-- 5. Ignis, la Forgia Vivente (Il Catalizzatore Instabile) -->
+              <div class="lore-commander-box set-beta">
+                <div class="lore-comm-title">🔥 5. Ignis, la Forgia Vivente (Il Catalizzatore Instabile)</div>
+                <div class="lore-attr-list">
+                  <div class="lore-attr-item"><strong>Ruolo:</strong> Furia Cumulativa / Detonazioni.</div>
+                  <div class="lore-attr-item"><strong>Meccanica:</strong> Guadagna danni, carica ed esplosioni ad area ogni volta che un Altare viene distrutto.</div>
+                  <div class="lore-attr-item"><strong>Visione:</strong> Lasciate che tutto bruci: la forgia finale restituirà al cosmo una forma perfetta.</div>
+                </div>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <!-- 7. LA MAPPA DELLE ESPANSIONI FUTURE -->
+        <section class="lore-section" id="lore-roadmap">
+          <div class="lore-section-header">
+            <div class="lore-section-num">7</div>
+            <h2 class="lore-section-title">LA MAPPA DELLE ESPANSIONI FUTURE</h2>
+          </div>
+
+          <article class="lore-card">
+            <div class="lore-callout">
+              <h3 class="lore-subhead" style="margin-top: 0;">I Frammenti Minori (Le Schegge di Rimbalzo)</h3>
+              <p><strong>I Frammenti Minori (Le Schegge di Rimbalzo):</strong> Milioni di micro-schegge piovute su Veridia hanno infettato capi tribù silvani, regine di ghiaccio o guardiani dei mari, trasformandoli in Comandanti capaci di proiettare gusci.</p>
+            </div>
+
+            <div class="lore-callout blood">
+              <h3 class="lore-subhead" style="margin-top: 0; color: #ff7675;">I Mietitori Esterni (Set γ)</h3>
+              <p><strong>I Mietitori Esterni (Set γ):</strong> Fazioni e ordini dai confini del mondo (ordini cavallereschi ciechi, culti abissali) che non lottano per ricomporre la Corona, ma per distruggerla ed eliminare la piaga energetica che consuma il pianeta.</p>
+            </div>
+
+            <div class="lore-callout">
+              <h3 class="lore-subhead" style="margin-top: 0;">I Figli della Fessura (Set δ)</h3>
+              <p><strong>I Figli della Fessura (Set δ):</strong> Entità generate dal sangue accumulato sotto le zolle in secoli di carneficina; mostruosità che corrompono le caselle e rifiutano l'ecologia degli Altari tradizionali.</p>
+            </div>
+          </article>
+        </section>
+
+        <!-- 8. REGOLA D'INGRESSO AL TAVOLO -->
+        <section class="lore-section" id="lore-regola">
+          <div class="lore-section-header">
+            <div class="lore-section-num">8</div>
+            <h2 class="lore-section-title">REGOLA D'INGRESSO AL TAVOLO</h2>
+          </div>
+
+          <article class="lore-card">
+            <div class="lore-callout">
+              <div class="lore-callout-title">La metafora d'ingresso</div>
+              <p><strong>La metafora d'ingresso:</strong> <em>"Immaginate una partita a scacchi in cui ogni pezzo che muore grida vendetta, dandovi il sangue per ribaltare la partita con una magia prima che l'avversario esulti."</em></p>
+            </div>
+
+            <div class="lore-callout">
+              <div class="lore-callout-title">Setup asimmetrico consigliato</div>
+              <p><strong>Setup asimmetrico consigliato:</strong> Valeria del Bastione contro Malakor del Rogo.</p>
+            </div>
+
+            <div class="lore-callout blood">
+              <div class="lore-callout-title">Sentenza di Fine Partita</div>
+              <p><strong>Sentenza di Fine Partita:</strong> Nessun punteggio. <em>"Taglia la testa al re avversario. Quando il comandante tocca terra, l'intera armata svanisce."</em></p>
+            </div>
+          </article>
+        </section>
+
+        <!-- FOOTER DI NAVIGAZIONE E AZIONI -->
+        <footer class="lore-actions-footer">
+          <button type="button" class="btn btn-gold" onclick="showPaneDirect('tutorial')">⚔️ Accademia Tattica</button>
+          <button type="button" class="btn btn-crimson" onclick="showPane('battle-lobby')">👑 Schiera la Battaglia</button>
+          <button type="button" class="btn" onclick="openDeckBuilder()">📜 Deckbuilder Arena</button>
+        </footer>
+
       </div>
     </div>
 
@@ -3929,6 +5742,20 @@
         }
       }
     });
-  </script>
+  
+    // --- HASH ROUTING (es. #lore, #tutorial, #deck) ---
+    window.addEventListener("hashchange", () => {
+      const h = window.location.hash.replace("#", "");
+      if (["lore", "tutorial", "home", "battle-lobby", "deck", "packs", "auth"].includes(h)) {
+        showPaneDirect(h);
+      }
+    });
+    if (window.location.hash) {
+      const initH = window.location.hash.replace("#", "");
+      if (["lore", "tutorial", "home", "battle-lobby", "deck", "packs", "auth"].includes(initH)) {
+        setTimeout(() => showPaneDirect(initH), 80);
+      }
+    }
+</script>
 </body>
 </html>
