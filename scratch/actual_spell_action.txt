@@ -1,0 +1,216 @@
+function castSpell(targetIdx) {
+      const role = getMyRole();
+      const cardId = battleState[role].hand[battleState.selectedHandIndex];
+      executeSpellAction(targetIdx, cardId, role, true);
+    }
+
+    function executeSpellAction(targetIdx, cardId, player = getMyRole(), isOriginator = true) {
+      const card = CARDS_DB[cardId];
+      if (!card) return;
+      const opp = (player === 'p1') ? 'p2' : 'p1';
+
+      if (isOriginator) {
+        if (battleState[player].mana < card.cost) return showToast("Mana insufficiente!");
+        if (card.id === 'spell_bloodsurge' && battleState[player].blood < 2) {
+          return showToast("Eruzione di Sangue richiede almeno 2 Sangue!");
+        }
+        const sq = document.querySelector(`.square[data-index="${targetIdx}"]`);
+        if (!sq || !sq.classList.contains('highlight-spell-target')) return;
+
+        battleState[player].mana -= card.cost;
+        if (card.id === 'spell_bloodsurge') battleState[player].blood -= 2;
+        battleState[player].hand.splice(battleState.selectedHandIndex, 1);
+        battleState.selectedHandIndex = null;
+      } else {
+        battleState[player].mana -= card.cost;
+        if (card.id === 'spell_bloodsurge') battleState[player].blood -= 2;
+        const hIdx = battleState[player].hand.indexOf(cardId);
+        if (hIdx !== -1) battleState[player].hand.splice(hIdx, 1);
+      }
+      if (!battleState[player].graveyard) battleState[player].graveyard = [];
+      battleState[player].graveyard.push(cardId);
+
+      addLog(`${player.toUpperCase()} lancia Sortilegio: ${card.name} [${RARITY_NAMES[card.rarity] || 'Comune'}] su cella ${targetIdx}`, player);
+
+      animateCardPlayed(card, () => {
+        const target = battleState.grid[targetIdx];
+
+        if (card.id === 'spell_cleave' && target) {
+          target.hp -= 2;
+          addLog(`${target.name} subisce 2 danni da Fendente Spettrale (PV residui: ${target.hp})`, 'sys');
+          if (target.hp <= 0) handlePieceDefeated(targetIdx, player);
+        } else if (card.id === 'spell_fortify' && target) {
+          const healAmount = target.type === 'altar' ? 3 : 2;
+          target.hp += healAmount;
+          addLog(`${target.name} ottiene +${healAmount} PV da Fortificazione Litica`, 'sys');
+        } else if (card.id === 'spell_push' && target) {
+          pushPiece(targetIdx, 2, player);
+        } else if (card.id === 'spell_heal') {
+          battleState[player].hp = Math.min(battleState[player].commander.hp, battleState[player].hp + 3);
+          const comm = battleState.grid[targetIdx];
+          if (comm) comm.hp = Math.min(battleState[player].commander.hp, comm.hp + 3);
+          addLog("Grazia del Bastione ripristina 3 PV al Comandante!", 'sys');
+        } else if (card.id === 'spell_bloodsurge' && target) {
+          target.hp -= 3;
+          addLog(`${target.name} subisce 3 danni da Eruzione di Sangue!`, 'sys');
+          if (target.hp <= 0) handlePieceDefeated(targetIdx, player);
+        } else if (card.id === 'spell_wrath') {
+          getAdjs(targetIdx).forEach(adj => {
+            const p = battleState.grid[adj];
+            if (p && p.owner === opp) {
+              p.hp -= 2;
+              addLog(`Giudizio Implacabile colpisce ${p.name} (-2 PV)`, 'sys');
+              if (p.hp <= 0) handlePieceDefeated(adj, player);
+            }
+          });
+        }
+
+        if (isP2P && isOriginator) {
+          sendNetMsg({ type: 'ACTION_SPELL', targetIdx, cardId, player });
+        }
+
+        clearHighlights();
+        renderPieces();
+        updateHUD();
+        renderHand();
+        checkWin();
+      });
+    }
+
+    function deployCard(idx) {
+      const role = getMyRole();
+      const cardId = battleState[role].hand[battleState.selectedHandIndex];
+      executeDeployAction(idx, cardId, role, true);
+    }
+
+    function executeDeployAction(idx, cardId, player = getMyRole(), isOriginator = true) {
+      const card = CARDS_DB[cardId];
+      if (!card) return;
+
+      if (isOriginator) {
+        if (battleState[player].mana < card.cost) return showToast("Mana insufficiente!");
+        const sq = document.querySelector(`.square[data-index="${idx}"]`);
+        if (!sq || !sq.classList.contains('highlight-deploy')) return;
+
+        if (card.type === 'altar') {
+          const altarsCount = battleState.grid.filter(p => p && p.owner === player && p.type === 'altar').length;
+          if (altarsCount >= 4) return showToast("Limite raggiunto: massimo 4 Altari contemporanei!");
+          if (battleState[player].altarDeployedThisTurn) return showToast("Puoi schierare al massimo 1 Altare per turno!");
+        }
+
+        battleState[player].mana -= card.cost;
+        battleState[player].hand.splice(battleState.selectedHandIndex, 1);
+        battleState.selectedHandIndex = null;
+      } else {
+        battleState[player].mana -= card.cost;
+        const hIdx = battleState[player].hand.indexOf(cardId);
+        if (hIdx !== -1) battleState[player].hand.splice(hIdx, 1);
+      }
+
+      addLog(`${player.toUpperCase()} schiera ${card.name} [${RARITY_NAMES[card.rarity] || 'Comune'}] su cella ${idx}`, player);
+
+      animateCardPlayed(card, () => {
+        const hasSlancio = card.slancio || (card.keywords && card.keywords.includes('slancio'));
+        const piece = {
+          owner: player,
+          type: card.type,
+          cardId: card.id,
+          name: card.name,
+          hp: card.hp,
+          att: card.att,
+          move: card.move || 'orth',
+          range: card.range || 1,
+          glyph: card.glyph,
+          desc: card.desc,
+          rarity: card.rarity || 'common',
+          exhausted: !hasSlancio
+        };
+
+        battleState.grid[idx] = piece;
+
+        if (card.type === 'altar') {
+          battleState[player].altarDeployedThisTurn = true;
+          battleState[player].maxMana = Math.min(4, battleState[player].maxMana + 1);
+          battleState[player].mana = Math.min(battleState[player].maxMana, battleState[player].mana + 1);
+          if (player === getMyRole()) showToast("Altare attivo! +1 Mana subito!");
+        }
+
+        if (isP2P && isOriginator) {
+          sendNetMsg({ type: 'ACTION_DEPLOY', idx, cardId, player });
+        }
+
+        clearHighlights();
+        renderPieces();
+        updateHUD();
+        renderHand();
+      });
+    }
+
+    function pushPiece(targetIdx, distance, originatorOwner) {
+      const target = battleState.grid[targetIdx];
+      if (!target) return;
+
+      const commIdx = battleState.grid.findIndex(p => p && p.owner === originatorOwner && p.type === 'commander');
+      const cr = Math.floor(commIdx / 8), cc = commIdx % 8;
+      const tr = Math.floor(targetIdx / 8), tc = targetIdx % 8;
+      const dr = Math.sign(tr - cr), dc = Math.sign(tc - cc);
+
+      let currentPos = targetIdx;
+      for (let s = 1; s <= distance; s++) {
+        const nr = Math.floor(currentPos / 8) + dr;
+        const nc = (currentPos % 8) + dc;
+
+        if (nr < 0 || nr >= 8 || nc < 0 || nc >= 8 || battleState.grid[nr * 8 + nc]) {
+          target.hp -= 2;
+          addLog(`${target.name} sbatte contro un ostacolo/bordo e subisce 2 danni da urto!`, 'sys');
+          if (target.hp <= 0) handlePieceDefeated(currentPos, originatorOwner);
+          return;
+        } else {
+          const nextPos = nr * 8 + nc;
+          battleState.grid[nextPos] = target;
+          battleState.grid[currentPos] = null;
+          currentPos = nextPos;
+        }
+      }
+      addLog(`${target.name} è stato respinto!`, 'sys');
+    }
+
+    function handlePieceDefeated(idx, killerOwner) {
+      const piece = battleState.grid[idx];
+      if (!piece) return;
+
+      battleState.grid[idx] = null;
+      const isAltarBlood = piece.cardId === 'altar_blood' || piece.name === 'Altare del Sangue';
+      const bloodReward = isAltarBlood ? 1 : 2;
+
+      // Inserisce il pezzo nel cimitero del suo proprietario
+      if (piece.owner && piece.type !== 'commander') {
+        const pOwner = piece.owner;
+        if (!battleState[pOwner].graveyard) battleState[pOwner].graveyard = [];
+        const deadCardId = piece.cardId || piece.name;
+        if (deadCardId) battleState[pOwner].graveyard.push(deadCardId);
+      }
+
+      if (killerOwner === 'p1') {
+        battleState.p1.blood += bloodReward;
+        battleState.p2.blood += 1;
+        addLog(`${piece.name} distrutto! P1 ottiene +${bloodReward} Sangue, P2 riceve +1 Sangue`, 'sys');
+      } else {
+        battleState.p2.blood += bloodReward;
+        battleState.p1.blood += 1;
+        addLog(`${piece.name} distrutto! P2 ottiene +${bloodReward} Sangue, P1 riceve +1 Sangue`, 'sys');
+      }
+    }
+
+    function hasIronAltarProtection(idx, piece) {
+      if (!piece || piece.type === 'altar') return false;
+      return getAdjs(idx).some(adj => {
+        const p = battleState.grid[adj];
+        return p && p.owner === piece.owner && p.type === 'altar' && (p.cardId === 'altar_iron' || p.name === 'Altare di Ferro');
+      });
+    }
+
+    function attack(from, to) {
+      executeAttackAction(from, to, getMyRole(), true);
+    }
+
