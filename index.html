@@ -2471,6 +2471,82 @@
     .piece.exhausted { filter: grayscale(85%) opacity(0.65); }
     .piece-badges { position: absolute; bottom: -4px; display: flex; gap: 2px; font-size: 0.6rem; background: rgba(0,0,0,0.9); padding: 1px 5px; border-radius: 3px; border: 1px solid rgba(255,255,255,0.2); }
 
+    /* FLOATING COLLISION POPUP & IMPACT ANIMATIONS */
+    @keyframes collisionPop {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, 15px) scale(0.65);
+      }
+      18% {
+        opacity: 1;
+        transform: translate(-50%, -10px) scale(1.18);
+      }
+      35% {
+        transform: translate(-50%, -6px) scale(1.0);
+      }
+      75% {
+        opacity: 1;
+        transform: translate(-50%, -24px) scale(1.0);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -44px) scale(0.85);
+      }
+    }
+
+    @keyframes pieceBumpShake {
+      0% { transform: translate3d(0, 0, 0); }
+      25% { transform: translate3d(var(--bump-x, 0px), var(--bump-y, 0px), 0) scale(1.08); }
+      50% { transform: translate3d(calc(var(--bump-x, 0px) * -0.6), calc(var(--bump-y, 0px) * -0.6), 0) scale(0.96); }
+      75% { transform: translate3d(calc(var(--bump-x, 0px) * 0.3), calc(var(--bump-y, 0px) * 0.3), 0); }
+      100% { transform: translate3d(0, 0, 0) scale(1); }
+    }
+
+    .collision-popup {
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translate(-50%, 0);
+      background: linear-gradient(135deg, rgba(38, 10, 16, 0.97) 0%, rgba(16, 6, 10, 0.98) 100%);
+      border: 2px solid #ff4757;
+      color: #fff;
+      font-family: 'Inter', -apple-system, sans-serif;
+      font-size: 0.72rem;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      box-shadow: 0 4px 20px rgba(255, 71, 87, 0.65), 0 0 12px rgba(0, 0, 0, 0.9);
+      pointer-events: none;
+      z-index: 9999;
+      white-space: nowrap;
+      animation: collisionPop 1.6s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.9);
+    }
+
+    .collision-popup .pop-main {
+      color: #ff6b81;
+      font-size: 0.75rem;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .collision-popup .pop-sub {
+      color: #ffd32a;
+      font-size: 0.65rem;
+      font-weight: 800;
+    }
+
+    .piece.bump-impact {
+      animation: pieceBumpShake 0.4s ease-out forwards;
+    }
+
     .battle-hand-bar { height: 110px; background: #06070a; border-top: 2px solid var(--border-frame); display: flex; align-items: center; gap: 10px; padding: 6px 16px; overflow-x: auto; flex-shrink: 0; }
     .hand-card { min-width: 90px; width: 90px; height: 94px; background: var(--bg-card); border: 1px solid var(--border-frame); border-radius: 6px; padding: 6px; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; flex-shrink: 0; }
     .hand-card.selected { border-color: var(--mana-cyan); }
@@ -3948,7 +4024,7 @@
               <div class="mockup-hud-bottom">
                 <div class="hud-resources">
                   <div class="res-chip mana">🔷 <strong>MANA:</strong> 2 / 2</div>
-                  <div class="res-chip blood">🩸 <strong>SANGUE:</strong> 1 (Rito a 3)</div>
+                  <div class="res-chip blood">🩸 <strong>SANGUE:</strong> 1 (Rito a 5)</div>
                   <div class="res-chip action">⚡ <strong>AZIONI:</strong> 2 Disponibili</div>
                 </div>
                 <div class="hud-hand-preview">
@@ -4006,7 +4082,7 @@
                     <br>• <strong>+2 Sangue</strong> all'uccisore (premio per l'offensiva).
                     <br>• <strong>+1 Sangue</strong> alla vittima (meccanica di rimonta / <em>catch-up</em>).
                   </li>
-                  <li><strong>A cosa serve:</strong> Attivare il devastante <strong>Rito d'Armi</strong> del Comandante (costo: 3 o 4 Sangue) e lanciare incantesimi neri di sacrificio.</li>
+                  <li><strong>A cosa serve:</strong> Attivare il devastante <strong>Rito d'Armi</strong> del Comandante (costo: 5 o 6 Sangue) e lanciare incantesimi neri di sacrificio.</li>
                   <li><strong>Vantaggio:</strong> Il Sangue si conserva da un turno all'altro finché non decidi di scatenare il Rito.</li>
                 </ul>
               </div>
@@ -4089,7 +4165,7 @@
                   <tr class="highlight-spent">
                     <td><strong>Attivare il Rito d'Armi Supremo</strong></td>
                     <td><span class="cost-pill paid">1 Azione ⚡</span></td>
-                    <td>3 o 4 Segnalini Sangue 🩸</td>
+                    <td>5 o 6 Segnalini Sangue 🩸</td>
                     <td>Scatena l'abilità suprema del Comandante ribaltando la partita.</td>
                   </tr>
                 </tbody>
@@ -4382,47 +4458,47 @@
           </div>
 
           <article class="tutorial-card">
-            <p>Ogni Comandante possiede un'<strong>Aura Passiva</strong> permanente e un devastante <strong>Rito d'Armi Supremo</strong>. Il Rito è il punto di rottura di ogni schermaglia: costa <strong>1 Azione Tattica</strong> e una scorta di <strong>3 o 4 Segnalini Sangue 🩸</strong>.</p>
+            <p>Ogni Comandante possiede un'<strong>Aura Passiva</strong> permanente e un devastante <strong>Rito d'Armi Supremo</strong>. Il Rito è il punto di rottura di ogni schermaglia: costa <strong>1 Azione Tattica</strong> e una scorta di <strong>5 o 6 Segnalini Sangue 🩸</strong>.</p>
 
             <div class="rites-grid-overview">
               <div class="rite-item">
                 <div class="r-comm">🛡️ Valeria (Ferro — Set α)</div>
-                <div class="r-cost">3 Sangue 🩸 | 1 Azione ⚡</div>
+                <div class="r-cost">5 Sangue 🩸 | 1 Azione ⚡</div>
                 <div class="r-name">Schianto Sismico</div>
                 <p>2 danni ad area ortogonale e respinge tutti i nemici attorno di 1 casella (+2 danni se sbattono contro muri o bordi).</p>
               </div>
 
               <div class="rite-item">
                 <div class="r-comm">💀 Malakor (Ceneri — Set α)</div>
-                <div class="r-cost">4 Sangue 🩸 | 1 Azione ⚡</div>
+                <div class="r-cost">6 Sangue 🩸 | 1 Azione ⚡</div>
                 <div class="r-name">Vincolo di Carne</div>
                 <p>Maledice un bersaglio a vista: per 1 intero round, il 50% di tutti i danni subiti da Malakor vengono istantaneamente riflessi sul bersaglio.</p>
               </div>
 
               <div class="rite-item">
                 <div class="r-comm">🌌 Vespera (Marea — Set α)</div>
-                <div class="r-cost">3 Sangue 🩸 | 1 Azione ⚡</div>
+                <div class="r-cost">5 Sangue 🩸 | 1 Azione ⚡</div>
                 <div class="r-name">Ritorno di Marea</div>
                 <p>Proietta un'onda gravitazionale che scaglia un pezzo qualsiasi fino a 3 caselle in linea retta (+2 danni se impatta).</p>
               </div>
 
               <div class="rite-item">
                 <div class="r-comm">⚖️ Aurelius (Silenzio — Set α)</div>
-                <div class="r-cost">4 Sangue 🩸 | 1 Azione ⚡</div>
+                <div class="r-cost">6 Sangue 🩸 | 1 Azione ⚡</div>
                 <div class="r-name">Decima di Ferro</div>
                 <p>Sanziona l'avversario con una tassa di sangue: ogni volta che il nemico sferra un attacco, deve pagare 1 Mana o subire 2 danni diretti.</p>
               </div>
 
               <div class="rite-item">
                 <div class="r-comm">🌋 Vulkan (Forgia — Set α)</div>
-                <div class="r-cost">3 Sangue 🩸 | 1 Azione ⚡</div>
+                <div class="r-cost">5 Sangue 🩸 | 1 Azione ⚡</div>
                 <div class="r-name">Altare Semovente</div>
                 <p>Infonde fuoco primordiale in un Altare alleato adiacente, animandolo istantaneamente in un automa da guerra 3/5 che attacca subito.</p>
               </div>
 
               <div class="rite-item">
                 <div class="r-comm">♞ Garek (Ferro — Set β)</div>
-                <div class="r-cost">3 Sangue 🩸 | 1 Azione ⚡</div>
+                <div class="r-cost">5 Sangue 🩸 | 1 Azione ⚡</div>
                 <div class="r-name">Ruggito del Bastione</div>
                 <p>Ripara 4 PV a un Altare alleato e gli conferisce 2 ATT di contrattacco difensivo per il resto della contesa.</p>
               </div>
@@ -4952,16 +5028,16 @@
     // --- 2. DATABASE DELLE CARTE & COMANDANTI ---
         // === REGISTRO COMPLETO DEI 10 COMANDANTI UFFICIALI ===
     const COMMANDERS_POOL = {
-      "Valeria": { faction: "Ferro", glyph: "🛡️", shortName: "VALERIA", hp: 42, att: 3, move: "ortho", rite: "Schianto Sismico", bloodCost: 3, desc: "Aura: Alleati e Altari adiacenti subiscono -1 danno; non scavalcabile da balzi a L. Rito (3🩸, 1⚡): 2 danni ad area e respinta di 1 casella (+1 danno urto)." },
-      "Garek": { faction: "Ferro", glyph: "♞", shortName: "GAREK", hp: 38, att: 3, move: "knight", rite: "Ruggito del Bastione", bloodCost: 3, desc: "Aura: Le truppe nemiche adiacenti non possono muoversi. Rito (3🩸, 1⚡): Ripara 4 PV a un Altare alleato e gli conferisce 2 ATT di contrattacco." },
-      "Malakor": { faction: "Ceneri", glyph: "💀", shortName: "MALAKOR", hp: 35, att: 2, move: "omni", rite: "Vincolo di Carne", bloodCost: 4, desc: "Aura: Ottiene 2 Sangue a perdita; evoca truppe adiacenti anche ai propri Altari. Rito (4🩸, 1⚡): Riflette il 50% dei danni subiti sul bersaglio per 1 round." },
-      "Morbida": { faction: "Ceneri", glyph: "🪱", shortName: "MORBIDA", hp: 32, att: 3, move: "diag", rite: "Masticazione", bloodCost: 4, desc: "Aura: I caduti alleati creano Cimiteri (1 danno ai nemici che transitano). Rito (4🩸, 1⚡): Consuma un Cimitero per infliggere 3 danni diretti a vista." },
-      "Vespera": { faction: "Marea", glyph: "🌌", shortName: "VESPERA", hp: 35, att: 2, move: "diag", rite: "Ritorno di Marea", bloodCost: 3, desc: "Aura: Trascina di 1 casella un nemico entro 3 passi a inizio turno. Rito (3🩸, 1⚡): Spinge un pezzo fino a 3 caselle in linea retta (+2 danni se urta ostacoli)." },
-      "Kaelen": { faction: "Marea", glyph: "🌀", shortName: "KAELEN", hp: 34, att: 2, move: "ortho2", rite: "Faglia Gravitazionale", bloodCost: 3, desc: "Aura: Respinge di 1 chi entra adiacente. Rito (3🩸, 1⚡): Scambia di posizione due unità qualsiasi entro 4 passi." },
-      "Aurelius": { faction: "Silenzio", glyph: "⚖️", shortName: "AURELIUS", hp: 38, att: 3, move: "ortho", rite: "Decima di Ferro", bloodCost: 4, desc: "Aura: Chi muore entro 2 caselle da lui non genera Sangue per nessuno. Rito (4🩸, 1⚡): Se il nemico attacca paga 1 Mana o subisce 2 danni." },
-      "Justiciar Kael": { faction: "Silenzio", glyph: "📜", shortName: "J. KAEL", hp: 36, att: 3, move: "ortho", rite: "Sigillo della Legge", bloodCost: 4, desc: "Aura: L'avversario subisce 1 danno diretto se accumula 3+ Sangue in un turno. Rito (4🩸, 1⚡): Blocca abilità [1⚡] e Riti nemici per 1 turno." },
-      "Vulkan": { faction: "Forgia", glyph: "🌋", shortName: "VULKAN", hp: 36, att: 4, move: "ortho", rite: "Altare Semovente", bloodCost: 3, desc: "Aura: Può sacrificare un Altare adiacente per curarsi 4 PV o dare +2/+2 a un automa. Rito (3🩸, 1⚡): Anima un Altare in truppa 3/5 che attacca subito." },
-      "Ignis": { faction: "Forgia", glyph: "🔥", shortName: "IGNIS", hp: 32, att: 4, move: "ortho", rite: "Eruzione di Scorie", bloodCost: 3, desc: "Aura: Guadagna permanentemente +1 ATT ogni volta che cade un Altare alleato. Rito (3🩸, 1⚡): Sacrifica un Altare per infliggere 3 danni ad area ortogonale." }
+      "Valeria": { faction: "Ferro", glyph: "🛡️", shortName: "VALERIA", hp: 42, att: 3, move: "ortho", rite: "Schianto Sismico", bloodCost: 5, desc: "Aura: Alleati e Altari adiacenti subiscono -1 danno; non scavalcabile da balzi a L. Rito (5🩸, 1⚡): 2 danni ad area e respinta di 1 casella (+1 danno urto)." },
+      "Garek": { faction: "Ferro", glyph: "♞", shortName: "GAREK", hp: 38, att: 3, move: "knight", rite: "Ruggito del Bastione", bloodCost: 5, desc: "Aura: Le truppe nemiche adiacenti non possono muoversi. Rito (5🩸, 1⚡): Ripara 4 PV a un Altare alleato e gli conferisce 2 ATT di contrattacco." },
+      "Malakor": { faction: "Ceneri", glyph: "💀", shortName: "MALAKOR", hp: 35, att: 2, move: "omni", rite: "Vincolo di Carne", bloodCost: 6, desc: "Aura: Ottiene 2 Sangue a perdita; evoca truppe adiacenti anche ai propri Altari. Rito (6🩸, 1⚡): Riflette il 50% dei danni subiti sul bersaglio per 1 round." },
+      "Morbida": { faction: "Ceneri", glyph: "🪱", shortName: "MORBIDA", hp: 32, att: 3, move: "diag", rite: "Masticazione", bloodCost: 6, desc: "Aura: I caduti alleati creano Cimiteri (1 danno ai nemici che transitano). Rito (6🩸, 1⚡): Consuma un Cimitero per infliggere 3 danni diretti a vista." },
+      "Vespera": { faction: "Marea", glyph: "🌌", shortName: "VESPERA", hp: 35, att: 2, move: "diag", rite: "Ritorno di Marea", bloodCost: 5, desc: "Aura: Trascina di 1 casella un nemico entro 3 passi a inizio turno. Rito (5🩸, 1⚡): Spinge un pezzo fino a 3 caselle in linea retta (+2 danni se urta ostacoli)." },
+      "Kaelen": { faction: "Marea", glyph: "🌀", shortName: "KAELEN", hp: 34, att: 2, move: "ortho2", rite: "Faglia Gravitazionale", bloodCost: 5, desc: "Aura: Respinge di 1 chi entra adiacente. Rito (5🩸, 1⚡): Scambia di posizione due unità qualsiasi entro 4 passi." },
+      "Aurelius": { faction: "Silenzio", glyph: "⚖️", shortName: "AURELIUS", hp: 38, att: 3, move: "ortho", rite: "Decima di Ferro", bloodCost: 6, desc: "Aura: Chi muore entro 2 caselle da lui non genera Sangue per nessuno. Rito (6🩸, 1⚡): Se il nemico attacca paga 1 Mana o subisce 2 danni." },
+      "Justiciar Kael": { faction: "Silenzio", glyph: "📜", shortName: "J. KAEL", hp: 36, att: 3, move: "ortho", rite: "Sigillo della Legge", bloodCost: 6, desc: "Aura: L'avversario subisce 1 danno diretto se accumula 3+ Sangue in un turno. Rito (6🩸, 1⚡): Blocca abilità [1⚡] e Riti nemici per 1 turno." },
+      "Vulkan": { faction: "Forgia", glyph: "🌋", shortName: "VULKAN", hp: 36, att: 4, move: "ortho", rite: "Altare Semovente", bloodCost: 5, desc: "Aura: Può sacrificare un Altare adiacente per curarsi 4 PV o dare +2/+2 a un automa. Rito (5🩸, 1⚡): Anima un Altare in truppa 3/5 che attacca subito." },
+      "Ignis": { faction: "Forgia", glyph: "🔥", shortName: "IGNIS", hp: 32, att: 4, move: "ortho", rite: "Eruzione di Scorie", bloodCost: 5, desc: "Aura: Guadagna permanentemente +1 ATT ogni volta che cade un Altare alleato. Rito (5🩸, 1⚡): Sacrifica un Altare per infliggere 3 danni ad area ortogonale." }
     };
 
     // === DATABASE COMPLETO CARTE: SET ALPHA & BETA (560 CARTE UNICHE) ===
@@ -7435,9 +7511,47 @@
       }, 250);
     }
 
-    function executeMoveAction(fromIdx, toIdx, player = getMyRole(), isOriginator = true) {
+    function showCollisionPopup(squareIdx, mainText = "💥 SBATTO CONTRO OSTACOLO!", subText = "+2 Danni da Urto!") {
+      const sq = document.querySelector(`.square[data-index="${squareIdx}"]`);
+      if (!sq) return;
+
+      const pop = document.createElement('div');
+      pop.className = 'collision-popup';
+      pop.innerHTML = `
+        <span class="pop-main">${mainText}</span>
+        <span class="pop-sub">${subText}</span>
+      `;
+      sq.appendChild(pop);
+
+      setTimeout(() => {
+        if (pop.parentNode) pop.parentNode.removeChild(pop);
+      }, 1650);
+    }
+
+    function bumpPiece(squareIdx, dr, dc) {
+      const sq = document.querySelector(`.square[data-index="${squareIdx}"]`);
+      const pieceEl = sq ? sq.querySelector('.piece') : null;
+      if (!pieceEl) return;
+
+      const bumpX = dc * 20;
+      const bumpY = dr * 20;
+      pieceEl.style.setProperty('--bump-x', `${bumpX}px`);
+      pieceEl.style.setProperty('--bump-y', `${bumpY}px`);
+
+      pieceEl.classList.remove('bump-impact');
+      pieceEl.offsetHeight; // reflow
+      pieceEl.classList.add('bump-impact');
+      setTimeout(() => {
+        pieceEl.classList.remove('bump-impact');
+      }, 450);
+    }
+
+    function executeMoveAction(fromIdx, toIdx, player = getMyRole(), isOriginator = true, onDone = null) {
       const piece = battleState.grid[fromIdx];
-      if (!piece) return;
+      if (!piece) {
+        if (onDone) onDone();
+        return;
+      }
       battleState.selectedSquare = null;
       clearHighlights();
 
@@ -7454,6 +7568,7 @@
         if (isP2P && isOriginator) {
           sendNetMsg({ type: 'ACTION_MOVE', from: fromIdx, to: toIdx, player });
         }
+        if (onDone) onDone();
       });
     }
 
@@ -7742,21 +7857,22 @@
       const opp = (player === 'p1') ? 'p2' : 'p1';
       const name = card.name || card.id;
 
+      const bloodReq = card.bloodCost || (name === 'Salasso Crudele' || card.id === 'spell_bloodsurge' ? 2 : 0);
       if (isOriginator) {
         if (battleState[player].mana < card.cost) return showToast("Mana insufficiente!");
-        if ((name === 'Salasso Crudele' || card.id === 'spell_bloodsurge') && battleState[player].blood < 2) {
-          return showToast("Salasso Crudele richiede almeno 2 Sangue!");
+        if (bloodReq > 0 && battleState[player].blood < bloodReq) {
+          return showToast(`${card.name} richiede almeno ${bloodReq} 🩸 Sangue!`);
         }
         const sq = document.querySelector(`.square[data-index="${targetIdx}"]`);
         if (!sq || !sq.classList.contains('highlight-spell-target')) return;
 
         battleState[player].mana -= card.cost;
-        if (name === 'Salasso Crudele' || card.id === 'spell_bloodsurge') battleState[player].blood -= 2;
+        if (bloodReq > 0) battleState[player].blood -= bloodReq;
         battleState[player].hand.splice(battleState.selectedHandIndex, 1);
         battleState.selectedHandIndex = null;
       } else {
         battleState[player].mana -= card.cost;
-        if (name === 'Salasso Crudele' || card.id === 'spell_bloodsurge') battleState[player].blood -= 2;
+        if (bloodReq > 0) battleState[player].blood -= bloodReq;
         const hIdx = battleState[player].hand.indexOf(cardId);
         if (hIdx !== -1) battleState[player].hand.splice(hIdx, 1);
       }
@@ -7886,33 +8002,98 @@
       });
     }
 
-    function pushPiece(targetIdx, distance, originatorOwner) {
+    function pushPiece(targetIdx, distance, originatorOwner, onComplete = null) {
       const target = battleState.grid[targetIdx];
-      if (!target) return;
+      if (!target) {
+        if (onComplete) onComplete();
+        return;
+      }
 
       const commIdx = battleState.grid.findIndex(p => p && p.owner === originatorOwner && p.type === 'commander');
-      const cr = Math.floor(commIdx / 8), cc = commIdx % 8;
-      const tr = Math.floor(targetIdx / 8), tc = targetIdx % 8;
-      const dr = Math.sign(tr - cr), dc = Math.sign(tc - cc);
+      let dr = 0, dc = 0;
+      if (commIdx !== -1 && commIdx !== targetIdx) {
+        const cr = Math.floor(commIdx / 8), cc = commIdx % 8;
+        const tr = Math.floor(targetIdx / 8), tc = targetIdx % 8;
+        dr = Math.sign(tr - cr);
+        dc = Math.sign(tc - cc);
+      } else {
+        dr = (originatorOwner === 'p1') ? 1 : -1;
+        dc = 0;
+      }
+      if (dr === 0 && dc === 0) dr = (originatorOwner === 'p1') ? 1 : -1;
 
       let currentPos = targetIdx;
+      let stepsTaken = 0;
+      let hitObstacle = false;
+      let obstacleName = '';
+
       for (let s = 1; s <= distance; s++) {
         const nr = Math.floor(currentPos / 8) + dr;
         const nc = (currentPos % 8) + dc;
 
-        if (nr < 0 || nr >= 8 || nc < 0 || nc >= 8 || battleState.grid[nr * 8 + nc]) {
-          target.hp -= 2;
-          addLog(`${target.name} sbatte contro un ostacolo/bordo e subisce 2 danni da urto!`, 'sys');
-          if (target.hp <= 0) handlePieceDefeated(currentPos, originatorOwner);
-          return;
-        } else {
-          const nextPos = nr * 8 + nc;
-          battleState.grid[nextPos] = target;
-          battleState.grid[currentPos] = null;
-          currentPos = nextPos;
+        if (nr < 0 || nr >= 8 || nc < 0 || nc >= 8) {
+          hitObstacle = true;
+          obstacleName = 'il bordo invalicabile della scacchiera';
+          break;
         }
+
+        const nextPos = nr * 8 + nc;
+        const occupant = battleState.grid[nextPos];
+        if (occupant) {
+          hitObstacle = true;
+          obstacleName = occupant.type === 'altar' ? `l'Altare (${occupant.name})` : (occupant.name || 'un ostacolo');
+          break;
+        }
+
+        battleState.grid[nextPos] = target;
+        battleState.grid[currentPos] = null;
+        currentPos = nextPos;
+        stepsTaken++;
       }
-      addLog(`${target.name} è stato respinto!`, 'sys');
+
+      const finishPush = () => {
+        if (hitObstacle) {
+          bumpPiece(currentPos, dr, dc);
+          target.hp -= 2;
+          addLog(`${target.name} sbatte contro ${obstacleName} e subisce 2 danni da urto! [PV: ${target.hp}]`, 'sys');
+          showCollisionPopup(currentPos, "💥 SBATTO CONTRO L'OSTACOLO!", `+2 Danni Urto (${obstacleName})`);
+
+          if (target.hp <= 0) {
+            setTimeout(() => {
+              handlePieceDefeated(currentPos, originatorOwner);
+              renderPieces();
+              updateHUD();
+              checkWin();
+              if (onComplete) onComplete();
+            }, 300);
+            return;
+          }
+        } else if (stepsTaken > 0) {
+          addLog(`${target.name} è stato respinto di ${stepsTaken} caselle!`, 'sys');
+          showCollisionPopup(currentPos, "💨 RESPINTO!", `${stepsTaken} passi indietro`);
+        }
+
+        renderPieces();
+        updateHUD();
+        checkWin();
+        if (onComplete) onComplete();
+      };
+
+      if (stepsTaken > 0) {
+        // Ripristina momentaneamente la griglia per consentire a glidePiece di trovare l'elemento nella casella di origine
+        battleState.grid[targetIdx] = target;
+        battleState.grid[currentPos] = null;
+        renderPieces();
+
+        glidePiece(targetIdx, currentPos, () => {
+          battleState.grid[currentPos] = target;
+          battleState.grid[targetIdx] = null;
+          renderPieces();
+          finishPush();
+        });
+      } else {
+        finishPush();
+      }
     }
 
     function handlePieceDefeated(idx, killerOwner) {
@@ -7921,7 +8102,14 @@
 
       battleState.grid[idx] = null;
       const isAltarBlood = piece.cardId === 'altar_blood' || piece.name === 'Altare del Sangue';
-      const bloodReward = isAltarBlood ? 1 : 2;
+      
+      // Calcolo ricompensa Sangue calibrata:
+      // Truppe leggere (costo 1-2 o pedine base): +1 Sangue a chi uccide
+      // Altari, Colossi o Truppe pesanti (costo 3+): +2 Sangue a chi uccide
+      // Altare del Sangue conferisce +1 Sangue bonus
+      const isHeavy = piece.type === 'altar' || (piece.cost && piece.cost >= 3) || piece.type === 'commander';
+      let bloodReward = isHeavy ? 2 : 1;
+      if (isAltarBlood) bloodReward += 1;
 
       // Inserisce il pezzo nel cimitero del suo proprietario
       if (piece.owner && piece.type !== 'commander') {
@@ -8554,14 +8742,12 @@
         if (bestAction.type === 'attack') {
            addLog(`IA (Min-Max) sferra attacco tattico da ${bestAction.from} a ${bestAction.to}!`, 'p2');
            executeAttackAction(bestAction.from, bestAction.to, 'p2', false);
+           setTimeout(() => aiCombatPhase(actionsLeft - 1, onComplete), 650);
         } else {
-           executeMoveAction(bestAction.from, bestAction.to, 'p2', false);
+           executeMoveAction(bestAction.from, bestAction.to, 'p2', false, () => {
+             setTimeout(() => aiCombatPhase(actionsLeft - 1, onComplete), 450);
+           });
         }
-        
-        renderPieces();
-        updateHUD();
-        checkWin();
-        setTimeout(() => aiCombatPhase(actionsLeft - 1, onComplete), 500);
         return;
       }
 
@@ -8707,18 +8893,24 @@
 
       addLog(`${player.toUpperCase()} scatena il Rito d'Armi di Kaelen: scambia di posizione ${p1.name} e ${p2.name}!`, player);
 
-      // Scambio fisico sulla scacchiera
-      battleState.grid[firstIdx] = p2;
-      battleState.grid[secondIdx] = p1;
+      showCollisionPopup(firstIdx, "🌀 VORTICE!", "Scambio Kaelen");
+      showCollisionPopup(secondIdx, "🌀 VORTICE!", "Scambio Kaelen");
 
-      if (isP2P && isOriginator) {
-        sendNetMsg({ type: 'ACTION_KAELEN_SWAP', firstIdx, secondIdx, player });
-      }
+      // Glides both pieces
+      glidePiece(firstIdx, secondIdx, () => {});
+      glidePiece(secondIdx, firstIdx, () => {
+        battleState.grid[firstIdx] = p2;
+        battleState.grid[secondIdx] = p1;
 
-      renderPieces();
-      updateHUD();
-      checkWin();
-      if (player === getMyRole()) showToast("🌀 Scambio del Vortice completato con successo!");
+        if (isP2P && isOriginator) {
+          sendNetMsg({ type: 'ACTION_KAELEN_SWAP', firstIdx, secondIdx, player });
+        }
+
+        renderPieces();
+        updateHUD();
+        checkWin();
+        if (player === getMyRole()) showToast("🌀 Scambio del Vortice completato con successo!");
+      });
     }
 
     function executeRiteAction(player = getMyRole(), isOriginator = true) {
