@@ -8199,6 +8199,46 @@
       }
     }
 
+    
+    function aiEvaluateBoardState(state) {
+      if (!state || !state.grid) return 0;
+      let score = 0;
+      
+      const p1CommIdx = state.grid.findIndex(p => p && p.owner === 'p1' && p.type === 'commander');
+      const p2CommIdx = state.grid.findIndex(p => p && p.owner === 'p2' && p.type === 'commander');
+      const p1Comm = p1CommIdx !== -1 ? state.grid[p1CommIdx] : null;
+      const p2Comm = p2CommIdx !== -1 ? state.grid[p2CommIdx] : null;
+
+      if (!p2Comm || p2Comm.hp <= 0) return -999999;
+      if (!p1Comm || p1Comm.hp <= 0) return 999999;
+
+      score += (p2Comm.hp * 1000);
+      score -= (p1Comm.hp * 1000);
+
+      const p1R = Math.floor(p1CommIdx / 8), p1C = p1CommIdx % 8;
+      const p2R = Math.floor(p2CommIdx / 8), p2C = p2CommIdx % 8;
+
+      state.grid.forEach((p, idx) => {
+        if (!p) return;
+        const r = Math.floor(idx / 8), c = idx % 8;
+        
+        let pieceValue = (p.att * 20) + (p.hp * 10);
+        if (p.type === 'altar') pieceValue = 50 + p.hp * 5;
+        if (p.type === 'commander') pieceValue = 0;
+
+        if (p.owner === 'p2') {
+          score += pieceValue;
+          const distToEnemy = Math.hypot(p1R - r, p1C - c);
+          score += (15 - distToEnemy) * 3;
+        } else {
+          score -= pieceValue;
+          const distToMe = Math.hypot(p2R - r, p2C - c);
+          score -= (15 - distToMe) * 3;
+        }
+      });
+      return score;
+    }
+
     // --- MOTORE IA COMBATTIVA, TATTICA ED OFFENSIVA ---
     function runAI() {
       if (isP2P) return;
@@ -8206,12 +8246,8 @@
 
       addLog(`--- TURNO IA AGGRESSIVA --- [Mana: ${battleState.p2.mana}/${battleState.p2.maxMana}, Azioni: ${battleState.p2.actions}]`, 'p2');
 
-      // FASE 1: SCHIERAMENTO DINAMICO DI ALTARE E TRUPPE (Sfrutta tutto il Mana disponibile)
       aiDeployPhase(() => {
-        // FASE 2: RITO SUPREMO DEL COMANDANTE SE DISPONIBILE
         aiCommanderRitePhase();
-
-        // FASE 3: COMBATTIMENTO ED AVANZATA CON TUTTE LE UNITA (Sfrutta tutte le Azioni ⚡)
         aiCombatPhase(2, () => {
           renderPieces();
           updateHUD();
@@ -8254,7 +8290,6 @@
           const card = CARDS_DB[cardId];
           const freeSqs = aiGetDeployableSquares();
           if (freeSqs.length > 0) {
-            // Posiziona l'altare nelle righe arretrate (righe 6 o 7)
             freeSqs.sort((a, b) => Math.floor(b / 8) - Math.floor(a / 8));
             const targetSq = freeSqs[0];
 
@@ -8265,17 +8300,9 @@
             battleState.p2.mana = Math.min(battleState.p2.maxMana, battleState.p2.mana + 1);
 
             battleState.grid[targetSq] = {
-              owner: 'p2',
-              type: 'altar',
-              cardId: card.id,
-              name: card.name,
-              hp: card.hp || 6,
-              att: card.att || 0,
-              move: 'none',
-              range: 0,
-              glyph: card.glyph || '🏛️',
-              desc: card.desc,
-              rarity: card.rarity || 'common',
+              owner: 'p2', type: 'altar', cardId: card.id, name: card.name,
+              hp: card.hp || 6, att: card.att || 0, move: 'none', range: 0,
+              glyph: card.glyph || '🏛️', desc: card.desc, rarity: card.rarity || 'common',
               exhausted: false
             };
             addLog(`IA attiva Altare: ${card.name} su cella ${targetSq} (+1 Mana max!)`, 'p2');
@@ -8285,7 +8312,95 @@
         }
       }
 
-      // 2. Schiera quante più unità possibili con il Mana rimasto
+      // 2. Magie intelligenti (Cure, Spinte, Frantumare)
+      let spellPlayed = true;
+      while (spellPlayed && battleState.p2.mana > 0) {
+        spellPlayed = false;
+        const spellIdx = battleState.p2.hand.findIndex(cId => {
+          const c = CARDS_DB[cId];
+          return c && (c.type === 'spell' || c.type === 'reaction') && c.cost <= battleState.p2.mana;
+        });
+        if (spellIdx !== -1) {
+          const cardId = battleState.p2.hand[spellIdx];
+          const card = CARDS_DB[cardId];
+          const name = card.name || cardId;
+          
+          if (name === 'Frantumare la Pietra' || card.id === 'spell_cleave') {
+            const p1AltarIdx = battleState.grid.findIndex(p => p && p.owner === 'p1' && p.type === 'altar');
+            if (p1AltarIdx !== -1) {
+              battleState.p2.mana -= card.cost;
+              battleState.p2.hand.splice(spellIdx, 1);
+              if(!battleState.p2.graveyard) battleState.p2.graveyard = [];
+              battleState.p2.graveyard.push(cardId);
+              const altar = battleState.grid[p1AltarIdx];
+              addLog(`IA lancia ${name} polverizzando l'Altare nemico ${altar.name}!`, 'p2');
+              battleState.grid[p1AltarIdx] = null;
+              spellPlayed = true;
+            }
+          } else if (name === 'Salasso Crudele' || card.id === 'spell_bloodsurge') {
+             const p1CommIdx = battleState.grid.findIndex(p => p && p.owner === 'p1' && p.type === 'commander');
+             if (p1CommIdx !== -1) {
+               battleState.p2.mana -= card.cost;
+               battleState.p2.hand.splice(spellIdx, 1);
+               if(!battleState.p2.graveyard) battleState.p2.graveyard = [];
+               battleState.p2.graveyard.push(cardId);
+               battleState.grid[p1CommIdx].hp -= 2;
+               addLog(`IA lancia ${name}: infligge 2 danni al tuo Comandante!`, 'p2');
+               if (battleState.grid[p1CommIdx].hp <= 0) handlePieceDefeated(p1CommIdx, 'p2');
+               spellPlayed = true;
+             }
+          } else if (name === 'Marcia Forzata' || card.id === 'spell_heal' || name === 'Carica Sfondante' || card.id === 'spell_push') {
+             // Cerca pezzo forte e lo sposta avanti
+             const myUnits = battleState.grid.map((p,i) => ({p,i})).filter(x => x.p && x.p.owner === 'p2' && x.p.type !== 'altar');
+             if (myUnits.length > 0) {
+               myUnits.sort((a,b) => b.p.att - a.p.att);
+               const unit = myUnits[0];
+               
+               const p1CommIdx = battleState.grid.findIndex(p => p && p.owner === 'p1' && p.type === 'commander');
+               const p1R = p1CommIdx !== -1 ? Math.floor(p1CommIdx/8) : 0;
+               const p1C = p1CommIdx !== -1 ? p1CommIdx%8 : 3;
+               
+               const r1 = Math.floor(unit.i / 8), c1 = unit.i % 8;
+               const orthoDests = [unit.i - 8, unit.i + 8, unit.i - 1, unit.i + 1].filter(dest => {
+                 if (dest < 0 || dest > 63) return false;
+                 const r2 = Math.floor(dest / 8), c2 = dest % 8;
+                 if (Math.abs(r1 - r2) + Math.abs(c1 - c2) !== 1) return false;
+                 return !battleState.grid[dest];
+               });
+               
+               if (orthoDests.length > 0) {
+                 // Sceglie la destinazione che lo avvicina di più al comandante avversario
+                 orthoDests.sort((a,b) => {
+                    const da = Math.hypot(p1R - Math.floor(a/8), p1C - a%8);
+                    const db = Math.hypot(p1R - Math.floor(b/8), p1C - b%8);
+                    return da - db;
+                 });
+                 const targetSq = orthoDests[0];
+                 
+                 battleState.p2.mana -= card.cost;
+                 battleState.p2.hand.splice(spellIdx, 1);
+                 if(!battleState.p2.graveyard) battleState.p2.graveyard = [];
+                 battleState.p2.graveyard.push(cardId);
+                 
+                 if (name === 'Carica Sfondante' || card.id === 'spell_push') unit.p.att += 1;
+                 battleState.grid[targetSq] = unit.p;
+                 battleState.grid[unit.i] = null;
+                 addLog(`IA lancia ${name} su ${unit.p.name}, avanzandolo!`, 'p2');
+                 spellPlayed = true;
+               }
+             }
+          }
+          
+          if (spellPlayed) {
+             renderPieces();
+             updateHUD();
+          } else {
+             break; 
+          }
+        }
+      }
+
+      // 3. Schiera quante più unità possibili con il Mana rimasto
       let canDeployMore = true;
       while (canDeployMore && battleState.p2.mana > 0) {
         canDeployMore = false;
@@ -8299,16 +8414,33 @@
           const card = CARDS_DB[cardId];
           const freeSqs = aiGetDeployableSquares();
           if (freeSqs.length > 0) {
-            // Ordina verso il nemico (Comandante P1)
             const p1CommIdx = battleState.grid.findIndex(p => p && p.owner === 'p1' && p.type === 'commander');
-            if (p1CommIdx !== -1) {
-              const p1R = Math.floor(p1CommIdx / 8), p1C = p1CommIdx % 8;
-              freeSqs.sort((a, b) => {
-                const distA = Math.hypot(p1R - Math.floor(a / 8), p1C - (a % 8));
-                const distB = Math.hypot(p1R - Math.floor(b / 8), p1C - (b % 8));
-                return distA - distB;
-              });
+            
+            // Logica di difesa: se il mio comandante è sotto pressione, schiero difensivo
+            const p2CommIdx = battleState.grid.findIndex(p => p && p.owner === 'p2' && p.type === 'commander');
+            let defensive = false;
+            if (p2CommIdx !== -1) {
+               const p2R = Math.floor(p2CommIdx / 8), p2C = p2CommIdx % 8;
+               const p1UnitsNear = battleState.grid.filter((p,i) => p && p.owner === 'p1' && Math.hypot(p2R - Math.floor(i/8), p2C - i%8) <= 3);
+               if (p1UnitsNear.length > 0) defensive = true;
             }
+
+            if (defensive && p2CommIdx !== -1) {
+               const p2R = Math.floor(p2CommIdx / 8), p2C = p2CommIdx % 8;
+               freeSqs.sort((a, b) => {
+                  const distA = Math.hypot(p2R - Math.floor(a / 8), p2C - (a % 8));
+                  const distB = Math.hypot(p2R - Math.floor(b / 8), p2C - (b % 8));
+                  return distA - distB;
+               });
+            } else if (p1CommIdx !== -1) {
+               const p1R = Math.floor(p1CommIdx / 8), p1C = p1CommIdx % 8;
+               freeSqs.sort((a, b) => {
+                 const distA = Math.hypot(p1R - Math.floor(a / 8), p1C - (a % 8));
+                 const distB = Math.hypot(p1R - Math.floor(b / 8), p1C - (b % 8));
+                 return distA - distB;
+               });
+            }
+            
             const targetSq = freeSqs[0];
 
             battleState.p2.mana -= card.cost;
@@ -8316,44 +8448,16 @@
 
             const hasSlancio = (card.slancio || (card.keywords && card.keywords.includes('slancio')) || (card.desc && card.desc.includes('Slancio')));
             battleState.grid[targetSq] = {
-              owner: 'p2',
-              type: 'unit',
-              cardId: card.id,
-              name: card.name,
-              hp: card.hp || 3,
-              att: card.att || 2,
-              move: card.move || 'orth',
-              range: card.gittata || 1,
-              glyph: card.glyph || '⚔️',
-              desc: card.desc,
-              rarity: card.rarity || 'common',
-              exhausted: !hasSlancio
+              owner: 'p2', type: 'unit', cardId: card.id, name: card.name,
+              hp: card.hp || 3, att: card.att || 2, move: card.move || 'orth',
+              range: card.gittata || 1, glyph: card.glyph || '⚔️', desc: card.desc,
+              rarity: card.rarity || 'common', exhausted: !hasSlancio
             };
             addLog(`IA schiera ${card.name} (${card.att}/${card.hp}) su cella ${targetSq}${hasSlancio ? ' [SLANCIO PRONTO!]' : ''}`, 'p2');
             canDeployMore = true;
             renderPieces();
             updateHUD();
           }
-        }
-      }
-
-      // 3. Usa sortilegi distruttivi se disponibili
-      const spellIdx = battleState.p2.hand.findIndex(cId => {
-        const c = CARDS_DB[cId];
-        return c && (c.type === 'spell' || c.type === 'reaction') && c.cost <= battleState.p2.mana;
-      });
-      if (spellIdx !== -1) {
-        const cardId = battleState.p2.hand[spellIdx];
-        const card = CARDS_DB[cardId];
-        const p1AltarIdx = battleState.grid.findIndex(p => p && p.owner === 'p1' && p.type === 'altar');
-        if (p1AltarIdx !== -1 && (card.name === 'Frantumare la Pietra' || card.id === 'spell_cleave')) {
-          battleState.p2.mana -= card.cost;
-          battleState.p2.hand.splice(spellIdx, 1);
-          const altar = battleState.grid[p1AltarIdx];
-          addLog(`IA lancia Frantumare la Pietra polverizzando l'Altare nemico ${altar.name}!`, 'p2');
-          battleState.grid[p1AltarIdx] = null;
-          renderPieces();
-          updateHUD();
         }
       }
 
@@ -8369,6 +8473,7 @@
         if (comm.id === 'ignis' || comm.id === 'morbida') {
           const p1Units = battleState.grid.map((p, i) => ({ p, i })).filter(item => item.p && item.p.owner === 'p1');
           if (p1Units.length > 0) {
+            p1Units.sort((a,b) => b.p.att - a.p.att);
             const target = p1Units[0];
             target.p.hp -= 2;
             addLog(`Rito di ${comm.name} infligge 2 danni a ${target.p.name}!`, 'p2');
@@ -8396,30 +8501,63 @@
         return onComplete();
       }
 
-      // 1. Priorità di attacco immediato
-      let bestAttack = null;
+      let bestAction = null;
+      let bestScore = -9999999;
+      const initialScore = aiEvaluateBoardState(battleState);
+
       for (const item of readyPieces) {
         const moves = getValidMoves(item.idx, item.piece);
+        
         if (moves.attacks && moves.attacks.length > 0) {
           for (const targetIdx of moves.attacks) {
             const def = battleState.grid[targetIdx];
             if (!def || def.owner !== 'p1') continue;
 
-            let score = 10;
-            if (def.type === 'commander') score = 100;
-            else if (def.hp <= item.piece.att) score = 50;
-            else if (def.type === 'altar') score = 20;
-
-            if (!bestAttack || score > bestAttack.score) {
-              bestAttack = { from: item.idx, to: targetIdx, score };
+            const clonedGrid = battleState.grid.map(p => p ? {...p} : null);
+            const defPiece = clonedGrid[targetIdx];
+            defPiece.hp -= item.piece.att;
+            
+            let simulatedScore = 0;
+            if (defPiece.hp <= 0) {
+               clonedGrid[targetIdx] = null;
+            }
+            
+            simulatedScore = aiEvaluateBoardState({ grid: clonedGrid });
+            simulatedScore += item.piece.att * 10;
+            
+            if (simulatedScore > bestScore) {
+               bestScore = simulatedScore;
+               bestAction = { type: 'attack', from: item.idx, to: targetIdx, piece: item.piece };
+            }
+          }
+        }
+        
+        if (moves.moves && moves.moves.length > 0) {
+          for (const targetIdx of moves.moves) {
+            const clonedGrid = battleState.grid.map(p => p ? {...p} : null);
+            clonedGrid[targetIdx] = clonedGrid[item.idx];
+            clonedGrid[item.idx] = null;
+            
+            let simulatedScore = aiEvaluateBoardState({ grid: clonedGrid });
+            simulatedScore += Math.random() * 5; // fuzziness to prevent freeze
+            
+            if (simulatedScore > bestScore) {
+               bestScore = simulatedScore;
+               bestAction = { type: 'move', from: item.idx, to: targetIdx, piece: item.piece };
             }
           }
         }
       }
 
-      if (bestAttack) {
-        addLog(`IA sceglie di attaccare con determinazione!`, 'p2');
-        executeAttackAction(bestAttack.from, bestAttack.to, 'p2', false);
+      // We only execute if the move makes progress, or if we have to just to end turn
+      if (bestAction && (bestScore > initialScore - 100)) {
+        if (bestAction.type === 'attack') {
+           addLog(`IA (Min-Max) sferra attacco tattico da ${bestAction.from} a ${bestAction.to}!`, 'p2');
+           executeAttackAction(bestAction.from, bestAction.to, 'p2', false);
+        } else {
+           executeMoveAction(bestAction.from, bestAction.to, 'p2', false);
+        }
+        
         renderPieces();
         updateHUD();
         checkWin();
@@ -8427,42 +8565,9 @@
         return;
       }
 
-      // 2. Avanzata aggressiva verso il nemico
-      const p1CommIdx = battleState.grid.findIndex(p => p && p.owner === 'p1' && p.type === 'commander');
-      const targetR = p1CommIdx !== -1 ? Math.floor(p1CommIdx / 8) : 0;
-      const targetC = p1CommIdx !== -1 ? p1CommIdx % 8 : 3;
-
-      let bestMove = null;
-      for (const item of readyPieces) {
-        const moves = getValidMoves(item.idx, item.piece);
-        if (moves.moves && moves.moves.length > 0) {
-          const curR = Math.floor(item.idx / 8), curC = item.idx % 8;
-          const currentDist = Math.hypot(targetR - curR, targetC - curC);
-
-          for (const mIdx of moves.moves) {
-            const mR = Math.floor(mIdx / 8), mC = mIdx % 8;
-            const newDist = Math.hypot(targetR - mR, targetC - mC);
-            const progress = currentDist - newDist;
-
-            if (!bestMove || progress > bestMove.progress) {
-              bestMove = { from: item.idx, to: mIdx, piece: item.piece, progress };
-            }
-          }
-        }
-      }
-
-      if (bestMove && bestMove.progress >= 0) {
-        executeMoveAction(bestMove.from, bestMove.to, 'p2', false);
-        renderPieces();
-        updateHUD();
-        setTimeout(() => aiCombatPhase(actionsLeft - 1, onComplete), 500);
-        return;
-      }
-
       onComplete();
     }
-
-    function checkWin() {
+\n    function checkWin() {
       const p1Alive = battleState.grid.some(p => p && p.owner === 'p1' && p.type === 'commander' && p.hp > 0);
       const p2Alive = battleState.grid.some(p => p && p.owner === 'p2' && p.type === 'commander' && p.hp > 0);
 
