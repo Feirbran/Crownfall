@@ -2471,6 +2471,224 @@
     .piece.exhausted { filter: grayscale(85%) opacity(0.65); }
     .piece-badges { position: absolute; bottom: -4px; display: flex; gap: 2px; font-size: 0.6rem; background: rgba(0,0,0,0.9); padding: 1px 5px; border-radius: 3px; border: 1px solid rgba(255,255,255,0.2); }
 
+    /* LOBBY BROWSER & OPEN ROOMS SIDEBAR */
+    .lobby-layout-wrap {
+      max-width: 1240px;
+      width: 100%;
+      margin: 20px auto 40px auto;
+      padding: 0 16px;
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    @media (max-width: 960px) {
+      .lobby-layout-wrap {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .lobby-open-rooms-panel {
+      background: var(--bg-card);
+      border: 2px solid var(--border-gold);
+      border-radius: 10px;
+      padding: 18px 20px;
+      box-shadow: 0 10px 35px rgba(0,0,0,0.85), inset 0 0 25px rgba(201, 155, 66, 0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .open-rooms-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-frame);
+      padding-bottom: 12px;
+    }
+
+    .open-rooms-title {
+      font-size: 1.05rem;
+      font-weight: 900;
+      color: var(--gold-primary);
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .open-rooms-live-pill {
+      font-size: 0.68rem;
+      font-weight: 800;
+      color: #2ed573;
+      background: rgba(46, 213, 115, 0.12);
+      border: 1px solid rgba(46, 213, 115, 0.4);
+      padding: 3px 8px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .open-rooms-live-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #2ed573;
+      box-shadow: 0 0 8px #2ed573;
+      animation: liveDotPulse 1.8s infinite;
+    }
+
+    @keyframes liveDotPulse {
+      0% { transform: scale(0.9); opacity: 0.7; }
+      50% { transform: scale(1.3); opacity: 1; }
+      100% { transform: scale(0.9); opacity: 0.7; }
+    }
+
+    .open-rooms-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 520px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .open-room-card {
+      background: #0f1118;
+      border: 1px solid var(--border-frame);
+      border-radius: 8px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .open-room-card:hover {
+      border-color: var(--gold-primary);
+      background: #141724;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+    }
+
+    .open-room-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .open-room-host {
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .open-room-code-badge {
+      font-family: monospace;
+      font-size: 0.82rem;
+      font-weight: 900;
+      color: var(--gold-primary);
+      background: rgba(229, 185, 88, 0.12);
+      border: 1px solid var(--border-gold);
+      padding: 2px 7px;
+      border-radius: 4px;
+      letter-spacing: 1px;
+    }
+
+    .open-room-mid {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.76rem;
+      color: var(--text-muted);
+    }
+
+    .open-room-comm-pill {
+      color: #d8dce8;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .open-room-faction-tag {
+      font-size: 0.65rem;
+      padding: 2px 6px;
+      border-radius: 3px;
+      background: #1e2233;
+      color: #a4b0be;
+      border: 1px solid #3c425c;
+      text-transform: uppercase;
+    }
+
+    .open-room-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 4px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .open-room-time {
+      font-size: 0.7rem;
+      color: #718093;
+    }
+
+    .btn-quick-join {
+      background: linear-gradient(135deg, #d4af37 0%, #aa771c 100%);
+      color: #000;
+      border: 1px solid #ffeaa7;
+      font-size: 0.78rem;
+      font-weight: 900;
+      padding: 6px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      transition: all 0.2s;
+      box-shadow: 0 3px 10px rgba(212, 175, 55, 0.3);
+    }
+
+    .btn-quick-join:hover {
+      background: linear-gradient(135deg, #e5b958 0%, #c99b42 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 15px rgba(229, 185, 88, 0.5);
+    }
+
+    .open-rooms-empty {
+      text-align: center;
+      padding: 36px 16px;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .open-rooms-empty-icon {
+      font-size: 2.2rem;
+      opacity: 0.7;
+    }
+
+    .open-rooms-empty-title {
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: #d8dce8;
+    }
+
+    .open-rooms-empty-desc {
+      font-size: 0.76rem;
+      line-height: 1.45;
+      max-width: 320px;
+      color: #718093;
+    }
+
     /* FLOATING COLLISION POPUP & IMPACT ANIMATIONS */
     @keyframes collisionPop {
       0% {
@@ -4793,58 +5011,73 @@
       </div>
     </div>
 
-    <!-- LOBBY (AI + MULTIPLAYER P2P) -->
+    <!-- LOBBY (AI + MULTIPLAYER P2P + STANZE APERTE A LATO) -->
     <div id="pane-battle-lobby" class="pane">
-      <div style="max-width: 800px; width: 100%; margin: 32px auto; display: flex; flex-direction: column; gap: 20px; padding: 0 16px;">
-        <h2>Lobby di Battaglia</h2>
+      <div class="lobby-layout-wrap">
         
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-          <!-- Opzione 1: Single Player vs AI -->
-          <div style="background: var(--bg-card); border: 1px solid var(--border-frame); border-radius: 8px; padding: 16px; display: flex; flex-direction: column; gap: 10px;">
-            <h3>🤖 Skirmish vs IA</h3>
-            <label style="font-size: 0.75rem; color: var(--text-muted);">Tuo Grimorio:</label>
-            <select id="lobby-deck-select-ai" onchange="onLobbyDeckChanged('ai')" style="padding: 6px; background: var(--bg-dark); color: #fff; border: 1px solid var(--border-frame); border-radius: 4px;"></select>
-            
-            <label style="font-size: 0.75rem; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center;">
-              <span>Tuo Comandante Leader:</span>
-              <a href="javascript:void(0)" onclick="openDeckBuilder(); startCommanderSelectionMode();" style="color: var(--gold-primary); text-decoration: none; font-size: 0.7rem; font-weight: 700;">👑 Galleria Carte ➔</a>
-            </label>
-            <select id="lobby-comm-select-ai" onchange="onLobbyCommanderChanged('ai', this.value)" style="padding: 6px; background: var(--bg-dark); color: #fff; border: 1px solid var(--border-frame); border-radius: 4px;"></select>
-            
-            <div id="lobby-p1-card" style="background: var(--bg-dark); padding: 8px; border-radius: 4px; font-size: 0.75rem; border: 1px solid var(--border-frame);"></div>
-            
-            <label style="font-size: 0.75rem; color: var(--text-muted);">Avversario IA:</label>
-            <select id="lobby-ai-select" onchange="updateLobbyP2Preview()" style="padding: 6px; background: var(--bg-dark); color: #fff; border: 1px solid var(--border-frame); border-radius: 4px;"></select>
-            <div id="lobby-p2-card" style="background: var(--bg-dark); padding: 8px; border-radius: 4px; font-size: 0.75rem; border: 1px solid var(--border-frame);"></div>
-            <button class="btn btn-gold" style="margin-top: 10px;" onclick="startBattle('ai')">GIOCA VS IA</button>
+        <!-- COLONNA SINISTRA: MODALITÀ DI GIOCO -->
+        <div class="lobby-main-col" style="display: flex; flex-direction: column; gap: 16px;">
+          <div>
+            <h2 style="font-size: 1.6rem; color: var(--gold-primary); letter-spacing: 2px;">Lobby di Battaglia</h2>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Scegli se allenarti contro l'IA tattica o sfidare un Condottiero online in tempo reale.</p>
           </div>
 
-          <!-- Opzione 2: Multiplayer Online & Locale -->
-          <div style="background: var(--bg-card); border: 2px solid var(--border-gold); border-radius: 8px; padding: 16px; display: flex; flex-direction: column; gap: 10px;">
-            <h3>🌐 Duello Multiplayer Online & Locale</h3>
-            <label style="font-size: 0.75rem; color: var(--text-muted);">Tuo Grimorio:</label>
-            <select id="lobby-deck-select-p2p" onchange="onLobbyDeckChanged('p2p')" style="padding: 6px; background: var(--bg-dark); color: #fff; border: 1px solid var(--border-frame); border-radius: 4px;"></select>
-            
-            <label style="font-size: 0.75rem; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center;">
-              <span>Tuo Comandante Leader:</span>
-              <a href="javascript:void(0)" onclick="openDeckBuilder(); startCommanderSelectionMode();" style="color: var(--gold-primary); text-decoration: none; font-size: 0.7rem; font-weight: 700;">👑 Galleria Carte ➔</a>
-            </label>
-            <select id="lobby-comm-select-p2p" onchange="onLobbyCommanderChanged('p2p', this.value)" style="padding: 6px; background: var(--bg-dark); color: #fff; border: 1px solid var(--border-frame); border-radius: 4px;"></select>
-            
-            <div id="lobby-p2p-card" style="background: var(--bg-dark); padding: 8px; border-radius: 4px; font-size: 0.75rem; border: 1px solid var(--border-frame);"></div>
-            
-            <button class="btn btn-gold" onclick="hostMultiplayer()" style="font-weight: 800; padding: 10px;">👑 CREA STANZA (HOST)</button>
-            <div id="host-id-display" style="font-size: 0.75rem; color: var(--gold-primary); word-break: break-all;"></div>
-
-            <hr style="border: 0; border-top: 1px solid var(--border-frame); margin: 6px 0;">
-
-            <div style="display: flex; gap: 6px;">
-              <input type="text" id="join-room-input" placeholder="Incolla Codice Stanza (es. CF-1234)..." style="flex: 1; padding: 8px; background: var(--bg-dark); border: 1px solid var(--border-frame); color: #fff; border-radius: 4px; font-size: 0.8rem; text-transform: uppercase;">
-              <button class="btn" onclick="pasteRoomCode()" style="padding: 6px 10px; font-size: 0.75rem;">📋 Incolla</button>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <!-- Opzione 1: Single Player vs AI -->
+            <div style="background: var(--bg-card); border: 1px solid var(--border-frame); border-radius: 8px; padding: 16px; display: flex; flex-direction: column; gap: 10px;">
+              <h3>🤖 Skirmish vs IA</h3>
+              <label style="font-size: 0.75rem; color: var(--text-muted);">Tuo Grimorio:</label>
+              <select id="lobby-deck-select-ai" onchange="onLobbyDeckChanged('ai')" style="padding: 6px; background: var(--bg-dark); color: #fff; border: 1px solid var(--border-frame); border-radius: 4px;"></select>
+              
+              <div id="lobby-p1-card" style="background: var(--bg-dark); padding: 10px; border-radius: 6px; font-size: 0.75rem; border: 1px solid var(--border-frame);"></div>
+              
+              <label style="font-size: 0.75rem; color: var(--text-muted);">Avversario IA:</label>
+              <select id="lobby-ai-select" onchange="updateLobbyP2Preview()" style="padding: 6px; background: var(--bg-dark); color: #fff; border: 1px solid var(--border-frame); border-radius: 4px;"></select>
+              <div id="lobby-p2-card" style="background: var(--bg-dark); padding: 8px; border-radius: 4px; font-size: 0.75rem; border: 1px solid var(--border-frame);"></div>
+              <button class="btn btn-gold" style="margin-top: 10px;" onclick="startBattle('ai')">GIOCA VS IA</button>
             </div>
-            <button class="btn btn-crimson" onclick="joinMultiplayer()" style="font-weight: 800; padding: 10px;">⚔️ ENTRA NELLA STANZA</button>
+
+            <!-- Opzione 2: Multiplayer Online & Locale -->
+            <div style="background: var(--bg-card); border: 2px solid var(--border-gold); border-radius: 8px; padding: 16px; display: flex; flex-direction: column; gap: 10px;">
+              <h3>🌐 Duello Multiplayer Online</h3>
+              <label style="font-size: 0.75rem; color: var(--text-muted);">Tuo Grimorio:</label>
+              <select id="lobby-deck-select-p2p" onchange="onLobbyDeckChanged('p2p')" style="padding: 6px; background: var(--bg-dark); color: #fff; border: 1px solid var(--border-frame); border-radius: 4px;"></select>
+              
+              <div id="lobby-p2p-card" style="background: var(--bg-dark); padding: 10px; border-radius: 6px; font-size: 0.75rem; border: 1px solid var(--border-frame);"></div>
+              
+              <button class="btn btn-gold" onclick="hostMultiplayer()" style="font-weight: 800; padding: 10px;">👑 CREA STANZA (HOST)</button>
+              <div id="host-id-display" style="font-size: 0.75rem; color: var(--gold-primary); word-break: break-all;"></div>
+
+              <hr style="border: 0; border-top: 1px solid var(--border-frame); margin: 6px 0;">
+
+              <div style="display: flex; gap: 6px;">
+                <input type="text" id="join-room-input" placeholder="Incolla Codice Stanza (es. CF-1234)..." style="flex: 1; padding: 8px; background: var(--bg-dark); border: 1px solid var(--border-frame); color: #fff; border-radius: 4px; font-size: 0.8rem; text-transform: uppercase;">
+                <button class="btn" onclick="pasteRoomCode()" style="padding: 6px 10px; font-size: 0.75rem;">📋 Incolla</button>
+              </div>
+              <button class="btn btn-crimson" onclick="joinMultiplayer()" style="font-weight: 800; padding: 10px;">⚔️ ENTRA CON CODICE</button>
+            </div>
           </div>
         </div>
+
+        <!-- COLONNA DESTRA: STANZE MULTIPLAYER APERTE A LATO -->
+        <aside class="lobby-open-rooms-panel">
+          <div class="open-rooms-header">
+            <div class="open-rooms-title">
+              <span>🏛️ STANZE APERTE</span>
+              <span class="open-rooms-live-pill"><span class="open-rooms-live-dot"></span> LIVE CLOUD</span>
+            </div>
+            <button class="btn" onclick="refreshOpenRooms()" style="padding: 4px 10px; font-size: 0.74rem; border-color: var(--border-gold); color: var(--gold-primary); font-weight: 700;" title="Aggiorna elenco stanze">🔄 Aggiorna</button>
+          </div>
+
+          <p style="font-size: 0.74rem; color: var(--text-muted); line-height: 1.4;">
+            I Condottieri dell'Alpha online compaiono qui in tempo reale. Clicca su <strong>"SFIDA ORA"</strong> per duellare subito senza inserire codici!
+          </p>
+
+          <div id="open-rooms-list" class="open-rooms-list">
+            <!-- Renderizzato dinamicamente da renderOpenRoomsList() -->
+          </div>
+        </aside>
+
       </div>
     </div>
 
@@ -5958,7 +6191,253 @@
       return clean;
     }
 
+    // --- GESTIONE LOBBY GLOBALE & STANZE APERTE A LATO ---
+    let lobbySbChannel = null;
+    let lobbyLocalBC = null;
+    let activeOpenRooms = new Map();
+    let lobbyPollInterval = null;
+
+    function escapeLobbyHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function initLobbyPresence() {
+      // 1. Canale locale BroadcastChannel (per test immediato tra schede sullo stesso computer)
+      try {
+        if (typeof BroadcastChannel !== 'undefined' && !lobbyLocalBC) {
+          lobbyLocalBC = new BroadcastChannel('crownfall_lobby_global_bc');
+          lobbyLocalBC.onmessage = (ev) => {
+            const data = ev.data;
+            if (!data) return;
+            if (data.type === 'ROOM_OPEN' && data.room) {
+              activeOpenRooms.set(data.room.roomCode, data.room);
+              renderOpenRoomsList();
+            } else if (data.type === 'ROOM_CLOSE' && data.roomCode) {
+              activeOpenRooms.delete(data.roomCode);
+              renderOpenRoomsList();
+            } else if (data.type === 'PING_ROOMS' && currentRoomCode && myP2PRole === 'p1') {
+              broadcastMyRoomLocal();
+            }
+          };
+        }
+      } catch(e) { console.warn("Lobby Local BC error:", e); }
+
+      // 2. Canale Supabase Realtime Presence Globale (per connettere tutti i 20 tester su Internet)
+      if (sbClient && !lobbySbChannel) {
+        try {
+          lobbySbChannel = sbClient.channel('crownfall_lobby_presence_v1', {
+            config: {
+              presence: { key: localClientId },
+              broadcast: { self: false }
+            }
+          });
+
+          lobbySbChannel.on('presence', { event: 'sync' }, () => syncPresenceRooms());
+          lobbySbChannel.on('presence', { event: 'join' }, () => syncPresenceRooms());
+          lobbySbChannel.on('presence', { event: 'leave' }, () => syncPresenceRooms());
+
+          lobbySbChannel.on('broadcast', { event: 'room_open' }, ({ payload }) => {
+            if (payload && payload.roomCode) {
+              activeOpenRooms.set(payload.roomCode, payload);
+              renderOpenRoomsList();
+            }
+          });
+
+          lobbySbChannel.on('broadcast', { event: 'room_close' }, ({ payload }) => {
+            if (payload && payload.roomCode) {
+              activeOpenRooms.delete(payload.roomCode);
+              renderOpenRoomsList();
+            }
+          });
+
+          lobbySbChannel.subscribe((status) => {
+            console.log("Lobby Presence Channel status:", status);
+            if (status === 'SUBSCRIBED') {
+              syncPresenceRooms();
+            }
+          });
+        } catch(e) { console.warn("Lobby Presence Channel init error:", e); }
+      }
+
+      if (!lobbyPollInterval) {
+        lobbyPollInterval = setInterval(() => {
+          renderOpenRoomsList();
+        }, 8000);
+      }
+    }
+
+    function syncPresenceRooms() {
+      if (!lobbySbChannel) return;
+      try {
+        const state = lobbySbChannel.presenceState();
+        const now = Date.now();
+        const activePresenceCodes = new Set();
+
+        for (const [key, presences] of Object.entries(state)) {
+          if (presences && presences.length > 0) {
+            const r = presences[0];
+            if (r && r.roomCode) {
+              activePresenceCodes.add(r.roomCode);
+              activeOpenRooms.set(r.roomCode, r);
+            }
+          }
+        }
+
+        // Rimuove stanze non più presenti su Supabase, eccetto la propria locale
+        for (const [code, r] of activeOpenRooms.entries()) {
+          if (!activePresenceCodes.has(code) && (!currentRoomCode || currentRoomCode !== code)) {
+            activeOpenRooms.delete(code);
+          }
+        }
+
+        renderOpenRoomsList();
+      } catch(e) { console.warn("Sync presence err:", e); }
+    }
+
+    function broadcastMyRoomLocal() {
+      if (!currentRoomCode || myP2PRole !== 'p1') return;
+      const deckSelect = document.getElementById('lobby-deck-select-p2p');
+      const deckName = deckSelect ? deckSelect.value : userState.activeDeckName;
+      let deck = userState.decks[deckName] || userState.decks['Mazzo Base'] || Object.values(userState.decks)[0];
+      const comm = COMMANDERS[deck.commanderId] || COMMANDERS['valeria'];
+
+      const roomData = {
+        roomCode: currentRoomCode,
+        peerCode: normalizePeerCode(currentRoomCode),
+        hostName: currentUser ? (currentUser.username || 'Condottiero 1') : 'Condottiero 1',
+        commanderId: comm.id,
+        commanderName: comm.name,
+        commanderGlyph: comm.glyph || '👑',
+        commanderFaction: comm.faction || 'Regno',
+        createdAt: Date.now()
+      };
+
+      if (lobbyLocalBC) {
+        try { lobbyLocalBC.postMessage({ type: 'ROOM_OPEN', room: roomData }); } catch(e){}
+      }
+    }
+
+    async function trackLobbyRoom(roomData) {
+      activeOpenRooms.set(roomData.roomCode, roomData);
+      renderOpenRoomsList();
+
+      if (lobbyLocalBC) {
+        try { lobbyLocalBC.postMessage({ type: 'ROOM_OPEN', room: roomData }); } catch(e){}
+      }
+
+      if (lobbySbChannel && lobbySbChannel.state === 'joined') {
+        try {
+          await lobbySbChannel.track(roomData);
+          lobbySbChannel.send({ type: 'broadcast', event: 'room_open', payload: roomData });
+        } catch(e) { console.warn("Track presence err:", e); }
+      }
+    }
+
+    async function untrackLobbyRoom() {
+      if (currentRoomCode) {
+        const code = currentRoomCode;
+        activeOpenRooms.delete(code);
+        renderOpenRoomsList();
+
+        if (lobbyLocalBC) {
+          try { lobbyLocalBC.postMessage({ type: 'ROOM_CLOSE', roomCode: code }); } catch(e){}
+        }
+
+        if (lobbySbChannel) {
+          try {
+            await lobbySbChannel.untrack();
+            lobbySbChannel.send({ type: 'broadcast', event: 'room_close', payload: { roomCode: code } });
+          } catch(e) { console.warn("Untrack presence err:", e); }
+        }
+      }
+    }
+
+    function renderOpenRoomsList() {
+      const container = document.getElementById('open-rooms-list');
+      if (!container) return;
+
+      const now = Date.now();
+      for (const [code, r] of activeOpenRooms.entries()) {
+        if (now - (r.createdAt || 0) > 30 * 60 * 1000) {
+          activeOpenRooms.delete(code);
+        }
+      }
+
+      const rooms = Array.from(activeOpenRooms.values());
+      
+      if (rooms.length === 0) {
+        container.innerHTML = `
+          <div class="open-rooms-empty">
+            <div class="open-rooms-empty-icon">⚔️</div>
+            <div class="open-rooms-empty-title">Nessuna stanza aperta al momento</div>
+            <div class="open-rooms-empty-desc">
+              Clicca su <strong>"👑 CREA STANZA"</strong> a sinistra per aprire la prima stanza. La tua partita comparirà istantaneamente in questa lista per tutti i 20 giocatori online!
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = rooms.map(r => {
+        const isMyRoom = (currentRoomCode && (currentRoomCode.toUpperCase() === r.roomCode.toUpperCase()));
+        const elapsedSec = Math.max(0, Math.floor((now - (r.createdAt || now)) / 1000));
+        let timeText = 'Aperta adesso';
+        if (elapsedSec >= 60) {
+          const mins = Math.floor(elapsedSec / 60);
+          timeText = `Aperta ${mins} min fa`;
+        }
+
+        return `
+          <div class="open-room-card" style="${isMyRoom ? 'border-color: #2ed573; background: rgba(46, 213, 115, 0.05);' : ''}">
+            <div class="open-room-top">
+              <span class="open-room-host">👑 ${escapeLobbyHtml(r.hostName || 'Condottiero')} ${isMyRoom ? '<span style="font-size:0.65rem; color:#2ed573; font-weight:800;">(LA TUA STANZA)</span>' : ''}</span>
+              <span class="open-room-code-badge">${escapeLobbyHtml(r.roomCode)}</span>
+            </div>
+            <div class="open-room-mid">
+              <span class="open-room-comm-pill">${r.commanderGlyph || '🛡️'} ${escapeLobbyHtml(r.commanderName || 'Comandante')}</span>
+              <span class="open-room-faction-tag">${escapeLobbyHtml(r.commanderFaction || 'Regno')}</span>
+            </div>
+            <div class="open-room-bottom">
+              <span class="open-room-time">⏱️ ${timeText}</span>
+              ${isMyRoom 
+                ? `<button class="btn btn-crimson" onclick="cancelHostMultiplayer()" style="padding: 4px 10px; font-size: 0.74rem;">🛑 Annulla</button>`
+                : `<button class="btn-quick-join" onclick="quickJoinRoom('${r.roomCode}')">⚔️ SFIDA ORA</button>`
+              }
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function quickJoinRoom(roomCode) {
+      const input = document.getElementById('join-room-input');
+      if (input) input.value = roomCode;
+      joinMultiplayer();
+    }
+
+    function refreshOpenRooms() {
+      initLobbyPresence();
+      if (lobbyLocalBC) {
+        try { lobbyLocalBC.postMessage({ type: 'PING_ROOMS' }); } catch(e){}
+      }
+      syncPresenceRooms();
+      renderOpenRoomsList();
+      showToast("🔄 Elenco stanze aggiornato!");
+    }
+
+    function cancelHostMultiplayer() {
+      untrackLobbyRoom();
+      cleanupNetwork();
+      const hostDisplay = document.getElementById('host-id-display');
+      if (hostDisplay) hostDisplay.innerHTML = '';
+      currentRoomCode = null;
+      isP2P = false;
+      showToast("Stanza annullata.");
+    }
+
     function cleanupNetwork() {
+      untrackLobbyRoom();
       if (netSbChannel && sbClient) {
         try { sbClient.removeChannel(netSbChannel); } catch(e){}
         netSbChannel = null;
@@ -5997,14 +6476,31 @@
           <div style="background: rgba(229,185,88,0.1); border: 2px dashed var(--gold-primary); border-radius: 8px; padding: 12px; text-align: center; margin-top: 6px;">
             <div style="font-size: 0.72rem; font-weight: 800; color: var(--gold-primary); text-transform: uppercase;">CODICE STANZA:</div>
             <div id="host-room-code-display" style="font-size: 1.8rem; font-weight: 900; color: #fff; letter-spacing: 3px; margin: 4px 0; user-select: all; -webkit-user-select: all;">${displayCode}</div>
-            <button type="button" class="btn btn-gold" onclick="copyHostRoomCode()" style="padding: 5px 12px; font-size: 0.78rem; font-weight: 800;">📋 COPIA CODICE</button>
-            <div id="host-status-msg" style="font-size: 0.76rem; color: #a4b0be; margin-top: 8px;">⏳ Connessione al Cloud Relay in corso...</div>
+            <div style="display: flex; justify-content: center; gap: 8px; margin-top: 4px;">
+              <button type="button" class="btn btn-gold" onclick="copyHostRoomCode()" style="padding: 5px 12px; font-size: 0.78rem; font-weight: 800;">📋 COPIA CODICE</button>
+              <button type="button" class="btn btn-crimson" onclick="cancelHostMultiplayer()" style="padding: 5px 12px; font-size: 0.78rem; font-weight: 800;">🛑 ANNULLA</button>
+            </div>
+            <div id="host-status-msg" style="font-size: 0.76rem; color: #2ed573; margin-top: 8px;">🟢 Stanza online visibile nell'elenco stanze a lato! In attesa di uno sfidante...</div>
           </div>
         `;
       }
 
       initNetwork(peerCode, true);
-      showToast(`Stanza ${displayCode} creata! Comunica il codice all'avversario.`);
+
+      // Annuncia la stanza nell'elenco globale
+      const comm = COMMANDERS[deck.commanderId] || COMMANDERS['valeria'];
+      trackLobbyRoom({
+        roomCode: displayCode,
+        peerCode: peerCode,
+        hostName: currentUser ? (currentUser.username || 'Condottiero 1') : 'Condottiero 1',
+        commanderId: comm.id,
+        commanderName: comm.name,
+        commanderGlyph: comm.glyph || '🛡️',
+        commanderFaction: comm.faction || 'Regno',
+        createdAt: Date.now()
+      });
+
+      showToast(`Stanza ${displayCode} creata e pubblicata nell'elenco!`);
     }
     const hostP2PMatch = hostMultiplayer;
 
@@ -6955,6 +7451,8 @@
       updateLobbyP1Preview();
       updateLobbyP2PPreview();
       updateLobbyP2Preview();
+      initLobbyPresence();
+      renderOpenRoomsList();
     }
 
     function onLobbyDeckChanged(mode) {
@@ -7002,16 +7500,16 @@
       if (!deckSelect) return;
       const deck = userState.decks[deckSelect.value];
       if (!deck) return;
-      populateLobbyCommanderSelect('lobby-comm-select-ai', deck.commanderId);
-      const c = COMMANDERS[deck.commanderId];
+      const c = COMMANDERS[deck.commanderId] || COMMANDERS['valeria'];
       const p1Card = document.getElementById('lobby-p1-card');
       if (p1Card && c) {
         p1Card.innerHTML = `
+          <div style="font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; font-weight: 800; margin-bottom: 4px;">👑 Comandante Assegnato al Mazzo:</div>
           <div style="display: flex; justify-content: space-between; align-items: center;">
-            <strong>${c.name}</strong>
+            <strong style="color: var(--gold-primary); font-size: 0.9rem;">${c.name}</strong>
             <span class="rarity-badge ${c.rarity || 'legendary'}">${RARITY_NAMES[c.rarity || 'legendary']}</span>
           </div>
-          <div style="font-size: 0.75rem; color: var(--gold-primary); margin-top: 3px;">${c.glyph} PV: ${c.hp} | ATT: ${c.att} | Movimento: ${c.move}</div>
+          <div style="font-size: 0.75rem; color: #fff; margin-top: 3px;">${c.glyph} PV: ${c.hp} | ATT: ${c.att} | Movimento: ${c.move}</div>
           <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 3px;"><em>Rito (${c.riteCost}🩸): ${c.riteDesc}</em></div>
         `;
       }
@@ -7022,16 +7520,16 @@
       if (!deckSelect) return;
       const deck = userState.decks[deckSelect.value];
       if (!deck) return;
-      populateLobbyCommanderSelect('lobby-comm-select-p2p', deck.commanderId);
-      const c = COMMANDERS[deck.commanderId];
+      const c = COMMANDERS[deck.commanderId] || COMMANDERS['valeria'];
       const p2pCard = document.getElementById('lobby-p2p-card');
       if (p2pCard && c) {
         p2pCard.innerHTML = `
+          <div style="font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; font-weight: 800; margin-bottom: 4px;">👑 Comandante Assegnato al Mazzo:</div>
           <div style="display: flex; justify-content: space-between; align-items: center;">
-            <strong>${c.name}</strong>
+            <strong style="color: var(--gold-primary); font-size: 0.9rem;">${c.name}</strong>
             <span class="rarity-badge ${c.rarity || 'legendary'}">${RARITY_NAMES[c.rarity || 'legendary']}</span>
           </div>
-          <div style="font-size: 0.75rem; color: var(--gold-primary); margin-top: 3px;">${c.glyph} PV: ${c.hp} | ATT: ${c.att} | Movimento: ${c.move}</div>
+          <div style="font-size: 0.75rem; color: #fff; margin-top: 3px;">${c.glyph} PV: ${c.hp} | ATT: ${c.att} | Movimento: ${c.move}</div>
           <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 3px;"><em>Rito (${c.riteCost}🩸): ${c.riteDesc}</em></div>
         `;
       }
@@ -7124,6 +7622,7 @@
     }
 
     function startBattleP2P(hostData, guestData, role) {
+      untrackLobbyRoom();
       isP2P = true;
       myP2PRole = role;
 
@@ -9026,6 +9525,7 @@
     // AVVIO SICURO & RIPRISTINO SESSIONE
     window.addEventListener('DOMContentLoaded', async () => {
       showPaneDirect('auth');
+      initLobbyPresence();
 
       // 1. Prova a ripristinare la sessione Cloud da Supabase
       if (sbClient) {
