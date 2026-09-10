@@ -8567,7 +8567,7 @@
 
       onComplete();
     }
-\n    function checkWin() {
+    function checkWin() {
       const p1Alive = battleState.grid.some(p => p && p.owner === 'p1' && p.type === 'commander' && p.hp > 0);
       const p2Alive = battleState.grid.some(p => p && p.owner === 'p2' && p.type === 'commander' && p.hp > 0);
 
