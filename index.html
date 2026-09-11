@@ -5512,48 +5512,7 @@
               </div>
             </div>
         
-    <!-- OVERLAY COMBATTIMENTO DINAMICO SOVRAIMPRESSIONE -->
-    <div id="combat-clash-overlay" class="combat-clash-overlay" style="display: none;" onclick="hideCombatClashOverlay()">
-      <div class="clash-modal" onclick="event.stopPropagation()">
-        <div class="clash-header">
-          <span class="clash-icon">⚔️</span>
-          <span class="clash-title">SCONTRO TATTICO SULLA PLANCIA</span>
-          <span class="clash-icon">⚔️</span>
-        </div>
-        <div class="clash-fighters-row">
-          <!-- CARTA ATTACCANTE -->
-          <div class="clash-card attacker" id="clash-card-att">
-            <div class="clash-card-badge">ATTACCANTE</div>
-            <div class="clash-card-glyph" id="clash-att-glyph">⚔️</div>
-            <div class="clash-card-name" id="clash-att-name">Attaccante</div>
-            <div class="clash-card-stats" id="clash-att-stats">⚔️ 3 | ❤️ 5</div>
-          </div>
-
-          <!-- CENTRO: CALCOLO COMBATTIMENTO -->
-          <div class="clash-vs-box">
-            <div class="clash-vs-icon">💥</div>
-            <div class="clash-formula" id="clash-formula-box">
-              <!-- Righe di calcolo dinamiche -->
-            </div>
-            <div class="clash-damage-banner" id="clash-damage-banner">
-              💥 3 DANNI INFLITTI
-            </div>
-            <div class="clash-counter-banner" id="clash-counter-banner">
-              🛡️ Contrattacco: 2 Danni
-            </div>
-          </div>
-
-          <!-- CARTA DIFENSORE -->
-          <div class="clash-card defender" id="clash-card-def">
-            <div class="clash-card-badge def">DIFENSORE</div>
-            <div class="clash-card-glyph" id="clash-def-glyph">🛡️</div>
-            <div class="clash-card-name" id="clash-def-name">Difensore</div>
-            <div class="clash-card-stats" id="clash-def-stats">⚔️ 2 | ❤️ 4 ➔ 1</div>
-          </div>
-        </div>
-        <div class="clash-footer-hint">Clicca ovunque per continuare</div>
-      </div>
-    </div>
+    
 
   </main>
         </div>
@@ -9065,7 +9024,11 @@
       glidePiece(fromIdx, toIdx, () => {
         battleState.grid[toIdx] = piece;
         battleState.grid[fromIdx] = null;
-        piece.exhausted = true;
+        if (piece.slancioAttivo) {
+          piece.slancioAttivo = false; // Usa il move speciale, non si stanca
+        } else {
+          piece.exhausted = true;
+        }
         battleState[player].actions--;
         renderPieces();
         updateHUD();
@@ -9149,7 +9112,7 @@
         if (pl === myRole) {
           addLog(`${pl.toUpperCase()} pesca ${cardObj?.name || card} [${RARITY_NAMES[cardObj?.rarity] || 'Comune'}]`, pl);
         } else {
-          addLog(`${pl.toUpperCase()} pesca 1 carta`, pl);
+          // addLog(`${pl.toUpperCase()} pesca 1 carta`, pl);
         }
       }
     }
@@ -9911,7 +9874,8 @@
           glyph: card.glyph,
           desc: card.desc,
           rarity: card.rarity || 'common',
-          exhausted: !hasSlancio
+          exhausted: !hasSlancio,
+          slancioAttivo: hasSlancio
         };
 
         battleState.grid[idx] = piece;
@@ -10438,9 +10402,11 @@
         const dist = Math.max(Math.abs(Math.floor(from/8) - Math.floor(to/8)), Math.abs((from%8) - (to%8)));
         const isRangedAttacker = (att.range && att.range > 1) && dist > 1;
         const defCannotCounter = defDesc.includes('non può contrattaccare') || defDesc.includes('non contrattacca');
+        const defIsStructure = def.type === 'altar' || def.type === 'wall';
 
-        if (!defCannotCounter && (!isRangedAttacker || def.range >= dist || def.cardId === 'halberdier' || def.name === "Alabardiere d'Élite")) {
-          let counterDmg = def.att;
+        if (!defCannotCounter && !defIsStructure && (!isRangedAttacker || (def.range || 1) >= dist || def.cardId === 'halberdier' || def.name === "Alabardiere d'Élite")) {
+          // Forza counterDmg a numero valido (def.att undefined -> NaN silenzioso)
+          let counterDmg = typeof def.att === 'number' ? def.att : 0;
           if (defDesc.includes('presidio') && counterDmg === 0) {
             counterDmg = 2; // Presidio contrattacca a 2 ATT
           }
@@ -10455,12 +10421,22 @@
           if (hasIronAltarProtection(from, att)) attArmor += 1;
           if (attArmor > 0) counterDmg = Math.max(0, counterDmg - attArmor);
 
-          att.hp -= counterDmg;
-          addLog(`${def.name} contrattacca infliggendo ${counterDmg} danni a ${att.name}`, 'sys');
-          if (att.hp <= 0) {
-            handlePieceDefeated(from, def.owner);
+          // Sanitize: sempre numero non-NaN
+          counterDmg = (isNaN(counterDmg) || counterDmg < 0) ? 0 : counterDmg;
+
+          if (counterDmg > 0) {
+            att.hp -= counterDmg;
+            addLog(`${def.name} contrattacca infliggendo ${counterDmg} danni a ${att.name}`, 'sys');
+            showCollisionPopup(from, '⚔️ CONTRATTACCO!', `${def.name} inflicts ${counterDmg} dmg`);
+            if (att.hp <= 0) {
+              handlePieceDefeated(from, def.owner);
+            }
+          } else if (def.att > 0) {
+            addLog(`${def.name} contrattacca ma 0 danni (armatura assorbe)`, 'sys');
+          } else {
+            addLog(`${def.name} ATT=0, nessun contrattacco effettivo.`, 'sys');
           }
-        } else {
+        } else if (isRangedAttacker) {
           addLog(`${att.name} attacca a distanza senza subire contrattacco!`, 'sys');
         }
       }
@@ -11311,7 +11287,7 @@
               owner: 'p2', type: 'unit', cardId: card.id, name: card.name,
               hp: card.hp || 3, att: card.att || 2, move: card.move || 'orth',
               range: card.gittata || 1, glyph: card.glyph || '⚔️', desc: card.desc,
-              rarity: card.rarity || 'common', exhausted: !hasSlancio
+              rarity: card.rarity || 'common', exhausted: !hasSlancio, slancioAttivo: hasSlancio
             };
             addLog(`IA schiera ${card.name} (${card.att}/${card.hp}) su cella ${targetSq}${hasSlancio ? ' [SLANCIO PRONTO!]' : ''}`, 'p2');
             canDeployMore = true;
@@ -12099,5 +12075,47 @@
     });
 
 </script>
+<!-- OVERLAY COMBATTIMENTO DINAMICO SOVRAIMPRESSIONE -->
+    <div id="combat-clash-overlay" class="combat-clash-overlay" style="display: none;" onclick="hideCombatClashOverlay()">
+      <div class="clash-modal" onclick="event.stopPropagation()">
+        <div class="clash-header">
+          <span class="clash-icon">⚔️</span>
+          <span class="clash-title">SCONTRO TATTICO SULLA PLANCIA</span>
+          <span class="clash-icon">⚔️</span>
+        </div>
+        <div class="clash-fighters-row">
+          <!-- CARTA ATTACCANTE -->
+          <div class="clash-card attacker" id="clash-card-att">
+            <div class="clash-card-badge">ATTACCANTE</div>
+            <div class="clash-card-glyph" id="clash-att-glyph">⚔️</div>
+            <div class="clash-card-name" id="clash-att-name">Attaccante</div>
+            <div class="clash-card-stats" id="clash-att-stats">⚔️ 3 | ❤️ 5</div>
+          </div>
+
+          <!-- CENTRO: CALCOLO COMBATTIMENTO -->
+          <div class="clash-vs-box">
+            <div class="clash-vs-icon">💥</div>
+            <div class="clash-formula" id="clash-formula-box">
+              <!-- Righe di calcolo dinamiche -->
+            </div>
+            <div class="clash-damage-banner" id="clash-damage-banner">
+              💥 3 DANNI INFLITTI
+            </div>
+            <div class="clash-counter-banner" id="clash-counter-banner">
+              🛡️ Contrattacco: 2 Danni
+            </div>
+          </div>
+
+          <!-- CARTA DIFENSORE -->
+          <div class="clash-card defender" id="clash-card-def">
+            <div class="clash-card-badge def">DIFENSORE</div>
+            <div class="clash-card-glyph" id="clash-def-glyph">🛡️</div>
+            <div class="clash-card-name" id="clash-def-name">Difensore</div>
+            <div class="clash-card-stats" id="clash-def-stats">⚔️ 2 | ❤️ 4 ➔ 1</div>
+          </div>
+        </div>
+        <div class="clash-footer-hint">Clicca ovunque per continuare</div>
+      </div>
+    </div>
 </body>
 </html>
