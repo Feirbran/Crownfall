@@ -2451,6 +2451,66 @@
     .hud-stat.blood { color: #ff7675; }
     .hud-stat.actions { color: var(--gold-primary); }
 
+    /* TRACKER DELLE FASI DEL TURNO */
+    .turn-phase-tracker {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 6px 14px;
+      background: linear-gradient(180deg, #10131d, #090b10);
+      border-bottom: 1px solid rgba(212, 175, 55, 0.25);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 4px 10px rgba(0,0,0,0.5);
+      flex-shrink: 0;
+      user-select: none;
+      flex-wrap: wrap;
+    }
+    .phase-step {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 0.74rem;
+      color: #718093;
+      font-weight: 600;
+      transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    .phase-step.active {
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.22), rgba(230, 126, 34, 0.18));
+      border: 1px solid var(--gold-primary);
+      color: #f5cd79;
+      box-shadow: 0 0 14px rgba(212, 175, 55, 0.4);
+      font-weight: 800;
+      transform: translateY(-1px);
+    }
+    .phase-num {
+      width: 17px;
+      height: 17px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      color: inherit;
+      font-size: 0.65rem;
+      font-weight: 800;
+    }
+    .phase-step.active .phase-num {
+      background: var(--gold-primary);
+      color: #0b0d14;
+    }
+    .phase-arrow {
+      color: #485460;
+      font-size: 0.70rem;
+      transition: color 0.2s ease;
+    }
+    .phase-arrow.passed {
+      color: var(--gold-primary);
+    }
+
     .battle-arena-wrap { flex: 1; display: flex; align-items: center; justify-content: center; padding: 8px; position: relative; overflow: hidden; min-height: 0; }
     .chessboard-container { width: min(85vw, 530px); height: min(85vw, 530px); display: grid; grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(8, 1fr); border: 2px solid #3c425c; position: relative; box-shadow: 0 0 40px rgba(0,0,0,0.9); }
     .square { position: relative; display: flex; align-items: center; justify-content: center; }
@@ -5094,7 +5154,7 @@
         </div>
         <div style="display: flex; gap: 8px; align-items: center;">
           <button class="btn btn-gold" id="btn-rite-p1" onclick="useWeaponRiteP1()" onmouseenter="showRiteHoverCard(event)" onmousemove="updateHoverCardPos(event)" onmouseleave="hideHoverCard()">Rito d'Armi</button>
-          <button class="btn btn-crimson" id="btn-end-turn" onclick="endTurnP1()">Passa Turno</button>
+          <button class="btn btn-crimson" id="btn-end-turn" onclick="advanceTurnPhase()">Passa a Fase 2: Azioni ⚔️</button>
         </div>
         <div class="player-hud-box">
           <button class="btn-hud-pile grave" id="btn-hud-p2-grave" onclick="openGraveyardModal('p2')" title="Esamina Cimitero nemico">🪦 <span id="hud-p2-grave-count">0</span></button>
@@ -5103,6 +5163,29 @@
           <span class="hud-stat blood">🩸 <span id="hud-p2-blood">0</span></span>
           <span class="hud-stat mana">💧 <span id="hud-p2-mana">1</span>/4</span>
           <span style="font-weight: 900; color: #f5a6b0;" id="hud-p2-name">P2</span>
+        </div>
+      </div>
+
+      <!-- TRACKER DELLE FASI DEL TURNO -->
+      <div class="turn-phase-tracker" id="turn-phase-tracker">
+        <div class="phase-step active" id="phase-step-1" data-phase="1">
+          <span class="phase-num">1</span>
+          <span class="phase-label">1ª Fase: Mantenimento</span>
+        </div>
+        <div class="phase-arrow" id="phase-arrow-1">➔</div>
+        <div class="phase-step" id="phase-step-2" data-phase="2">
+          <span class="phase-num">2</span>
+          <span class="phase-label">2ª Fase: Azioni / Movimento</span>
+        </div>
+        <div class="phase-arrow" id="phase-arrow-2">➔</div>
+        <div class="phase-step" id="phase-step-3" data-phase="3">
+          <span class="phase-num">3</span>
+          <span class="phase-label">3ª Fase: Mantenimento</span>
+        </div>
+        <div class="phase-arrow" id="phase-arrow-3">➔</div>
+        <div class="phase-step" id="phase-step-4" data-phase="4">
+          <span class="phase-num">4</span>
+          <span class="phase-label">4ª Fase: Fine Turno</span>
         </div>
       </div>
 
@@ -5600,6 +5683,7 @@
     let localClientId = 'cl_' + Math.random().toString(36).substring(2, 9);
     let isP2P = false;
     let myP2PRole = 'p1';
+    let hostHandshakePayload = null;
 
     function getMyRole() {
       return (battleState && battleState.myRole) ? battleState.myRole : (isP2P ? (myP2PRole || 'p1') : 'p1');
@@ -6199,7 +6283,12 @@
 
     function escapeLobbyHtml(str) {
       if (!str) return '';
-      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
     }
 
     function initLobbyPresence() {
@@ -6438,6 +6527,7 @@
 
     function cleanupNetwork() {
       untrackLobbyRoom();
+      hostHandshakePayload = null;
       if (netSbChannel && sbClient) {
         try { sbClient.removeChannel(netSbChannel); } catch(e){}
         netSbChannel = null;
@@ -6480,7 +6570,10 @@
               <button type="button" class="btn btn-gold" onclick="copyHostRoomCode()" style="padding: 5px 12px; font-size: 0.78rem; font-weight: 800;">📋 COPIA CODICE</button>
               <button type="button" class="btn btn-crimson" onclick="cancelHostMultiplayer()" style="padding: 5px 12px; font-size: 0.78rem; font-weight: 800;">🛑 ANNULLA</button>
             </div>
-            <div id="host-status-msg" style="font-size: 0.76rem; color: #2ed573; margin-top: 8px;">🟢 Stanza online visibile nell'elenco stanze a lato! In attesa di uno sfidante...</div>
+            <div id="host-status-msg" style="font-size: 0.76rem; color: #2ed573; margin-top: 8px; line-height: 1.4;">
+              🟢 Stanza online attiva sul Cloud! In attesa dell'avversario...<br>
+              <span style="font-size: 0.70rem; color: #a4b0be;">(💡 Per testare da solo sullo stesso computer: apri una <strong>NUOVA scheda in Incognito</strong>)</span>
+            </div>
           </div>
         `;
       }
@@ -6509,9 +6602,22 @@
       const rawVal = (inputEl ? inputEl.value : '').trim();
       if (!rawVal) return showToast("Inserisci il codice della stanza fornito dall'Host!");
 
-      cleanupNetwork();
       const peerCode = normalizePeerCode(rawVal);
-      currentRoomCode = peerCode.toUpperCase();
+      const targetDisplayCode = ('CF-' + peerCode.replace(/^cf/i, '')).toUpperCase();
+
+      // Controllo Anti-Self-Join: impedisce all'Host di distruggere la propria stanza tentando di unirsi da sé nella stessa scheda
+      if (myP2PRole === 'p1' && currentRoomCode && (currentRoomCode.toUpperCase() === targetDisplayCode || currentRoomCode.toLowerCase() === peerCode)) {
+        alert("⚠️ Stai già ospitando questa stanza in QUESTA scheda!\n\n" +
+              "Un browser non può essere contemporaneamente Host e Ospite nella stessa scheda.\n\n" +
+              "💡 Per testare da solo sullo stesso computer:\n" +
+              "1. Lascia aperta QUESTA scheda (Host con stanza attiva);\n" +
+              "2. Apri una NUOVA scheda in modalità Incognito (oppure un altro browser);\n" +
+              "3. Apri Crownfall nella seconda scheda e clicca 'SFIDA ORA' o incolla il codice " + currentRoomCode + "!");
+        return;
+      }
+
+      cleanupNetwork();
+      currentRoomCode = targetDisplayCode;
       isP2P = true;
       myP2PRole = 'p2';
 
@@ -6555,7 +6661,7 @@
             if (status === 'SUBSCRIBED') {
               if (isHost) {
                 const statusEl = document.getElementById('host-status-msg');
-                if (statusEl) statusEl.textContent = "🟢 Stanza online attiva sul Cloud! In attesa dell'avversario...";
+                if (statusEl) statusEl.innerHTML = "🟢 Stanza online attiva sul Cloud! In attesa dell'avversario...<br><span style='font-size:0.70rem; color:#a4b0be;'>(💡 Per testare da solo sullo stesso PC: apri una <strong>NUOVA scheda in Incognito</strong>)</span>";
               } else {
                 console.log("Guest iscritto alla stanza Cloud. Invio pacchetto di ingresso HELLO_JOIN...");
                 sendGuestHello();
@@ -6581,7 +6687,7 @@
         console.warn("BroadcastChannel err:", e);
       }
 
-      // 3. WebRTC PeerJS (canale P2P diretto ausiliario)
+      // 3. WebRTC PeerJS (canale P2P diretto ausiliario - STUN Google)
       if (typeof Peer !== 'undefined') {
         try {
           if (isHost) {
@@ -6604,7 +6710,7 @@
             });
 
             netPeer.on('error', (err) => {
-              console.warn("PeerJS Host error:", err);
+              console.info("ℹ️ WebRTC Host notice (canale Cloud Relay Supabase attivo):", err?.type || err);
             });
           } else {
             // Guest
@@ -6619,7 +6725,8 @@
             });
 
             netPeer.on('error', (err) => {
-              console.warn("PeerJS Guest error:", err);
+              // Fallback pulito: non blocca il gioco se WebRTC diretto non riesce causa NAT/Firewall
+              console.info("ℹ️ WebRTC Guest notice (canale Cloud Relay Supabase attivo):", err?.type || err);
             });
           }
         } catch(e) {
@@ -6665,15 +6772,21 @@
       }
 
       // 1. Cloud Relay via Supabase Realtime WebSockets (Internet globale WAN - Torino <-> Mondo)
-      if (netSbChannel && netSbChannel.state === 'joined') {
+      if (netSbChannel) {
         try {
           netSbChannel.send({
             type: 'broadcast',
             event: 'game_msg',
             payload: payload
+          }).then(res => {
+            if (res !== 'ok') {
+              console.warn("Supabase Realtime send non-ok:", res, "evento:", payload.type);
+            }
+          }).catch(e => {
+            console.warn("Realtime broadcast send err:", e);
           });
         } catch(e) {
-          console.warn("Realtime broadcast send err:", e);
+          console.warn("Realtime broadcast send exception:", e);
         }
       }
 
@@ -6712,35 +6825,34 @@
           const statusEl = document.getElementById('host-status-msg');
           if (statusEl) statusEl.textContent = `⚔️ ${data.username} è entrato nella stanza! Avvio duello...`;
 
-          let p1Cards, p2Cards;
-          if (battleState && battleState.p1 && battleState.p1.initialDeck) {
-            p1Cards = battleState.p1.initialDeck;
-            p2Cards = battleState.p2.initialDeck;
-          } else {
-            p1Cards = shuffleDeck(hostDeck.cards);
-            p2Cards = shuffleDeck(ensureDeck30Cards({ cards: data.cards }));
+          // Handshake deterministico con cache: se l'Ospite ritenta, rimanda lo STESSO identico mazzo mescolato
+          if (!hostHandshakePayload || hostHandshakePayload.guestSenderId !== data.senderId) {
+            const p1Cards = shuffleDeck(hostDeck.cards);
+            const p2Cards = shuffleDeck(ensureDeck30Cards({ cards: data.cards }));
+            hostHandshakePayload = {
+              type: 'HELLO_HOST',
+              guestSenderId: data.senderId,
+              username: currentUser ? (currentUser.username || 'Host') : 'Condottiero 1',
+              commanderId: hostDeck.commanderId || 'valeria',
+              p1Cards: p1Cards,
+              p2Cards: p2Cards
+            };
           }
 
-          sendNetMsg({
-            type: 'HELLO_HOST',
-            username: currentUser ? (currentUser.username || 'Host') : 'Condottiero 1',
-            commanderId: hostDeck.commanderId || 'valeria',
-            p1Cards: p1Cards,
-            p2Cards: p2Cards
-          });
+          sendNetMsg(hostHandshakePayload);
 
           if (!battleState || !battleState.phase) {
             const hostData = {
-              username: currentUser ? (currentUser.username || 'Host') : 'Condottiero 1',
-              commanderId: hostDeck.commanderId || 'valeria',
-              cards: p1Cards,
-              shuffledDeck: p1Cards
+              username: hostHandshakePayload.username,
+              commanderId: hostHandshakePayload.commanderId,
+              cards: hostHandshakePayload.p1Cards,
+              shuffledDeck: hostHandshakePayload.p1Cards
             };
             const guestData = {
               username: data.username,
               commanderId: data.commanderId,
-              cards: p2Cards,
-              shuffledDeck: p2Cards
+              cards: hostHandshakePayload.p2Cards,
+              shuffledDeck: hostHandshakePayload.p2Cards
             };
 
             startBattleP2P(hostData, guestData, 'p1');
@@ -6748,6 +6860,12 @@
         }
       } else if (data.type === 'HELLO_HOST') {
         if (myP2PRole === 'p2') {
+          // Invia immediata conferma di ricezione all'Host per completare il 3-way handshake
+          sendNetMsg({
+            type: 'HELLO_ACK',
+            username: currentUser ? (currentUser.username || 'Ospite') : 'Condottiero 2'
+          });
+
           if (battleState && battleState.phase) return;
 
           const deckSelect = document.getElementById('lobby-deck-select-p2p');
@@ -6770,6 +6888,8 @@
 
           startBattleP2P(hostData, guestData, 'p2');
         }
+      } else if (data.type === 'HELLO_ACK') {
+        console.log("Ospite ha confermato l'inizio partita (HELLO_ACK).");
       } else if (data.type === 'SYNC_PLACEMENT') {
         const comm = (data.role === 'p1') ? battleState.p1.commander : battleState.p2.commander;
         battleState.grid[data.idx] = {
@@ -6835,6 +6955,12 @@
         executeKaelenSwap(data.firstIdx, data.secondIdx, data.player, false);
       } else if (data.type === 'SYNC_END_TURN') {
         startTurnFor(data.nextTurn);
+      } else if (data.type === 'SYNC_TURN_PHASE') {
+        if (battleState) {
+          battleState.turnPhase = data.phase;
+          updatePhaseUI();
+          renderHand();
+        }
       }
     }
 
@@ -7610,7 +7736,9 @@
         nextTurnManaDrainP1: 0,
         nextTurnManaDrainP2: 0,
         p1Placed: false,
-        p2Placed: false
+        p2Placed: false,
+        turnPhase: 1,
+        isGameOver: false
       };
 
       showPaneDirect('battle');
@@ -7619,6 +7747,7 @@
       addLog("Nuova battaglia avviata: Single Player vs IA", 'sys');
       showToast("Piazza il tuo Comandante sulla prima riga (a1–h1)!");
       updateHUD();
+      updatePhaseUI();
     }
 
     function startBattleP2P(hostData, guestData, role) {
@@ -7674,7 +7803,9 @@
         nextTurnManaDrainP2: 0,
         p1Placed: false,
         p2Placed: false,
-        hasDrawnInitialCards: false
+        hasDrawnInitialCards: false,
+        turnPhase: 1,
+        isGameOver: false
       };
 
       showPaneDirect('battle');
@@ -7688,6 +7819,7 @@
         showToast("Sei P2 (Ospite). Piazza il tuo Comandante sull'ottava riga (a8–h8)!");
       }
       updateHUD();
+      updatePhaseUI();
     }
 
     function createBoard() {
@@ -7948,6 +8080,11 @@
       if (battleState.selectedHandIndex !== null) {
         const cardId = battleState[role].hand[battleState.selectedHandIndex];
         const card = CARDS_DB[cardId];
+        const phase = battleState.turnPhase || 1;
+        if (card.type !== 'spell' && card.type !== 'reaction' && phase === 2) {
+          showToast("🏰 Lo schieramento truppe/altari avviene in Fase Mantenimento (Fase 1 o 3)!");
+          return;
+        }
         if (card.type === 'spell' || card.type === 'reaction') castSpell(idx);
         else deployCard(idx);
         return;
@@ -7958,6 +8095,11 @@
       if (p && p.owner === role) {
         if (p.type === 'altar') {
           showToast("Gli altari sono strutture fisse e non possono muoversi!");
+          return;
+        }
+        const phase = battleState.turnPhase || 1;
+        if (phase !== 2) {
+          showToast("⚔️ Movimenti e attacchi richiedono la 2ª Fase (Azioni)! Clicca 'Passa a Fase 2'.");
           return;
         }
         battleState.selectedSquare = idx;
@@ -8176,6 +8318,11 @@
 
         cardEl.onclick = () => {
           if (battleState.turn !== role) return showToast("Non è il tuo turno!");
+          const phase = battleState.turnPhase || 1;
+          if (c.type !== 'spell' && c.type !== 'reaction' && phase === 2) {
+            showToast("🏰 Lo schieramento truppe/altari avviene in Fase Mantenimento (Fase 1 o 3)!");
+            return;
+          }
           battleState.selectedHandIndex = battleState.selectedHandIndex === i ? null : i;
           renderHand();
           clearHighlights();
@@ -8241,8 +8388,9 @@
             document.querySelector(`.square[data-index="${i}"]`)?.classList.add('highlight-spell-target');
           }
         } else if (name === 'Frantumare la Pietra' || card.id === 'spell_cleave') {
-          // Bersaglia Altare o Muro nemico entro 4 caselle dal Comandante
-          if (target && target.owner === opp && (target.type === 'altar' || (target.desc && target.desc.includes('Muro'))) && dist <= 4) {
+          // Bersaglia Altare o Muro nemico entro 4 caselle dal Comandante (esclusi altari immuni)
+          const isImmune = target && (target.name === 'Monolito di Basalto' || target.cardId === 'altar_stone' || target.name === 'Cattedrale Sbarrata' || (target.desc && target.desc.includes('non bersagliabile da Frantumare')));
+          if (target && target.owner === opp && (target.type === 'altar' || (target.desc && target.desc.includes('Muro'))) && dist <= 4 && !isImmune) {
             document.querySelector(`.square[data-index="${i}"]`)?.classList.add('highlight-spell-target');
           }
         } else if (name === 'Genio del Geniere' || card.id === 'spell_fortify') {
@@ -8384,9 +8532,22 @@
         const target = battleState.grid[targetIdx];
 
         if ((name === 'Frantumare la Pietra' || card.id === 'spell_cleave') && target) {
-          addLog(`Frantumare la Pietra polverizza istantaneamente ${target.name}!`, 'sys');
-          target.hp = 0;
-          handlePieceDefeated(targetIdx, player);
+          const commIdx = battleState.grid.findIndex(p => p && p.owner === player && p.type === 'commander');
+          const cr = commIdx !== -1 ? Math.floor(commIdx / 8) : 0;
+          const cc = commIdx !== -1 ? commIdx % 8 : 0;
+          const tr = Math.floor(targetIdx / 8), tc = targetIdx % 8;
+          const dist = Math.max(Math.abs(tr - cr), Math.abs(tc - cc));
+          const isImmune = (target.name === 'Monolito di Basalto' || target.cardId === 'altar_stone' || target.name === 'Cattedrale Sbarrata' || (target.desc && target.desc.includes('non bersagliabile da Frantumare')));
+
+          if (dist > 4) {
+            addLog(`Frantumare la Pietra fallito: ${target.name} è a distanza ${dist} (portata max 4 caselle dal Comandante)!`, 'sys');
+          } else if (isImmune) {
+            addLog(`Frantumare la Pietra inefficace: ${target.name} è immune a sortilegi diretti!`, 'sys');
+          } else {
+            addLog(`Frantumare la Pietra polverizza istantaneamente ${target.name}!`, 'sys');
+            target.hp = 0;
+            handlePieceDefeated(targetIdx, player);
+          }
         } else if ((name === 'Genio del Geniere' || card.id === 'spell_fortify') && target) {
           const healAmount = target.type === 'altar' ? 3 : 2;
           target.hp += healAmount;
@@ -8485,7 +8646,7 @@
 
         if (card.type === 'altar') {
           battleState[player].altarDeployedThisTurn = true;
-          battleState[player].maxMana = Math.min(4, battleState[player].maxMana + 1);
+          recalculatePlayerMaxMana(player);
           battleState[player].mana = Math.min(battleState[player].maxMana, battleState[player].mana + 1);
           if (player === getMyRole()) showToast("Altare attivo! +1 Mana subito!");
         }
@@ -8626,6 +8787,11 @@
         battleState.p2.blood += bloodReward;
         battleState.p1.blood += 1;
         addLog(`${piece.name} distrutto! P2 ottiene +${bloodReward} Sangue, P1 riceve +1 Sangue`, 'sys');
+      }
+
+      if (piece.type === 'altar') {
+        recalculatePlayerMaxMana(piece.owner);
+        addLog(`Altare di ${piece.owner.toUpperCase()} distrutto! Riserva Mana massimo ridotta a ${battleState[piece.owner].maxMana}.`, 'sys');
       }
     }
 
@@ -8822,6 +8988,104 @@
       const elHandGrave = document.getElementById('hand-grave-count'); if (elHandGrave) elHandGrave.textContent = (battleState[role] && battleState[role].graveyard) ? battleState[role].graveyard.length : 0;
     }
 
+    function recalculatePlayerMaxMana(player) {
+      if (!battleState || !battleState[player]) return;
+      const activeAltars = battleState.grid.filter(p => p && p.owner === player && p.type === 'altar').length;
+      battleState[player].maxMana = Math.min(4, 1 + activeAltars);
+      if (battleState[player].mana > battleState[player].maxMana) {
+        battleState[player].mana = battleState[player].maxMana;
+      }
+      updateHUD();
+    }
+
+    function advanceTurnPhase() {
+      if (!battleState) return;
+      const role = getMyRole();
+      if (battleState.turn !== role) return showToast("Non è il tuo turno!");
+
+      const currentPhase = battleState.turnPhase || 1;
+
+      if (currentPhase === 1) {
+        setTurnPhase(2);
+        showToast("⚔️ 2ª Fase: Movimento e Azioni! Spendi le tue 2 Azioni ⚡.");
+        addLog(`>>> Inizio 2ª Fase: Movimento / Azioni [Azioni: ${battleState[role].actions}]`, role);
+      } else if (currentPhase === 2) {
+        setTurnPhase(3);
+        showToast("💧 3ª Fase: Mantenimento! Puoi schierare truppe o usare magie residue.");
+        addLog(`>>> Inizio 3ª Fase: Mantenimento finale [Mana residuo: ${battleState[role].mana}]`, role);
+      } else if (currentPhase === 3) {
+        setTurnPhase(4);
+        showToast("⏳ 4ª Fase: Fine Turno! Passaggio del turno in corso...");
+        addLog(`>>> 4ª Fase: Conclusione turno ${role.toUpperCase()}`, role);
+        setTimeout(() => {
+          endTurnP1();
+        }, 300);
+      } else {
+        endTurnP1();
+      }
+    }
+
+    function setTurnPhase(phase, broadcast = true) {
+      if (!battleState) return;
+      battleState.turnPhase = phase;
+      clearHighlights();
+      battleState.selectedSquare = null;
+      battleState.selectedHandIndex = null;
+      updatePhaseUI();
+      renderHand();
+
+      if (broadcast && isP2P) {
+        sendNetMsg({ type: 'SYNC_TURN_PHASE', phase });
+      }
+    }
+
+    function updatePhaseUI() {
+      if (!battleState) return;
+      const phase = battleState.turnPhase || 1;
+      const role = getMyRole();
+      const isMyTurn = battleState.turn === role;
+
+      for (let i = 1; i <= 4; i++) {
+        const stepEl = document.getElementById(`phase-step-${i}`);
+        if (stepEl) {
+          if (i === phase) stepEl.classList.add('active');
+          else stepEl.classList.remove('active');
+        }
+        const arrowEl = document.getElementById(`phase-arrow-${i}`);
+        if (arrowEl) {
+          if (i < phase) arrowEl.classList.add('passed');
+          else arrowEl.classList.remove('passed');
+        }
+      }
+
+      const btn = document.getElementById('btn-end-turn');
+      if (btn) {
+        if (!isMyTurn) {
+          btn.textContent = "Turno Avversario...";
+          btn.disabled = true;
+          btn.style.opacity = "0.5";
+          btn.style.cursor = "not-allowed";
+        } else {
+          btn.disabled = false;
+          btn.style.opacity = "1";
+          btn.style.cursor = "pointer";
+          if (phase === 1) {
+            btn.innerHTML = `Passa a Fase 2: Azioni ⚔️`;
+            btn.className = "btn btn-gold";
+          } else if (phase === 2) {
+            btn.innerHTML = `Passa a Fase 3: Mantenimento 💧`;
+            btn.className = "btn btn-crimson";
+          } else if (phase === 3) {
+            btn.innerHTML = `Passa a Fase 4: Fine Turno ⏳`;
+            btn.className = "btn btn-crimson";
+          } else {
+            btn.innerHTML = `Fine Turno ⏳`;
+            btn.className = "btn btn-crimson";
+          }
+        }
+      }
+    }
+
     function endTurnP1() {
       const role = getMyRole();
       if (battleState.turn !== role) return showToast("Non è il tuo turno!");
@@ -8850,8 +9114,10 @@
 
     function startTurnFor(nextTurn) {
       battleState.turn = nextTurn;
+      battleState.turnPhase = 1;
       battleState[nextTurn].actions = 2;
       const drainKey = (nextTurn === 'p1') ? 'nextTurnManaDrainP1' : 'nextTurnManaDrainP2';
+      recalculatePlayerMaxMana(nextTurn);
       battleState[nextTurn].mana = Math.max(0, battleState[nextTurn].maxMana - (battleState[drainKey] || 0));
       battleState[drainKey] = 0;
       battleState[nextTurn].altarDeployedThisTurn = false;
@@ -8862,14 +9128,15 @@
 
       drawCard(nextTurn);
       updateHUD();
+      updatePhaseUI();
       renderHand();
       renderPieces();
 
       const role = getMyRole();
       if (isP2P) {
         if (nextTurn === role) {
-          showToast("È il tuo Turno!");
-          addLog(`--- TUO TURNO (${role.toUpperCase()}) --- [Azioni: 2, Mana: ${battleState[role].mana}]`, role);
+          showToast("È il tuo Turno! (1ª Fase: Mantenimento)");
+          addLog(`--- TUO TURNO (${role.toUpperCase()}) --- [1ª Fase: Mantenimento | Azioni: 2, Mana: ${battleState[role].mana}/${battleState[role].maxMana}]`, role);
         } else {
           showToast("Turno dell'avversario...");
           addLog(`--- TURNO AVVERSARIO (${nextTurn.toUpperCase()}) ---`, nextTurn);
@@ -8880,8 +9147,8 @@
           addLog(`Inizio Turno IA: Mana=${battleState.p2.mana}/${battleState.p2.maxMana}, Azioni=${battleState.p2.actions}`, 'p2');
           setTimeout(runAI, 600);
         } else {
-          showToast("Tuo Turno!");
-          addLog("--- TUO TURNO (P1) --- [Azioni: 2, Unità pronte]", 'p1');
+          showToast("Tuo Turno! (1ª Fase: Mantenimento)");
+          addLog(`--- TUO TURNO (P1) --- [1ª Fase: Mantenimento | Azioni: 2, Mana: ${battleState.p1.mana}/${battleState.p1.maxMana}]`, 'p1');
         }
       }
     }
@@ -8933,13 +9200,17 @@
 
       addLog(`--- TURNO IA AGGRESSIVA --- [Mana: ${battleState.p2.mana}/${battleState.p2.maxMana}, Azioni: ${battleState.p2.actions}]`, 'p2');
 
+      setTurnPhase(1, false);
       aiDeployPhase(() => {
         aiCommanderRitePhase();
+        setTurnPhase(2, false);
         aiCombatPhase(2, () => {
+          setTurnPhase(3, false);
           renderPieces();
           updateHUD();
           checkWin();
           if (battleState && battleState.phase === 'active' && battleState.turn === 'p2') {
+            setTurnPhase(4, false);
             setTimeout(() => startTurnFor('p1'), 500);
           }
         });
@@ -8983,8 +9254,6 @@
             battleState.p2.mana -= card.cost;
             battleState.p2.hand.splice(altarIdx, 1);
             battleState.p2.altarDeployedThisTurn = true;
-            battleState.p2.maxMana = Math.min(4, battleState.p2.maxMana + 1);
-            battleState.p2.mana = Math.min(battleState.p2.maxMana, battleState.p2.mana + 1);
 
             battleState.grid[targetSq] = {
               owner: 'p2', type: 'altar', cardId: card.id, name: card.name,
@@ -8992,6 +9261,8 @@
               glyph: card.glyph || '🏛️', desc: card.desc, rarity: card.rarity || 'common',
               exhausted: false
             };
+            recalculatePlayerMaxMana('p2');
+            battleState.p2.mana = Math.min(battleState.p2.maxMana, battleState.p2.mana + 1);
             addLog(`IA attiva Altare: ${card.name} su cella ${targetSq} (+1 Mana max!)`, 'p2');
             renderPieces();
             updateHUD();
@@ -9013,7 +9284,23 @@
           const name = card.name || cardId;
           
           if (name === 'Frantumare la Pietra' || card.id === 'spell_cleave') {
-            const p1AltarIdx = battleState.grid.findIndex(p => p && p.owner === 'p1' && p.type === 'altar');
+            const aiCommIdx = battleState.grid.findIndex(p => p && p.owner === 'p2' && p.type === 'commander');
+            let p1AltarIdx = -1;
+            if (aiCommIdx !== -1) {
+              const cr = Math.floor(aiCommIdx / 8), cc = aiCommIdx % 8;
+              for (let i = 0; i < 64; i++) {
+                const p = battleState.grid[i];
+                if (p && p.owner === 'p1' && (p.type === 'altar' || (p.desc && p.desc.includes('Muro')))) {
+                  const tr = Math.floor(i / 8), tc = i % 8;
+                  const dist = Math.max(Math.abs(tr - cr), Math.abs(tc - cc));
+                  const isImmune = (p.name === 'Monolito di Basalto' || p.cardId === 'altar_stone' || p.name === 'Cattedrale Sbarrata' || (p.desc && p.desc.includes('non bersagliabile da Frantumare')));
+                  if (dist <= 4 && !isImmune) {
+                    p1AltarIdx = i;
+                    break;
+                  }
+                }
+              }
+            }
             if (p1AltarIdx !== -1) {
               battleState.p2.mana -= card.cost;
               battleState.p2.hand.splice(spellIdx, 1);
@@ -9021,7 +9308,8 @@
               battleState.p2.graveyard.push(cardId);
               const altar = battleState.grid[p1AltarIdx];
               addLog(`IA lancia ${name} polverizzando l'Altare nemico ${altar.name}!`, 'p2');
-              battleState.grid[p1AltarIdx] = null;
+              altar.hp = 0;
+              handlePieceDefeated(p1AltarIdx, 'p2');
               spellPlayed = true;
             }
           } else if (name === 'Salasso Crudele' || card.id === 'spell_bloodsurge') {
@@ -9253,11 +9541,14 @@
       onComplete();
     }
     function checkWin() {
+      if (!battleState || battleState.isGameOver) return;
+
       const p1Alive = battleState.grid.some(p => p && p.owner === 'p1' && p.type === 'commander' && p.hp > 0);
       const p2Alive = battleState.grid.some(p => p && p.owner === 'p2' && p.type === 'commander' && p.hp > 0);
 
       const role = getMyRole();
       if (!p2Alive) {
+        battleState.isGameOver = true;
         addLog("BATTAGLIA CONCLUSA: VITTORIA DI P1!", 'sys');
         if (role === 'p1') {
           userState.gold = (userState.gold || 0) + 100;
@@ -9269,6 +9560,7 @@
         }
         showPaneDirect('home');
       } else if (!p1Alive) {
+        battleState.isGameOver = true;
         addLog("BATTAGLIA CONCLUSA: VITTORIA DI P2!", 'sys');
         if (role === 'p2') {
           userState.gold = (userState.gold || 0) + 100;
