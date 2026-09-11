@@ -8261,7 +8261,12 @@
         const card = battleState[pl].deck.shift();
         battleState[pl].hand.push(card);
         const cardObj = CARDS_DB[card];
-        addLog(`${pl.toUpperCase()} pesca ${cardObj?.name || card} [${RARITY_NAMES[cardObj?.rarity] || 'Comune'}]`, pl);
+        const myRole = getMyRole();
+        if (pl === myRole) {
+          addLog(`${pl.toUpperCase()} pesca ${cardObj?.name || card} [${RARITY_NAMES[cardObj?.rarity] || 'Comune'}]`, pl);
+        } else {
+          addLog(`${pl.toUpperCase()} pesca 1 carta`, pl);
+        }
       }
     }
 
@@ -8403,6 +8408,12 @@
           }
         } else if (name === 'Furia dei Relitti' || card.id === 'spell_wrath') {
           if (i === commIdx) {
+            document.querySelector(`.square[data-index="${i}"]`)?.classList.add('highlight-spell-target');
+          }
+        } else if (name === 'Trazione Forzata' || name === 'Singolarità Tascabile' || card.id === 'spell_pull_ally' || card.id === 'spell_pull_commander') {
+          // Bersaglia un'unità o comandante nemico (non altari, non immuni a trascinamenti)
+          const isImmune = target && (target.type === 'altar' || (target.desc && (target.desc.includes('immune a spinte') || target.desc.includes('non può essere trascinat') || target.desc.includes('Inamovibile') || target.desc.includes('Ancorato'))));
+          if (target && target.owner === opp && !isImmune) {
             document.querySelector(`.square[data-index="${i}"]`)?.classList.add('highlight-spell-target');
           }
         } else {
@@ -8575,6 +8586,9 @@
               }
             });
           }
+        } else if ((name === 'Trazione Forzata' || card.id === 'spell_pull_ally' || name === 'Singolarità Tascabile' || card.id === 'spell_pull_commander') && target) {
+          const targetAllyType = (name === 'Singolarità Tascabile' || card.id === 'spell_pull_commander') ? 'commander' : 'nearest';
+          pullPiece(targetIdx, 2, player, null, targetAllyType);
         } else if (target && target.owner === opp) {
           target.hp -= 2;
           addLog(`${target.name} subisce 2 danni da ${card.name}!`, 'sys');
@@ -8753,6 +8767,121 @@
         });
       } else {
         finishPush();
+      }
+    }
+
+    function pullPiece(targetIdx, distance, originatorOwner, onComplete = null, targetAllyType = 'nearest') {
+      const target = battleState.grid[targetIdx];
+      if (!target) {
+        if (onComplete) onComplete();
+        return;
+      }
+
+      const isImmune = target.type === 'altar' || (target.desc && (target.desc.includes('immune a spinte') || target.desc.includes('non può essere trascinat') || target.desc.includes('Inamovibile') || target.desc.includes('Ancorato')));
+      if (isImmune) {
+        addLog(`${target.name} è immune a spinte e trascinamenti!`, 'sys');
+        showToast(`${target.name} è immune a trascinamenti!`);
+        if (onComplete) onComplete();
+        return;
+      }
+
+      // Trova il pezzo alleato verso cui trascinare
+      let destAlly = null;
+      let allyIdx = -1;
+
+      if (targetAllyType === 'commander') {
+        allyIdx = battleState.grid.findIndex(p => p && p.owner === originatorOwner && p.type === 'commander');
+        if (allyIdx !== -1) destAlly = battleState.grid[allyIdx];
+      }
+
+      if (!destAlly) {
+        // Trova il pezzo alleato più vicino (distanza Manhattan ortogonale)
+        const tr = Math.floor(targetIdx / 8), tc = targetIdx % 8;
+        let bestDist = Infinity;
+        battleState.grid.forEach((p, idx) => {
+          if (p && p.owner === originatorOwner) {
+            const pr = Math.floor(idx / 8), pc = idx % 8;
+            const d = Math.abs(pr - tr) + Math.abs(pc - tc);
+            if (d < bestDist) {
+              bestDist = d;
+              destAlly = p;
+              allyIdx = idx;
+            }
+          }
+        });
+      }
+
+      if (!destAlly || allyIdx === -1) {
+        if (onComplete) onComplete();
+        return;
+      }
+
+      const ar = Math.floor(allyIdx / 8), ac = allyIdx % 8;
+      let currentPos = targetIdx;
+      let stepsTaken = 0;
+
+      for (let s = 1; s <= distance; s++) {
+        const currR = Math.floor(currentPos / 8), currC = currentPos % 8;
+        const diffR = ar - currR;
+        const diffC = ac - currC;
+
+        if (diffR === 0 && diffC === 0) break;
+
+        let candSteps = [];
+        if (Math.abs(diffR) >= Math.abs(diffC)) {
+          if (diffR !== 0) candSteps.push([Math.sign(diffR), 0]);
+          if (diffC !== 0) candSteps.push([0, Math.sign(diffC)]);
+        } else {
+          if (diffC !== 0) candSteps.push([0, Math.sign(diffC)]);
+          if (diffR !== 0) candSteps.push([Math.sign(diffR), 0]);
+        }
+
+        let moved = false;
+        for (const [dr, dc] of candSteps) {
+          const nr = currR + dr, nc = currC + dc;
+          if (nr >= 0 && nr < 8 && nc >= 0 && nc < 8) {
+            const nextIdx = nr * 8 + nc;
+            if (!battleState.grid[nextIdx]) {
+              battleState.grid[nextIdx] = target;
+              battleState.grid[currentPos] = null;
+              currentPos = nextIdx;
+              stepsTaken++;
+              moved = true;
+              break;
+            }
+          }
+        }
+        if (!moved) break;
+      }
+
+      const finishPull = () => {
+        if (stepsTaken > 0) {
+          addLog(`${target.name} viene trascinato di ${stepsTaken} ${stepsTaken === 1 ? 'casella' : 'caselle'} verso ${destAlly.name}!`, 'sys');
+          showCollisionPopup(currentPos, "🧲 TRASCINATO!", `${stepsTaken} ${stepsTaken === 1 ? 'passo' : 'passi'} verso gli alleati`);
+        } else {
+          addLog(`${target.name} non può essere trascinato (percorso ostruito o già adiacente)!`, 'sys');
+          showToast(`${target.name} non può essere trascinato!`);
+        }
+
+        renderPieces();
+        updateHUD();
+        checkWin();
+        if (onComplete) onComplete();
+      };
+
+      if (stepsTaken > 0) {
+        battleState.grid[targetIdx] = target;
+        battleState.grid[currentPos] = null;
+        renderPieces();
+
+        glidePiece(targetIdx, currentPos, () => {
+          battleState.grid[currentPos] = target;
+          battleState.grid[targetIdx] = null;
+          renderPieces();
+          finishPull();
+        });
+      } else {
+        finishPull();
       }
     }
 
@@ -9363,6 +9492,20 @@
                  addLog(`IA lancia ${name} su ${unit.p.name}, avanzandolo!`, 'p2');
                  spellPlayed = true;
                }
+             }
+          } else if (name === 'Trazione Forzata' || card.id === 'spell_pull_ally' || name === 'Singolarità Tascabile' || card.id === 'spell_pull_commander') {
+             const p1Units = battleState.grid.map((p, i) => ({ p, i })).filter(x => x.p && x.p.owner === 'p1' && x.p.type !== 'altar');
+             if (p1Units.length > 0) {
+               p1Units.sort((a, b) => (b.p.att || 0) - (a.p.att || 0));
+               const chosen = p1Units[0];
+               battleState.p2.mana -= card.cost;
+               battleState.p2.hand.splice(spellIdx, 1);
+               if (!battleState.p2.graveyard) battleState.p2.graveyard = [];
+               battleState.p2.graveyard.push(cardId);
+               const targetAllyType = (name === 'Singolarità Tascabile' || card.id === 'spell_pull_commander') ? 'commander' : 'nearest';
+               addLog(`IA lancia ${name} su ${chosen.p.name}!`, 'p2');
+               pullPiece(chosen.i, 2, 'p2', null, targetAllyType);
+               spellPlayed = true;
              }
           }
           
