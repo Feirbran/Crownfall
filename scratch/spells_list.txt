@@ -1,0 +1,389 @@
+1. [SPELL] "Comando di Trincea" (Cost: 2M, Blood: 0B, Fac: Ferro)
+   Desc: Comandante e alleati adiacenti ad Altari azzerano i danni a distanza per 1 round.
+
+2. [SPELL] "Manto d'Ossidiana" (Cost: 2M, Blood: 0B, Fac: Ferro)
+   Desc: 2 alleati diventano immuni a spinte, trascinamenti e danni urto fino al prossimo turno.
+
+3. [SPELL] "Formazione a Testuggine" (Cost: 1M, Blood: 0B, Fac: Ferro)
+   Desc: Alleati adiacenti tra loro ottengono +1 armatura; non possono muovere in questo turno.
+
+4. [SPELL] "Carica d'Acciaio" (Cost: 1M, Blood: 0B, Fac: Ferro)
+   Desc: Un'unità con armatura muove di 1 casella extra a costo 0 Azioni e spinge ostacoli.
+
+5. [SPELL] "Rinforzo dei Plinti" (Cost: 1M, Blood: 0B, Fac: Ferro)
+   Desc: Ripristina 3 PV a un Altare alleato o conferisce 3 PV temporanei a una struttura.
+
+6. [SPELL] "Sfondamento di Linea" (Cost: 2M, Blood: 0B, Fac: Ferro)
+   Desc: Il prossimo attacco alleato ignora coperture difensive e spinge indietro il difensore.
+
+7. [SPELL] "Frantumare la Corazza" (Cost: 2M, Blood: 0B, Fac: Ferro)
+   Desc: Rimuove permanentemente armature e scudi passivi da un nemico entro 3 passi.
+
+8. [SPELL] "Scudo d'Ossidiana" (Cost: 1M, Blood: 3B, Fac: Ferro)
+   Desc: Cura 3 PV al Comandante e conferisce Scudo Totale contro il prossimo colpo subito.
+
+9. [SPELL] "Interdizione di Bastione" (Cost: 2M, Blood: 3B, Fac: Ferro)
+   Desc: I nemici non possono attraversare una specifica riga con movimenti lineari nel prossimo round.
+
+10. [REACTION] "Muro d'Acciaio" (Cost: 0M, Blood: 3B, Fac: Ferro)
+   Desc: Reazione: azzera completamente il danno di un attacco a distanza nemico.
+
+11. [REACTION] "Ritorsione dello Scudo" (Cost: 0M, Blood: 3B, Fac: Ferro)
+   Desc: Reazione su attacco mischia: riduce il danno di 2 e infligge 2 danni all'attaccante.
+
+12. [SPELL] "Offerta Funebre" (Cost: 1M, Blood: 0B, Fac: Ceneri)
+   Desc: Sacrifica una tua truppa a costo 1 per incassare 3 Segnalini Sangue e pescare 1 carta.
+
+13. [SPELL] "Offerta d'Ossa" (Cost: 1M, Blood: 0B, Fac: Ceneri)
+   Desc: Sacrifica una truppa per pescare 2 carte e incassare 2 Segnalini Sangue.
+
+14. [SPELL] "Marea Sepolcrale" (Cost: 2M, Blood: 5B, Fac: Ceneri)
+   Desc: Rianima 2 truppe a costo 1-2 dal Cimitero adiacenti al Comandante o ad Altari.
+
+15. [SPELL] "Esplosione Spettrale" (Cost: 2M, Blood: 0B, Fac: Ceneri)
+   Desc: Fai detonare un tuo Guscio o Carogna infliggendo 3 danni ad area ortogonale.
+
+16. [SPELL] "Salasso di Massa" (Cost: 2M, Blood: 3B, Fac: Ceneri)
+   Desc: Tutte le unità in campo con salute inferiore a 3 PV subiscono 1 danno immediato.
+
+17. [SPELL] "Patto della Pira" (Cost: 1M, Blood: 0B, Fac: Ceneri)
+   Desc: Subisci 2 danni al Comandante per ottenere 3 Sangue e 1 Azione extra in questo turno.
+
+18. [SPELL] "Catene di Braci" (Cost: 2M, Blood: 0B, Fac: Ceneri)
+   Desc: Immobilizza un pezzo nemico per 1 round; subisce 1 danno se tenta di attaccare.
+
+19. [SPELL] "Rianimazione Veloce" (Cost: 1M, Blood: 3B, Fac: Ceneri)
+   Desc: Rimetti in gioco una truppa a costo 1 morta in questo round conferendole Slancio *(può muoversi e attaccare nello stesso turno in cui entra in gioco)*.
+
+20. [SPELL] "Festino Macabro" (Cost: 2M, Blood: 5B, Fac: Ceneri)
+   Desc: Distruggi tutti i tuoi pezzi a costo 1: cura il tuo Comandante di 3 PV per ciascuno.
+
+21. [REACTION] "Scudo di Brace" (Cost: 0M, Blood: 3B, Fac: Ceneri)
+   Desc: Reazione: alla morte di un alleato, infligge 2 danni immediati all'uccisore.
+
+22. [REACTION] "Riflesso di Carne" (Cost: 0M, Blood: 5B, Fac: Ceneri)
+   Desc: Reazione: quando subisci danno, trasferisci 3 danni su una truppa nemica.
+
+23. [SPELL] "Fusione d'Emergenza" (Cost: 1M, Blood: 0B, Fac: Forgia)
+   Desc: Sacrifica un proprio Altare o Blocco per pescare 2 carte e infliggere 2 danni ad area.
+
+24. [SPELL] "Fonderia da Campo" (Cost: 2M, Blood: 0B, Fac: Forgia)
+   Desc: Converte un Muro in Blocco di Scorie e infligge 1 danno alle unità adiacenti.
+
+25. [SPELL] "Ignizione Primordiale" (Cost: 2M, Blood: 5B, Fac: Forgia)
+   Desc: Trasforma un Altare in truppa semovente 4/5 mantenendo la produzione di Mana.
+
+26. [SPELL] "Sovraccarico Termico" (Cost: 1M, Blood: 0B, Fac: Forgia)
+   Desc: Un automa ottiene +2 ATT per questo round, ma subisce 2 danni alla fine del turno.
+
+27. [SPELL] "Riciclo Metalli" (Cost: 1M, Blood: 0B, Fac: Forgia)
+   Desc: Rimuovi un Blocco di Scorie per incassare immediatamente +2 Mana spendibili subito.
+
+28. [SPELL] "Saldata d'Urgenza" (Cost: 1M, Blood: 0B, Fac: Forgia)
+   Desc: Ripristina 3 PV a un automa alleato o al Comandante.
+
+29. [SPELL] "Gettata di Ghisa" (Cost: 2M, Blood: 0B, Fac: Forgia)
+   Desc: Infligge 2 danni a un bersaglio e riduce il suo movimento a 0 per 1 round.
+
+30. [SPELL] "Forgiatura Istantanea" (Cost: 3M, Blood: 3B, Fac: Forgia)
+   Desc: Schiera immediatamente un automa a costo 1 o 2 dalla mano a costo 0 Azioni.
+
+31. [SPELL] "Tempra d'Acciaio" (Cost: 2M, Blood: 0B, Fac: Forgia)
+   Desc: Conferisce +1 armatura permanente a un automa alleato (max 2 per unità).
+
+32. [REACTION] "Raffreddamento Istantaneo" (Cost: 0M, Blood: 3B, Fac: Forgia)
+   Desc: Reazione: quando un Altare subisce danno letale, sopravvive a 1 PV diventando Blocco.
+
+33. [REACTION] "Detonazione di Scorie" (Cost: 0M, Blood: 3B, Fac: Forgia)
+   Desc: Reazione: fai esplodere un Blocco adiacente a un attaccante nemico infliggendogli 3 danni.
+
+34. [SPELL] "Singolarità Tascabile" (Cost: 1M, Blood: 0B, Fac: Marea)
+   Desc: Trascina una truppa nemica di 2 caselle in linea retta verso il Comandante.
+
+35. [SPELL] "Pressione di Marea" (Cost: 1M, Blood: 0B, Fac: Marea)
+   Desc: Trascina 2 unità nemiche qualsiasi di 1 casella verso l'asse centrale della scacchiera.
+
+36. [REACTION] "Deviazione Astrale" (Cost: 0M, Blood: 3B, Fac: Marea)
+   Desc: Reazione: quando un nemico dichiara una mossa verso di te, devia la destinazione di 1 asse.
+
+37. [SPELL] "Collasso di Marea" (Cost: 2M, Blood: 3B, Fac: Marea)
+   Desc: Nemici entro 2 passi da un proprio Altare subiscono 2 danni e vengono respinti.
+
+38. [SPELL] "Spostamento di Fase" (Cost: 1M, Blood: 0B, Fac: Marea)
+   Desc: Scambia istantaneamente di posizione 2 miniature amiche sulla plancia.
+
+39. [SPELL] "Salto di Quanta" (Cost: 2M, Blood: 0B, Fac: Marea)
+   Desc: Teletrasporta un'unità amica su una qualsiasi casella adiacente a un proprio Altare.
+
+40. [SPELL] "Frattura Spazio-Temporale" (Cost: 2M, Blood: 3B, Fac: Marea)
+   Desc: Rimuove dal gioco un'unità per 1 intero round; riappare al round dopo nella stessa casella.
+
+41. [SPELL] "Ritorno all'Origine" (Cost: 2M, Blood: 0B, Fac: Marea)
+   Desc: Rimanda una miniatura nemica non-Comandante sulla sua riga di partenza (riga 8).
+
+42. [SPELL] "Marea Crescente" (Cost: 1M, Blood: 0B, Fac: Marea)
+   Desc: Tutte le unità che muovono in diagonale ottengono +1 passo di movimento in questo round.
+
+43. [REACTION] "Bolla di Vuoto" (Cost: 0M, Blood: 3B, Fac: Marea)
+   Desc: Reazione: annulla un attacco contro un alleato e lo sposta di 1 casella diagonale.
+
+44. [REACTION] "Barriera di Risonanza" (Cost: 0M, Blood: 5B, Fac: Marea)
+   Desc: Reazione: respinge l'attaccante di 3 caselle in linea retta (+2 danni se urta ostacoli).
+
+45. [SPELL] "Editto di Quarantena" (Cost: 2M, Blood: 0B, Fac: Silenzio)
+   Desc: Sigilla un'area 2x2 per 1 round: nessuna unità può entrarvi o attaccare attraverso.
+
+46. [SPELL] "Editto di Confisca" (Cost: 2M, Blood: 0B, Fac: Silenzio)
+   Desc: Sottrae 1 Mana dalla riserva iniziale dell'avversario nel suo turno successivo.
+
+47. [SPELL] "Sigillo di Confisca" (Cost: 1M, Blood: 3B, Fac: Silenzio)
+   Desc: Sottrae 2 Sangue al nemico (infligge 2 danni al Comandante se a secco).
+
+48. [REACTION] "Interdizione di Legge" (Cost: 0M, Blood: 5B, Fac: Silenzio)
+   Desc: Reazione: annulla e dissipa completamente un sortilegio nemico appena lanciato.
+
+49. [REACTION] "Manto del Giudizio" (Cost: 1M, Blood: 3B, Fac: Silenzio)
+   Desc: Reazione su attacco a Comandante: nega il danno e sottrae 1 Azione al turno nemico.
+
+50. [SPELL] "Tassa Imperiale" (Cost: 1M, Blood: 0B, Fac: Silenzio)
+   Desc: L'avversario deve pagare 1 Sangue per ogni unità che muove nel suo prossimo turno.
+
+51. [SPELL] "Anatema del Silenzio" (Cost: 2M, Blood: 0B, Fac: Silenzio)
+   Desc: Rimuove permanentemente il testo di abilità di un'unità nemica non-Comandante.
+
+52. [SPELL] "Confisca Forzata" (Cost: 2M, Blood: 3B, Fac: Silenzio)
+   Desc: Distrugge un Altare nemico se l'avversario controlla più Altari di te.
+
+53. [SPELL] "Sentenza Inappellabile" (Cost: 3M, Blood: 5B, Fac: Silenzio)
+   Desc: Distrugge istantaneamente una truppa nemica che ha sferrato un attacco in questo round.
+
+54. [REACTION] "Veto Inquisitorio" (Cost: 0M, Blood: 3B, Fac: Silenzio)
+   Desc: Reazione: nega l'attivazione di un Rito d'Armi o abilità [1⚡] nemica.
+
+55. [REACTION] "Giudizio Immediato" (Cost: 0M, Blood: 3B, Fac: Silenzio)
+   Desc: Reazione: quando un nemico muove adiacente al Comandante, subisce 2 danni immediati.
+
+56. [SPELL] "Frantumare la Pietra" (Cost: 2M, Blood: 0B, Fac: Neutral)
+   Desc: Distrugge istantaneamente 1 Altare o Muro nemico entro 4 caselle dal Comandante.
+
+57. [SPELL] "Marcia Forzata" (Cost: 1M, Blood: 0B, Fac: Neutral)
+   Desc: Muove 1 truppa alleata di 1 casella ortogonale extra a costo 0 Azioni Tattiche.
+
+58. [SPELL] "Carica Sfondante" (Cost: 1M, Blood: 0B, Fac: Neutral)
+   Desc: Muove un'unità di 1 passo extra e le conferisce +1 ATT sul prossimo attacco.
+
+59. [SPELL] "Salasso Crudele" (Cost: 2M, Blood: 0B, Fac: Neutral)
+   Desc: 3 danni diretti a un'unità ferita o a costo <= 2 entro 3 caselle.
+
+60. [SPELL] "Barricata Improvvisata" (Cost: 1M, Blood: 0B, Fac: Neutral)
+   Desc: Evoca un Muro di Detriti solido (0 ATT / 3 PV) su una casella libera entro 3 passi.
+
+61. [SPELL] "Sguardo del Monolito" (Cost: 2M, Blood: 0B, Fac: Neutral)
+   Desc: Blocca completamente movimento e attacchi di un nemico fino al prossimo turno.
+
+62. [SPELL] "Pozza di Sangue" (Cost: 2M, Blood: 0B, Fac: Neutral)
+   Desc: Incanta una casella: chiunque vi transiti conferisce 2 Sangue al controllore.
+
+63. [SPELL] "Genio del Geniere" (Cost: 2M, Blood: 0B, Fac: Neutral)
+   Desc: Ripristina 3 PV a un Altare o Muro alleato entro 3 passi dal Comandante.
+
+64. [SPELL] "Rito di Comunione" (Cost: 3M, Blood: 3B, Fac: Neutral)
+   Desc: Pesca 2 carte (pesca 3 carte se il Comandante ha meno di 10 PV rimasti).
+
+65. [SPELL] "Furia dei Relitti" (Cost: 3M, Blood: 0B, Fac: Neutral)
+   Desc: Danni diretti pari alle unità morte in questo round a una truppa entro 3 passi.
+
+66. [SPELL] "Spaccatura Terrestre" (Cost: 2M, Blood: 3B, Fac: Neutral)
+   Desc: Apre una Voragine permanente su una casella libera entro 3 passi dal Comandante.
+
+67. [SPELL] "Fendenti Incrociati" (Cost: 2M, Blood: 0B, Fac: Neutral)
+   Desc: Per questo turno, tutti gli attacchi con Flanking *(infligge danni bonus se il bersaglio è ingaggiato anche da un altro alleato)* infliggono +2 danni extra.
+
+68. [SPELL] "Giuramento Ancestrale" (Cost: 3M, Blood: 5B, Fac: Neutral)
+   Desc: Pesca 3 carte dal Grimorio e rigenera 4 PV al tuo Comandante.
+
+69. [REACTION] "Contro-Urto" (Cost: 0M, Blood: 3B, Fac: Neutral)
+   Desc: Reazione su attacco mischia: riduce di 2 il danno e respinge l'attaccante (+2 danni urto).
+
+70. [SPELL] "Tagliola da Campo" (Cost: 1M, Blood: 0B, Fac: Neutral)
+   Desc: Trappola invisibile: il primo nemico che vi entra subisce 2 danni e si ferma.
+
+71. [REACTION] "Passo Falso" (Cost: 0M, Blood: 3B, Fac: Neutral)
+   Desc: Reazione: quando un nemico dichiara una mossa, riduci il suo movimento a 0 per il round.
+
+72. [SPELL] "Rinvigorire" (Cost: 1M, Blood: 0B, Fac: Neutral)
+   Desc: Un'unità alleata che ha già agito in questo round può muovere di 1 casella extra.
+
+73. [SPELL] "Saccheggio Rapido" (Cost: 1M, Blood: 0B, Fac: Neutral)
+   Desc: Se hai distrutto una struttura nemica in questo round, incassi +2 Mana immediati.
+
+74. [SPELL] "Nebbia di Guerra" (Cost: 2M, Blood: 0B, Fac: Neutral)
+   Desc: Tutti gli attacchi a distanza sono impediti per 1 intero round di gioco.
+
+75. [SPELL] "Provocazione" (Cost: 1M, Blood: 0B, Fac: Neutral)
+   Desc: Costringe una truppa nemica entro 2 caselle ad attaccare l'alleato bersaglio nel suo turno.
+
+76. [SPELL] "Faglia Improvvisa" (Cost: 2M, Blood: 3B, Fac: Ferro)
+   Desc: Apre una Voragine permanente su una casella libera entro 3 passi dal Comandante.
+
+77. [SPELL] "Impatto Tettonico" (Cost: 2M, Blood: 0B, Fac: Ferro)
+   Desc: Infligge 2 danni a tutte le unità adiacenti a muri o Altari e le respinge di 1 casella.
+
+78. [SPELL] "Salasso di Piastre" (Cost: 1M, Blood: 3B, Fac: Ferro)
+   Desc: Rimuovi l'armatura da un alleato per conferirgli +2 ATT immediati in questo round.
+
+79. [SPELL] "Riparazione di Garek" (Cost: 1M, Blood: 0B, Fac: Ferro)
+   Desc: Ripristina 4 PV a un Altare alleato o a una macchina d'assedio.
+
+80. [SPELL] "Muraglia di Scudi" (Cost: 2M, Blood: 0B, Fac: Ferro)
+   Desc: Tutte le unità alleate guadagnano +1 armatura temporanea fino all'inizio del prossimo turno.
+
+81. [SPELL] "Carica Inarrestabile" (Cost: 2M, Blood: 0B, Fac: Ferro)
+   Desc: Un colosso alleato muove di 2 passi extra e travolge il primo ostacolo che incontra.
+
+82. [SPELL] "Bastione Spezzato" (Cost: 1M, Blood: 0B, Fac: Ferro)
+   Desc: Distruggi un tuo muro o blocco per pescare 2 carte dal Grimorio.
+
+83. [SPELL] "Ruggito d'Ossidiana" (Cost: 2M, Blood: 3B, Fac: Ferro)
+   Desc: Tutti i nemici adiacenti a Garek vengono spinti indietro di 2 passi (+2 danni urto).
+
+84. [SPELL] "Pietrificazione" (Cost: 2M, Blood: 3B, Fac: Ferro)
+   Desc: Trasforma una truppa nemica ferita in un Muro solido (0 ATT / 4 PV) permanente.
+
+85. [REACTION] "Contro-Sfondamento" (Cost: 0M, Blood: 3B, Fac: Ferro)
+   Desc: Reazione: quando un nemico carica un alleato, nega la carica e gli infligge 3 danni.
+
+86. [REACTION] "Scudo Fratturato" (Cost: 0M, Blood: 3B, Fac: Ferro)
+   Desc: Reazione: riduce a 0 il danno subito da un attacco; scaglia schegge infliggendo 2 danni all'attaccante.
+
+87. [SPELL] "Infestazione di Vermi" (Cost: 2M, Blood: 3B, Fac: Ceneri)
+   Desc: Genera 3 Cimiteri su caselle libere a scelta; ciascuno infligge 1 danno ai nemici che vi passano.
+
+88. [SPELL] "Masticazione Rapida" (Cost: 1M, Blood: 0B, Fac: Ceneri)
+   Desc: Distruggi un tuo pezzo a costo 1 per curare 3 PV a un'altra truppa o a Morbida.
+
+89. [SPELL] "Rianimazione Putrescente" (Cost: 2M, Blood: 5B, Fac: Ceneri)
+   Desc: Rimetti in gioco dal Cimitero un colosso a costo 4 con 3 PV su una casella libera adiacente.
+
+90. [SPELL] "Nube di Larve" (Cost: 1M, Blood: 0B, Fac: Ceneri)
+   Desc: Acceca un'unità nemica: la sua gittata massima è ridotta a 1 per 1 round.
+
+91. [SPELL] "Contagio" (Cost: 2M, Blood: 0B, Fac: Ceneri)
+   Desc: Infligge 1 danno a un bersaglio; se muore in questo turno, il danno si diffonde a catena attorno.
+
+92. [SPELL] "Patto Sepolcrale" (Cost: 1M, Blood: 3B, Fac: Ceneri)
+   Desc: Pesca 2 carte dal Grimorio e genera 1 Cimitero sotto la posizione del Comandante.
+
+93. [SPELL] "Scoppio di Braciere" (Cost: 2M, Blood: 0B, Fac: Ceneri)
+   Desc: Fai brillare tutti i Cimiteri: ciascun Cimitero infligge 2 danni alle unità che vi sostano sopra.
+
+94. [SPELL] "Marea di Larve" (Cost: 3M, Blood: 3B, Fac: Ceneri)
+   Desc: Evoca 3 Larvoni Infetti (1/1 con Slancio *(può muoversi e attaccare nello stesso turno in cui entra in gioco)*) adiacenti a Morbida o ad Altari.
+
+95. [SPELL] "Carne Putrida" (Cost: 1M, Blood: 0B, Fac: Ceneri)
+   Desc: Conferisce +2 PV massimi a una truppa delle Ceneri ma ne riduce l'ATT di 1.
+
+96. [REACTION] "Ritorsione Putrescente" (Cost: 0M, Blood: 3B, Fac: Ceneri)
+   Desc: Reazione: quando un alleato muore in mischia, trasforma la casella in Cimitero e infligge 2 danni.
+
+97. [REACTION] "Muro di Cadaveri" (Cost: 0M, Blood: 3B, Fac: Ceneri)
+   Desc: Reazione: evoca istantaneamente un Muro di Ossa (3 PV) davanti a una carica nemica.
+
+98. [SPELL] "Faglia Gravitazionale Rapida" (Cost: 2M, Blood: 3B, Fac: Marea)
+   Desc: Inverte istantaneamente la posizione di 2 unità qualsiasi sulla plancia.
+
+99. [SPELL] "Trazione Forzata" (Cost: 1M, Blood: 0B, Fac: Marea)
+   Desc: Trascina un'unità nemica di 2 caselle ortogonali verso il pezzo alleato più vicino.
+
+100. [SPELL] "Onda d'Urto Astrale" (Cost: 2M, Blood: 0B, Fac: Marea)
+   Desc: Respinge tutti i nemici adiacenti a Kaelen di 2 passi (+2 danni se impattano ostacoli).
+
+101. [SPELL] "Sfasamento di Kaelen" (Cost: 1M, Blood: 0B, Fac: Marea)
+   Desc: Kaelen scambia posizione con una sua truppa senza spendere Azioni Tattiche.
+
+102. [SPELL] "Vortice Temporale" (Cost: 2M, Blood: 3B, Fac: Marea)
+   Desc: Ricarica 1 Azione Tattica per questo round spendendo 3 Segnalini Sangue.
+
+103. [SPELL] "Prisma di Distorsione" (Cost: 1M, Blood: 0B, Fac: Marea)
+   Desc: Tutti gli attacchi a distanza alleati ottengono +1 gittata fino alla fine del round.
+
+104. [SPELL] "Bolla Sfasante" (Cost: 2M, Blood: 0B, Fac: Marea)
+   Desc: Rende un alleato immune ad attacchi fisici per 1 turno; non può attaccare durante l'effetto.
+
+105. [SPELL] "Spinta nel Vuoto" (Cost: 2M, Blood: 3B, Fac: Marea)
+   Desc: Spinge una miniatura nemica di 2 passi: se finisce in una Voragine, viene rimossa dal gioco.
+
+106. [SPELL] "Corrente di Marea" (Cost: 1M, Blood: 0B, Fac: Marea)
+   Desc: Muove 2 pedine amiche di 1 casella diagonale gratis.
+
+107. [REACTION] "Deviazione Istantanea" (Cost: 0M, Blood: 3B, Fac: Marea)
+   Desc: Reazione: quando un nemico ti attacca a distanza, devia il colpo su un'altra unità a portata.
+
+108. [REACTION] "Riflesso del Vuoto" (Cost: 0M, Blood: 5B, Fac: Marea)
+   Desc: Reazione: scambia di posto Kaelen con l'attaccante prima che il danno venga calcolato.
+
+109. [SPELL] "Sigillo di Kael" (Cost: 1M, Blood: 3B, Fac: Silenzio)
+   Desc: Blocca completamente i Riti d'Armi e le abilità speciali del Comandante nemico per 1 round.
+
+110. [SPELL] "Confisca Totale" (Cost: 2M, Blood: 3B, Fac: Silenzio)
+   Desc: Azzera la riserva di Sangue dell'avversario; cura il tuo Comandante di 2 PV per ogni Sangue tolto.
+
+111. [SPELL] "Quarantena di Faglia" (Cost: 2M, Blood: 0B, Fac: Silenzio)
+   Desc: Sigilla una casella per il resto del match: non può essere attraversata né occupata.
+
+112. [SPELL] "Decreto d'Interdizione" (Cost: 2M, Blood: 0B, Fac: Silenzio)
+   Desc: L'avversario non può schierare più di 1 carta dalla mano nel suo turno successivo.
+
+113. [SPELL] "Tassa sulle Armi" (Cost: 1M, Blood: 0B, Fac: Silenzio)
+   Desc: Il prossimo attacco dichiarato dall'avversario costa 1 Mana addizionale.
+
+114. [SPELL] "Verdetto Immediato" (Cost: 2M, Blood: 0B, Fac: Silenzio)
+   Desc: Infligge 3 danni diretti a una truppa nemica che ha già compiuto un'azione in questo turno.
+
+115. [SPELL] "Voto di Silenzio" (Cost: 1M, Blood: 0B, Fac: Silenzio)
+   Desc: Nessun giocatore può lanciare sortilegi non-Reazione fino all'inizio del prossimo round.
+
+116. [SPELL] "Manto di Marmo" (Cost: 2M, Blood: 0B, Fac: Silenzio)
+   Desc: Conferisce Scudo Totale a un Altare alleato: previene la prossima fonte di danno su di esso.
+
+117. [SPELL] "Castigo della Legge" (Cost: 3M, Blood: 3B, Fac: Silenzio)
+   Desc: Infligge 4 danni a un'unità nemica; se muore, l'avversario non guadagna Segnalini Sangue.
+
+118. [REACTION] "Veto Inappellabile" (Cost: 0M, Blood: 5B, Fac: Silenzio)
+   Desc: Reazione: annulla e scarta un sortilegio nemico; infligge 2 danni al Comandante nemico.
+
+119. [REACTION] "Giudizio Riflesso" (Cost: 0M, Blood: 3B, Fac: Silenzio)
+   Desc: Reazione: quando un alleato subisce danno letale, infligge lo stesso danno all'attaccante.
+
+120. [SPELL] "Eruzione di Scorie Rapida" (Cost: 2M, Blood: 3B, Fac: Forgia)
+   Desc: Distrugge un proprio Altare infliggendo 4 danni a tutti i nemici entro 2 caselle.
+
+121. [SPELL] "Fusione di Emergenza" (Cost: 1M, Blood: 0B, Fac: Forgia)
+   Desc: Sacrifica un blocco o rottame per pescare 2 carte e infliggere 2 danni alle caselle adiacenti.
+
+122. [SPELL] "Tempra d'Ossidiana" (Cost: 2M, Blood: 0B, Fac: Forgia)
+   Desc: Conferisce +2 armatura temporanea a un automa alleato per questo round.
+
+123. [SPELL] "Sovraccarico di Vapore" (Cost: 1M, Blood: 0B, Fac: Forgia)
+   Desc: Un automa alleato muove di 2 passi extra ortogonali e spinge il primo ostacolo toccato.
+
+124. [SPELL] "Riciclo Istantaneo" (Cost: 1M, Blood: 0B, Fac: Forgia)
+   Desc: Rimuovi un automa distrutto per incassare immediatamente +2 Mana spendibili subito.
+
+125. [SPELL] "Ignizione di Ignis" (Cost: 2M, Blood: 5B, Fac: Forgia)
+   Desc: Anima permanentemente un Altare in un costrutto semovente 4/5 che attacca subito.
+
+126. [SPELL] "Colata di Magma" (Cost: 2M, Blood: 0B, Fac: Forgia)
+   Desc: Inonda una riga della scacchiera di lava: chiunque vi transiti subisce 2 danni immediati.
+
+127. [SPELL] "Martellata Sismica" (Cost: 2M, Blood: 0B, Fac: Forgia)
+   Desc: Infligge 3 danni diretti a una struttura o a un'unità che staziona su un muro.
+
+128. [SPELL] "Fucina da Campo" (Cost: 1M, Blood: 0B, Fac: Forgia)
+   Desc: Schiera immediatamente un blocco di scorie solido (4 PV) su una casella libera.
+
+129. [REACTION] "Raffreddamento d'Urgenza" (Cost: 0M, Blood: 3B, Fac: Forgia)
+   Desc: Reazione: quando un automa subisce danno letale, sopravvive con 1 PV diventando solido.
+
+130. [REACTION] "Scoppio di Caldaia" (Cost: 0M, Blood: 3B, Fac: Forgia)
+   Desc: Reazione: alla distruzione di un automa, infligge 3 danni ad area a tutti i pezzi attorno.

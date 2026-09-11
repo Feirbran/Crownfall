@@ -1,0 +1,1042 @@
+[
+  {
+    "name": "Comando di Trincea",
+    "type": "spell",
+    "faction": "Ferro",
+    "cost": 2,
+    "bloodCost": 0,
+    "desc": "Comandante e alleati adiacenti ad Altari azzerano i danni a distanza per 1 round."
+  },
+  {
+    "name": "Manto d'Ossidiana",
+    "type": "spell",
+    "faction": "Ferro",
+    "cost": 2,
+    "bloodCost": 0,
+    "desc": "2 alleati diventano immuni a spinte, trascinamenti e danni urto fino al prossimo turno."
+  },
+  {
+    "name": "Formazione a Testuggine",
+    "type": "spell",
+    "faction": "Ferro",
+    "cost": 1,
+    "bloodCost": 0,
+    "desc": "Alleati adiacenti tra loro ottengono +1 armatura; non possono muovere in questo turno."
+  },
+  {
+    "name": "Carica d'Acciaio",
+    "type": "spell",
+    "faction": "Ferro",
+    "cost": 1,
+    "bloodCost": 0,
+    "desc": "Un'unità con armatura muove di 1 casella extra a costo 0 Azioni e spinge ostacoli."
+  },
+  {
+    "name": "Rinforzo dei Plinti",
+    "type": "spell",
+    "faction": "Ferro",
+    "cost": 1,
+    "bloodCost": 0,
+    "desc": "Ripristina 3 PV a un Altare alleato o conferisce 3 PV temporanei a una struttura."
+  },
+  {
+    "name": "Sfondamento di Linea",
+    "type": "spell",
+    "faction": "Ferro",
+    "cost": 2,
+    "bloodCost": 0,
+    "desc": "Il prossimo attacco alleato ignora coperture difensive e spinge indietro il difensore."
+  },
+  {
+    "name": "Frantumare la Corazza",
+    "type": "spell",
+    "faction": "Ferro",
+    "cost": 2,
+    "bloodCost": 0,
+    "desc": "Rimuove permanentemente armature e scudi passivi da un nemico entro 3 passi."
+  },
+  {
+    "name": "Scudo d'Ossidiana",
+    "type": "spell",
+    "faction": "Ferro",
+    "cost": 1,
+    "bloodCost": 3,
+    "desc": "Cura 3 PV al Comandante e conferisce Scudo Totale contro il prossimo colpo subito."
+  },
+  {
+    "name": "Interdizione di Bastione",
+    "type": "spell",
+    "faction": "Ferro",
+    "cost": 2,
+    "bloodCost": 3,
+    "desc": "I nemici non possono attraversare una specifica riga con movimenti lineari nel prossimo round."
+  },
+  {
+    "name": "Muro d'Acciaio",
+    "type": "reaction",
+    "faction": "Ferro",
+    "cost": 0,
+    "bloodCost": 3,
+    "desc": "Reazione: azzera completamente il danno di un attacco a distanza nemico."
+  },
+  {
+    "name": "Ritorsione dello Scudo",
+    "type": "reaction",
+    "faction": "Ferro",
+    "cost": 0,
+    "bloodCost": 3,
+    "desc": "Reazione su attacco mischia: riduce il danno di 2 e infligge 2 danni all'attaccante."
+  },
+  {
+    "name": "Offerta Funebre",
+    "type": "spell",
+    "faction": "Ceneri",
+    "cost": 1,
+    "bloodCost": 0,
+    "desc": "Sacrifica una tua truppa a costo 1 per incassare 3 Segnalini Sangue e pescare 1 carta."
+  },
+  {
+    "name": "Offerta d'Ossa",
+    "type": "spell",
+    "faction": "Ceneri",
+    "cost": 1,
+    "bloodCost": 0,
+    "desc": "Sacrifica una truppa per pescare 2 carte e incassare 2 Segnalini Sangue."
+  },
+  {
+    "name": "Marea Sepolcrale",
+    "type": "spell",
+    "faction": "Ceneri",
+    "cost": 2,
+    "bloodCost": 5,
+    "desc": "Rianima 2 truppe a costo 1-2 dal Cimitero adiacenti al Comandante o ad Altari."
+  },
+  {
+    "name": "Esplosione Spettrale",
+    "type": "spell",
+    "faction": "Ceneri",
+    "cost": 2,
+    "bloodCost": 0,
+    "desc": "Fai detonare un tuo Guscio o Carogna infliggendo 3 danni ad area ortogonale."
+  },
+  {
+    "name": "Salasso di Massa",
+    "type": "spell",
+    "faction": "Ceneri",
+    "cost": 2,
+    "bloodCost": 3,
+    "desc": "Tutte le unità in campo con salute inferiore a 3 PV subiscono 1 danno immediato."
+  },
+  {
+    "name": "Patto della Pira",
+    "type": "spell",
+    "faction": "Ceneri",
+    "cost": 1,
+    "bloodCost": 0,
+    "desc": "Subisci 2 danni al Comandante per ottenere 3 Sangue e 1 Azione extra in questo turno."
+  },
+  {
+    "name": "Catene di Braci",
+    "type": "spell",
+    "faction": "Ceneri",
+    "cost": 2,
+    "bloodCost": 0,
+    "desc": "Immobilizza un pezzo nemico per 1 round; subisce 1 danno se tenta di attaccare."
+  },
+  {
+    "name": "Rianimazione Veloce",
+    "type": "spell",
+    "faction": "Ceneri",
+    "cost": 1,
+    "bloodCost": 3,
+    "desc": "Rimetti in gioco una truppa a costo 1 morta in questo round conferendole Slancio *(può muoversi e attaccare nello stesso turno in cui entra in gioco)*."
+  },
+  {
+    "name": "Festino Macabro",
+    "type": "spell",
+    "faction": "Ceneri",
+    "cost": 2,
+    "bloodCost": 5,
+    "desc": "Distruggi tutti i tuoi pezzi a costo 1: cura il tuo Comandante di 3 PV per ciascuno."
+  },
+  {
+    "name": "Scudo di Brace",
+    "type": "reaction",
+    "faction": "Ceneri",
+    "cost": 0,
+    "bloodCost": 3,
+    "desc": "Reazione: alla morte di un alleato, infligge 2 danni immediati all'uccisore."
+  },
+  {
+    "name": "Riflesso di Carne",
+    "type": "reaction",
+    "faction": "Ceneri",
+    "cost": 0,
+    "bloodCost": 5,
+    "desc": "Reazione: quando subisci danno, trasferisci 3 danni su una truppa nemica."
+  },
+  {
+    "name": "Fusione d'Emergenza",
+    "type": "spell",
+    "faction": "Forgia",
+    "cost": 1,
+    "bloodCost": 0,
+    "desc": "Sacrifica un proprio Altare o Blocco per pescare 2 carte e infliggere 2 danni ad area."
+  },
+  {
+    "name": "Fonderia da Campo",
+    "type": "spell",
+    "faction": "Forgia",
+    "cost": 2,
+    "bloodCost": 0,
+    "desc": "Converte un Muro in Blocco di Scorie e infligge 1 danno alle unità adiacenti."
+  },
+  {
+    "name": "Ignizione Primordiale",
+    "type": "spell",
+    "faction": "Forgia",
+    "cost": 2,
+    "bloodCost": 5,
+    "desc": "Trasforma un Altare in truppa semovente 4/5 mantenendo la produzione di Mana."
+  },
+  {
+    "name": "Sovraccarico Termico",
+    "type": "spell",
+    "faction": "Forgia",
+    "cost": 1,
+    "bloodCost": 0,
+    "desc": "Un automa ottiene +2 ATT per questo round, ma subisce 2 danni alla fine del turno."
+  },
+  {
+    "name": "Riciclo Metalli",
+    "type": "spell",
+    "faction": "Forgia",
+    "cost": 1,
+    "bloodCost": 0,
+    "desc": "Rimuovi un Blocco di Scorie per incassare immediatamente +2 Mana spendibili subito."
+  },
+  {
+    "name": "Saldata d'Urgenza",
+    "type": "spell",
+    "faction": "Forgia",
+    "cost": 1,
+    "bloodCost": 0,
+    "desc": "Ripristina 3 PV a un automa alleato o al Comandante."
+  },
+  {
+    "name": "Gettata di Ghisa",
+    "type": "spell",
+    "faction": "Forgia",
+    "cost": 2,
+    "bloodCost": 0,
+    "desc": "Infligge 2 danni a un bersaglio e riduce il suo movimento a 0 per 1 round."
+  },
+  {
+    "name": "Forgiatura Istantanea",
+    "type": "spell",
+    "faction": "Forgia",
+    "cost": 3,
+    "bloodCost": 3,
+    "desc": "Schiera immediatamente un automa a costo 1 o 2 dalla mano a costo 0 Azioni."
+  },
+  {
+    "name": "Tempra d'Acciaio",
+    "type": "spell",
+    "faction": "Forgia",
+    "cost": 2,
+    "bloodCost": 0,
+    "desc": "Conferisce +1 armatura permanente a un automa alleato (max 2 per unità)."
+  },
+  {
+    "name": "Raffreddamento Istantaneo",
+    "type": "reaction",
+    "faction": "Forgia",
+    "cost": 0,
+    "bloodCost": 3,
+    "desc": "Reazione: quando un Altare subisce danno letale, sopravvive a 1 PV diventando Blocco."
+  },
+  {
+    "name": "Detonazione di Scorie",
+    "type": "reaction",
+    "faction": "Forgia",
+    "cost": 0,
+    "bloodCost": 3,
+    "desc": "Reazione: fai esplodere un Blocco adiacente a un attaccante nemico infliggendogli 3 danni."
+  },
+  {
+    "name": "Singolarità Tascabile",
+    "type": "spell",
+    "faction": "Marea",
+    "cost": 1,
+    "bloodCost": 0,
+    "desc": "Trascina una truppa nemica di 2 caselle in linea retta verso il Comandante."
+  },
+  {
+    "name": "Pressione di Marea",
+    "type": "spell",
+    "faction": "Marea",
+    "cost": 1,
+    "bloodCost": 0,
+    "desc": "Trascina 2 unità nemiche qualsiasi di 1 casella verso l'asse centrale della scacchiera."
+  },
+  {
+    "name": "Deviazione Astrale",
+    "type": "reaction",
+    "faction": "Marea",
+    "cost": 0,
+    "bloodCost": 3,
+    "desc": "Reazione: quando un nemico dichiara una mossa verso di te, devia la destinazione di 1 asse."
+  },
+  {
+    "name": "Collasso di Marea",
+    "type": "spell",
+    "faction": "Marea",
+    "cost": 2,
+    "bloodCost": 3,
+    "desc": "Nemici entro 2 passi da un proprio Altare subiscono 2 danni e vengono respinti."
+  },
+  {
+    "name": "Spostamento di Fase",
+    "type": "spell",
+    "faction": "Marea",
+    "cost": 1,
+    "bloodCost": 0,
+    "desc": "Scambia istantaneamente di posizione 2 miniature amiche sulla plancia."
+  },
+  {
+    "name": "Salto di Quanta",
+    "type": "spell",
+    "faction": "Marea",
+    "cost": 2,
+    "bloodCost": 0,
+    "desc": "Teletrasporta un'unità amica su una qualsiasi casella adiacente a un proprio Altare."
+  },
+  {
+    "name": "Frattura Spazio-Temporale",
+    "type": "spell",
+    "faction": "Marea",
+    "cost": 2,
+    "bloodCost": 3,
+    "desc": "Rimuove dal gioco un'unità per 1 intero round; riappare al round dopo nella stessa casella."
+  },
+  {
+    "name": "Ritorno all'Origine",
+    "type": "spell",
+    "faction": "Marea",
+    "cost": 2,
+    "bloodCost": 0,
+    "desc": "Rimanda una miniatura nemica non-Comandante sulla sua riga di partenza (riga 8)."
+  },
+  {
+    "name": "Marea Crescente",
+    "type": "spell",
+    "faction": "Marea",
+    "cost": 1,
+    "bloodCost": 0,
+    "desc": "Tutte le unità che muovono in diagonale ottengono +1 passo di movimento in questo round."
+  },
+  {
+    "name": "Bolla di Vuoto",
+    "type": "reaction",
+    "faction": "Marea",
+    "cost": 0,
+    "bloodCost": 3,
+    "desc": "Reazione: annulla un attacco contro un alleato e lo sposta di 1 casella diagonale."
+  },
+  {
+    "name": "Barriera di Risonanza",
+    "type": "reaction",
+    "faction": "Marea",
+    "cost": 0,
+    "bloodCost": 5,
+    "desc": "Reazione: respinge l'attaccante di 3 caselle in linea retta (+2 danni se urta ostacoli)."
+  },
+  {
+    "name": "Editto di Quarantena",
+    "type": "spell",
+    "faction": "Silenzio",
+    "cost": 2,
+    "bloodCost": 0,
+    "desc": "Sigilla un'area 2x2 per 1 round: nessuna unità può entrarvi o attaccare attraverso."
+  },
+  {
+    "name": "Editto di Confisca",
+    "type": "spell",
+    "faction": "Silenzio",
+    "cost": 2,
+    "bloodCost": 0,
+    "desc": "Sottrae 1 Mana dalla riserva iniziale dell'avversario nel suo turno successivo."
+  },
+  {
+    "name": "Sigillo di Confisca",
+    "type": "spell",
+    "faction": "Silenzio",
+    "cost": 1,
+    "bloodCost": 3,
+    "desc": "Sottrae 2 Sangue al nemico (infligge 2 danni al Comandante se a secco)."
+  },
+  {
+    "name": "Interdizione di Legge",
+    "type": "reaction",
+    "faction": "Silenzio",
+    "cost": 0,
+    "bloodCost": 5,
+    "desc": "Reazione: annulla e dissipa completamente un sortilegio nemico appena lanciato."
+  },
+  {
+    "name": "Manto del Giudizio",
+    "type": "reaction",
+    "faction": "Silenzio",
+    "cost": 1,
+    "bloodCost": 3,
+    "desc": "Reazione su attacco a Comandante: nega il danno e sottrae 1 Azione al turno nemico."
+  },
+  {
+    "name": "Tassa Imperiale",
+    "type": "spell",
+    "faction": "Silenzio",
+    "cost": 1,
+    "bloodCost": 0,
+    "desc": "L'avversario deve pagare 1 Sangue per ogni unità che muove nel suo prossimo turno."
+  },
+  {
+    "name": "Anatema del Silenzio",
+    "type": "spell",
+    "faction": "Silenzio",
+    "cost": 2,
+    "bloodCost": 0,
+    "desc": "Rimuove permanentemente il testo di abilità di un'unità nemica non-Comandante."
+  },
+  {
+    "name": "Confisca Forzata",
+    "type": "spell",
+    "faction": "Silenzio",
+    "cost": 2,
+    "bloodCost": 3,
+    "desc": "Distrugge un Altare nemico se l'avversario controlla più Altari di te."
+  },
+  {
+    "name": "Sentenza Inappellabile",
+    "type": "spell",
+    "faction": "Silenzio",
+    "cost": 3,
+    "bloodCost": 5,
+    "desc": "Distrugge istantaneamente una truppa nemica che ha sferrato un attacco in questo round."
+  },
+  {
+    "name": "Veto Inquisitorio",
+    "type": "reaction",
+    "faction": "Silenzio",
+    "cost": 0,
+    "bloodCost": 3,
+    "desc": "Reazione: nega l'attivazione di un Rito d'Armi o abilità [1⚡] nemica."
+  },
+  {
+    "name": "Giudizio Immediato",
+    "type": "reaction",
+    "faction": "Silenzio",
+    "cost": 0,
+    "bloodCost": 3,
+    "desc": "Reazione: quando un nemico muove adiacente al Comandante, subisce 2 danni immediati."
+  },
+  {
+    "name": "Frantumare la Pietra",
+    "type": "spell",
+    "faction": "Neutral",
+    "cost": 2,
+    "bloodCost": 0,
+    "desc": "Distrugge istantaneamente 1 Altare o Muro nemico entro 4 caselle dal Comandante."
+  },
+  {
+    "name": "Marcia Forzata",
+    "type": "spell",
+    "faction": "Neutral",
+    "cost": 1,
+    "bloodCost": 0,
+    "desc": "Muove 1 truppa alleata di 1 casella ortogonale extra a costo 0 Azioni Tattiche."
+  },
+  {
+    "name": "Carica Sfondante",
+    "type": "spell",
+    "faction": "Neutral",
+    "cost": 1,
+    "bloodCost": 0,
+    "desc": "Muove un'unità di 1 passo extra e le conferisce +1 ATT sul prossimo attacco."
+  },
+  {
+    "name": "Salasso Crudele",
+    "type": "spell",
+    "faction": "Neutral",
+    "cost": 2,
+    "bloodCost": 0,
+    "desc": "3 danni diretti a un'unità ferita o a costo <= 2 entro 3 caselle."
+  },
+  {
+    "name": "Barricata Improvvisata",
+    "type": "spell",
+    "faction": "Neutral",
+    "cost": 1,
+    "bloodCost": 0,
+    "desc": "Evoca un Muro di Detriti solido (0 ATT / 3 PV) su una casella libera entro 3 passi."
+  },
+  {
+    "name": "Sguardo del Monolito",
+    "type": "spell",
+    "faction": "Neutral",
+    "cost": 2,
+    "bloodCost": 0,
+    "desc": "Blocca completamente movimento e attacchi di un nemico fino al prossimo turno."
+  },
+  {
+    "name": "Pozza di Sangue",
+    "type": "spell",
+    "faction": "Neutral",
+    "cost": 2,
+    "bloodCost": 0,
+    "desc": "Incanta una casella: chiunque vi transiti conferisce 2 Sangue al controllore."
+  },
+  {
+    "name": "Genio del Geniere",
+    "type": "spell",
+    "faction": "Neutral",
+    "cost": 2,
+    "bloodCost": 0,
+    "desc": "Ripristina 3 PV a un Altare o Muro alleato entro 3 passi dal Comandante."
+  },
+  {
+    "name": "Rito di Comunione",
+    "type": "spell",
+    "faction": "Neutral",
+    "cost": 3,
+    "bloodCost": 3,
+    "desc": "Pesca 2 carte (pesca 3 carte se il Comandante ha meno di 10 PV rimasti)."
+  },
+  {
+    "name": "Furia dei Relitti",
+    "type": "spell",
+    "faction": "Neutral",
+    "cost": 3,
+    "bloodCost": 0,
+    "desc": "Danni diretti pari alle unità morte in questo round a una truppa entro 3 passi."
+  },
+  {
+    "name": "Spaccatura Terrestre",
+    "type": "spell",
+    "faction": "Neutral",
+    "cost": 2,
+    "bloodCost": 3,
+    "desc": "Apre una Voragine permanente su una casella libera entro 3 passi dal Comandante."
+  },
+  {
+    "name": "Fendenti Incrociati",
+    "type": "spell",
+    "faction": "Neutral",
+    "cost": 2,
+    "bloodCost": 0,
+    "desc": "Per questo turno, tutti gli attacchi con Flanking *(infligge danni bonus se il bersaglio è ingaggiato anche da un altro alleato)* infliggono +2 danni extra."
+  },
+  {
+    "name": "Giuramento Ancestrale",
+    "type": "spell",
+    "faction": "Neutral",
+    "cost": 3,
+    "bloodCost": 5,
+    "desc": "Pesca 3 carte dal Grimorio e rigenera 4 PV al tuo Comandante."
+  },
+  {
+    "name": "Contro-Urto",
+    "type": "reaction",
+    "faction": "Neutral",
+    "cost": 0,
+    "bloodCost": 3,
+    "desc": "Reazione su attacco mischia: riduce di 2 il danno e respinge l'attaccante (+2 danni urto)."
+  },
+  {
+    "name": "Tagliola da Campo",
+    "type": "spell",
+    "faction": "Neutral",
+    "cost": 1,
+    "bloodCost": 0,
+    "desc": "Trappola invisibile: il primo nemico che vi entra subisce 2 danni e si ferma."
+  },
+  {
+    "name": "Passo Falso",
+    "type": "reaction",
+    "faction": "Neutral",
+    "cost": 0,
+    "bloodCost": 3,
+    "desc": "Reazione: quando un nemico dichiara una mossa, riduci il suo movimento a 0 per il round."
+  },
+  {
+    "name": "Rinvigorire",
+    "type": "spell",
+    "faction": "Neutral",
+    "cost": 1,
+    "bloodCost": 0,
+    "desc": "Un'unità alleata che ha già agito in questo round può muovere di 1 casella extra."
+  },
+  {
+    "name": "Saccheggio Rapido",
+    "type": "spell",
+    "faction": "Neutral",
+    "cost": 1,
+    "bloodCost": 0,
+    "desc": "Se hai distrutto una struttura nemica in questo round, incassi +2 Mana immediati."
+  },
+  {
+    "name": "Nebbia di Guerra",
+    "type": "spell",
+    "faction": "Neutral",
+    "cost": 2,
+    "bloodCost": 0,
+    "desc": "Tutti gli attacchi a distanza sono impediti per 1 intero round di gioco."
+  },
+  {
+    "name": "Provocazione",
+    "type": "spell",
+    "faction": "Neutral",
+    "cost": 1,
+    "bloodCost": 0,
+    "desc": "Costringe una truppa nemica entro 2 caselle ad attaccare l'alleato bersaglio nel suo turno."
+  },
+  {
+    "name": "Faglia Improvvisa",
+    "type": "spell",
+    "faction": "Ferro",
+    "cost": 2,
+    "bloodCost": 3,
+    "desc": "Apre una Voragine permanente su una casella libera entro 3 passi dal Comandante."
+  },
+  {
+    "name": "Impatto Tettonico",
+    "type": "spell",
+    "faction": "Ferro",
+    "cost": 2,
+    "bloodCost": 0,
+    "desc": "Infligge 2 danni a tutte le unità adiacenti a muri o Altari e le respinge di 1 casella."
+  },
+  {
+    "name": "Salasso di Piastre",
+    "type": "spell",
+    "faction": "Ferro",
+    "cost": 1,
+    "bloodCost": 3,
+    "desc": "Rimuovi l'armatura da un alleato per conferirgli +2 ATT immediati in questo round."
+  },
+  {
+    "name": "Riparazione di Garek",
+    "type": "spell",
+    "faction": "Ferro",
+    "cost": 1,
+    "bloodCost": 0,
+    "desc": "Ripristina 4 PV a un Altare alleato o a una macchina d'assedio."
+  },
+  {
+    "name": "Muraglia di Scudi",
+    "type": "spell",
+    "faction": "Ferro",
+    "cost": 2,
+    "bloodCost": 0,
+    "desc": "Tutte le unità alleate guadagnano +1 armatura temporanea fino all'inizio del prossimo turno."
+  },
+  {
+    "name": "Carica Inarrestabile",
+    "type": "spell",
+    "faction": "Ferro",
+    "cost": 2,
+    "bloodCost": 0,
+    "desc": "Un colosso alleato muove di 2 passi extra e travolge il primo ostacolo che incontra."
+  },
+  {
+    "name": "Bastione Spezzato",
+    "type": "spell",
+    "faction": "Ferro",
+    "cost": 1,
+    "bloodCost": 0,
+    "desc": "Distruggi un tuo muro o blocco per pescare 2 carte dal Grimorio."
+  },
+  {
+    "name": "Ruggito d'Ossidiana",
+    "type": "spell",
+    "faction": "Ferro",
+    "cost": 2,
+    "bloodCost": 3,
+    "desc": "Tutti i nemici adiacenti a Garek vengono spinti indietro di 2 passi (+2 danni urto)."
+  },
+  {
+    "name": "Pietrificazione",
+    "type": "spell",
+    "faction": "Ferro",
+    "cost": 2,
+    "bloodCost": 3,
+    "desc": "Trasforma una truppa nemica ferita in un Muro solido (0 ATT / 4 PV) permanente."
+  },
+  {
+    "name": "Contro-Sfondamento",
+    "type": "reaction",
+    "faction": "Ferro",
+    "cost": 0,
+    "bloodCost": 3,
+    "desc": "Reazione: quando un nemico carica un alleato, nega la carica e gli infligge 3 danni."
+  },
+  {
+    "name": "Scudo Fratturato",
+    "type": "reaction",
+    "faction": "Ferro",
+    "cost": 0,
+    "bloodCost": 3,
+    "desc": "Reazione: riduce a 0 il danno subito da un attacco; scaglia schegge infliggendo 2 danni all'attaccante."
+  },
+  {
+    "name": "Infestazione di Vermi",
+    "type": "spell",
+    "faction": "Ceneri",
+    "cost": 2,
+    "bloodCost": 3,
+    "desc": "Genera 3 Cimiteri su caselle libere a scelta; ciascuno infligge 1 danno ai nemici che vi passano."
+  },
+  {
+    "name": "Masticazione Rapida",
+    "type": "spell",
+    "faction": "Ceneri",
+    "cost": 1,
+    "bloodCost": 0,
+    "desc": "Distruggi un tuo pezzo a costo 1 per curare 3 PV a un'altra truppa o a Morbida."
+  },
+  {
+    "name": "Rianimazione Putrescente",
+    "type": "spell",
+    "faction": "Ceneri",
+    "cost": 2,
+    "bloodCost": 5,
+    "desc": "Rimetti in gioco dal Cimitero un colosso a costo 4 con 3 PV su una casella libera adiacente."
+  },
+  {
+    "name": "Nube di Larve",
+    "type": "spell",
+    "faction": "Ceneri",
+    "cost": 1,
+    "bloodCost": 0,
+    "desc": "Acceca un'unità nemica: la sua gittata massima è ridotta a 1 per 1 round."
+  },
+  {
+    "name": "Contagio",
+    "type": "spell",
+    "faction": "Ceneri",
+    "cost": 2,
+    "bloodCost": 0,
+    "desc": "Infligge 1 danno a un bersaglio; se muore in questo turno, il danno si diffonde a catena attorno."
+  },
+  {
+    "name": "Patto Sepolcrale",
+    "type": "spell",
+    "faction": "Ceneri",
+    "cost": 1,
+    "bloodCost": 3,
+    "desc": "Pesca 2 carte dal Grimorio e genera 1 Cimitero sotto la posizione del Comandante."
+  },
+  {
+    "name": "Scoppio di Braciere",
+    "type": "spell",
+    "faction": "Ceneri",
+    "cost": 2,
+    "bloodCost": 0,
+    "desc": "Fai brillare tutti i Cimiteri: ciascun Cimitero infligge 2 danni alle unità che vi sostano sopra."
+  },
+  {
+    "name": "Marea di Larve",
+    "type": "spell",
+    "faction": "Ceneri",
+    "cost": 3,
+    "bloodCost": 3,
+    "desc": "Evoca 3 Larvoni Infetti (1/1 con Slancio *(può muoversi e attaccare nello stesso turno in cui entra in gioco)*) adiacenti a Morbida o ad Altari."
+  },
+  {
+    "name": "Carne Putrida",
+    "type": "spell",
+    "faction": "Ceneri",
+    "cost": 1,
+    "bloodCost": 0,
+    "desc": "Conferisce +2 PV massimi a una truppa delle Ceneri ma ne riduce l'ATT di 1."
+  },
+  {
+    "name": "Ritorsione Putrescente",
+    "type": "reaction",
+    "faction": "Ceneri",
+    "cost": 0,
+    "bloodCost": 3,
+    "desc": "Reazione: quando un alleato muore in mischia, trasforma la casella in Cimitero e infligge 2 danni."
+  },
+  {
+    "name": "Muro di Cadaveri",
+    "type": "reaction",
+    "faction": "Ceneri",
+    "cost": 0,
+    "bloodCost": 3,
+    "desc": "Reazione: evoca istantaneamente un Muro di Ossa (3 PV) davanti a una carica nemica."
+  },
+  {
+    "name": "Faglia Gravitazionale Rapida",
+    "type": "spell",
+    "faction": "Marea",
+    "cost": 2,
+    "bloodCost": 3,
+    "desc": "Inverte istantaneamente la posizione di 2 unità qualsiasi sulla plancia."
+  },
+  {
+    "name": "Trazione Forzata",
+    "type": "spell",
+    "faction": "Marea",
+    "cost": 1,
+    "bloodCost": 0,
+    "desc": "Trascina un'unità nemica di 2 caselle ortogonali verso il pezzo alleato più vicino."
+  },
+  {
+    "name": "Onda d'Urto Astrale",
+    "type": "spell",
+    "faction": "Marea",
+    "cost": 2,
+    "bloodCost": 0,
+    "desc": "Respinge tutti i nemici adiacenti a Kaelen di 2 passi (+2 danni se impattano ostacoli)."
+  },
+  {
+    "name": "Sfasamento di Kaelen",
+    "type": "spell",
+    "faction": "Marea",
+    "cost": 1,
+    "bloodCost": 0,
+    "desc": "Kaelen scambia posizione con una sua truppa senza spendere Azioni Tattiche."
+  },
+  {
+    "name": "Vortice Temporale",
+    "type": "spell",
+    "faction": "Marea",
+    "cost": 2,
+    "bloodCost": 3,
+    "desc": "Ricarica 1 Azione Tattica per questo round spendendo 3 Segnalini Sangue."
+  },
+  {
+    "name": "Prisma di Distorsione",
+    "type": "spell",
+    "faction": "Marea",
+    "cost": 1,
+    "bloodCost": 0,
+    "desc": "Tutti gli attacchi a distanza alleati ottengono +1 gittata fino alla fine del round."
+  },
+  {
+    "name": "Bolla Sfasante",
+    "type": "spell",
+    "faction": "Marea",
+    "cost": 2,
+    "bloodCost": 0,
+    "desc": "Rende un alleato immune ad attacchi fisici per 1 turno; non può attaccare durante l'effetto."
+  },
+  {
+    "name": "Spinta nel Vuoto",
+    "type": "spell",
+    "faction": "Marea",
+    "cost": 2,
+    "bloodCost": 3,
+    "desc": "Spinge una miniatura nemica di 2 passi: se finisce in una Voragine, viene rimossa dal gioco."
+  },
+  {
+    "name": "Corrente di Marea",
+    "type": "spell",
+    "faction": "Marea",
+    "cost": 1,
+    "bloodCost": 0,
+    "desc": "Muove 2 pedine amiche di 1 casella diagonale gratis."
+  },
+  {
+    "name": "Deviazione Istantanea",
+    "type": "reaction",
+    "faction": "Marea",
+    "cost": 0,
+    "bloodCost": 3,
+    "desc": "Reazione: quando un nemico ti attacca a distanza, devia il colpo su un'altra unità a portata."
+  },
+  {
+    "name": "Riflesso del Vuoto",
+    "type": "reaction",
+    "faction": "Marea",
+    "cost": 0,
+    "bloodCost": 5,
+    "desc": "Reazione: scambia di posto Kaelen con l'attaccante prima che il danno venga calcolato."
+  },
+  {
+    "name": "Sigillo di Kael",
+    "type": "spell",
+    "faction": "Silenzio",
+    "cost": 1,
+    "bloodCost": 3,
+    "desc": "Blocca completamente i Riti d'Armi e le abilità speciali del Comandante nemico per 1 round."
+  },
+  {
+    "name": "Confisca Totale",
+    "type": "spell",
+    "faction": "Silenzio",
+    "cost": 2,
+    "bloodCost": 3,
+    "desc": "Azzera la riserva di Sangue dell'avversario; cura il tuo Comandante di 2 PV per ogni Sangue tolto."
+  },
+  {
+    "name": "Quarantena di Faglia",
+    "type": "spell",
+    "faction": "Silenzio",
+    "cost": 2,
+    "bloodCost": 0,
+    "desc": "Sigilla una casella per il resto del match: non può essere attraversata né occupata."
+  },
+  {
+    "name": "Decreto d'Interdizione",
+    "type": "spell",
+    "faction": "Silenzio",
+    "cost": 2,
+    "bloodCost": 0,
+    "desc": "L'avversario non può schierare più di 1 carta dalla mano nel suo turno successivo."
+  },
+  {
+    "name": "Tassa sulle Armi",
+    "type": "spell",
+    "faction": "Silenzio",
+    "cost": 1,
+    "bloodCost": 0,
+    "desc": "Il prossimo attacco dichiarato dall'avversario costa 1 Mana addizionale."
+  },
+  {
+    "name": "Verdetto Immediato",
+    "type": "spell",
+    "faction": "Silenzio",
+    "cost": 2,
+    "bloodCost": 0,
+    "desc": "Infligge 3 danni diretti a una truppa nemica che ha già compiuto un'azione in questo turno."
+  },
+  {
+    "name": "Voto di Silenzio",
+    "type": "spell",
+    "faction": "Silenzio",
+    "cost": 1,
+    "bloodCost": 0,
+    "desc": "Nessun giocatore può lanciare sortilegi non-Reazione fino all'inizio del prossimo round."
+  },
+  {
+    "name": "Manto di Marmo",
+    "type": "spell",
+    "faction": "Silenzio",
+    "cost": 2,
+    "bloodCost": 0,
+    "desc": "Conferisce Scudo Totale a un Altare alleato: previene la prossima fonte di danno su di esso."
+  },
+  {
+    "name": "Castigo della Legge",
+    "type": "spell",
+    "faction": "Silenzio",
+    "cost": 3,
+    "bloodCost": 3,
+    "desc": "Infligge 4 danni a un'unità nemica; se muore, l'avversario non guadagna Segnalini Sangue."
+  },
+  {
+    "name": "Veto Inappellabile",
+    "type": "reaction",
+    "faction": "Silenzio",
+    "cost": 0,
+    "bloodCost": 5,
+    "desc": "Reazione: annulla e scarta un sortilegio nemico; infligge 2 danni al Comandante nemico."
+  },
+  {
+    "name": "Giudizio Riflesso",
+    "type": "reaction",
+    "faction": "Silenzio",
+    "cost": 0,
+    "bloodCost": 3,
+    "desc": "Reazione: quando un alleato subisce danno letale, infligge lo stesso danno all'attaccante."
+  },
+  {
+    "name": "Eruzione di Scorie Rapida",
+    "type": "spell",
+    "faction": "Forgia",
+    "cost": 2,
+    "bloodCost": 3,
+    "desc": "Distrugge un proprio Altare infliggendo 4 danni a tutti i nemici entro 2 caselle."
+  },
+  {
+    "name": "Fusione di Emergenza",
+    "type": "spell",
+    "faction": "Forgia",
+    "cost": 1,
+    "bloodCost": 0,
+    "desc": "Sacrifica un blocco o rottame per pescare 2 carte e infliggere 2 danni alle caselle adiacenti."
+  },
+  {
+    "name": "Tempra d'Ossidiana",
+    "type": "spell",
+    "faction": "Forgia",
+    "cost": 2,
+    "bloodCost": 0,
+    "desc": "Conferisce +2 armatura temporanea a un automa alleato per questo round."
+  },
+  {
+    "name": "Sovraccarico di Vapore",
+    "type": "spell",
+    "faction": "Forgia",
+    "cost": 1,
+    "bloodCost": 0,
+    "desc": "Un automa alleato muove di 2 passi extra ortogonali e spinge il primo ostacolo toccato."
+  },
+  {
+    "name": "Riciclo Istantaneo",
+    "type": "spell",
+    "faction": "Forgia",
+    "cost": 1,
+    "bloodCost": 0,
+    "desc": "Rimuovi un automa distrutto per incassare immediatamente +2 Mana spendibili subito."
+  },
+  {
+    "name": "Ignizione di Ignis",
+    "type": "spell",
+    "faction": "Forgia",
+    "cost": 2,
+    "bloodCost": 5,
+    "desc": "Anima permanentemente un Altare in un costrutto semovente 4/5 che attacca subito."
+  },
+  {
+    "name": "Colata di Magma",
+    "type": "spell",
+    "faction": "Forgia",
+    "cost": 2,
+    "bloodCost": 0,
+    "desc": "Inonda una riga della scacchiera di lava: chiunque vi transiti subisce 2 danni immediati."
+  },
+  {
+    "name": "Martellata Sismica",
+    "type": "spell",
+    "faction": "Forgia",
+    "cost": 2,
+    "bloodCost": 0,
+    "desc": "Infligge 3 danni diretti a una struttura o a un'unità che staziona su un muro."
+  },
+  {
+    "name": "Fucina da Campo",
+    "type": "spell",
+    "faction": "Forgia",
+    "cost": 1,
+    "bloodCost": 0,
+    "desc": "Schiera immediatamente un blocco di scorie solido (4 PV) su una casella libera."
+  },
+  {
+    "name": "Raffreddamento d'Urgenza",
+    "type": "reaction",
+    "faction": "Forgia",
+    "cost": 0,
+    "bloodCost": 3,
+    "desc": "Reazione: quando un automa subisce danno letale, sopravvive con 1 PV diventando solido."
+  },
+  {
+    "name": "Scoppio di Caldaia",
+    "type": "reaction",
+    "faction": "Forgia",
+    "cost": 0,
+    "bloodCost": 3,
+    "desc": "Reazione: alla distruzione di un automa, infligge 3 danni ad area a tutti i pezzi attorno."
+  }
+]

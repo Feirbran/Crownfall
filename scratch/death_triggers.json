@@ -1,0 +1,177 @@
+[
+  {
+    "name": "Sepolcro delle Ceneri Calde",
+    "type": "altar",
+    "desc": "+1 Mana. Se distrutto, genera +2 Segnalini Sangue per te anziché zero."
+  },
+  {
+    "name": "Guscio Esplosivo",
+    "type": "unit",
+    "desc": "Detonazione: alla morte infligge 2 danni a tutte le 4 caselle ortogonali adiacenti."
+  },
+  {
+    "name": "Kamikaze di Braci",
+    "type": "unit",
+    "desc": "Scoppio Frontale: alla morte infligge 3 danni alla casella esattamente frontale."
+  },
+  {
+    "name": "Verme Sepolcrale",
+    "type": "unit",
+    "desc": "Alla morte genera 1 Sangue extra per il controllore."
+  },
+  {
+    "name": "Colosso di Cadaveri",
+    "type": "unit",
+    "desc": "Alla morte genera 2 Carogne Rianimate nelle caselle adiacenti libere."
+  },
+  {
+    "name": "Scudo di Brace",
+    "type": "reaction",
+    "desc": "Reazione: alla morte di un alleato, infligge 2 danni immediati all'uccisore."
+  },
+  {
+    "name": "Rottame Semovente",
+    "type": "unit",
+    "desc": "Macerie: alla morte lascia un Blocco di Scorie (0 ATT / 2 PV) sulla casella."
+  },
+  {
+    "name": "Golia Meccanico",
+    "type": "unit",
+    "desc": "Alla morte genera 2 Rottami Semoventi nelle caselle libere ortogonali."
+  },
+  {
+    "name": "Monolito Giurato di Tassa",
+    "type": "altar",
+    "desc": "+1 Mana. Sanzione: se distrutto dal nemico, l'avversario perde 1 Azione nel suo turno successivo."
+  },
+  {
+    "name": "Altare della Decima",
+    "type": "altar",
+    "desc": "+1 Mana. Anatema: se distrutto dal nemico, l'avversario perde 2 Mana a turno per 2 round."
+  },
+  {
+    "name": "Scriba Inquisitore",
+    "type": "unit",
+    "desc": "Quando muore fa scartare 1 carta casuale dalla mano dell'avversario."
+  },
+  {
+    "name": "Avatar del Giuramento",
+    "type": "unit",
+    "desc": "Se distrutto, sigilla tutte le abilità attive del pezzo uccisore per il resto del match."
+  },
+  {
+    "name": "Vena Tettorica Instabile",
+    "type": "altar",
+    "desc": "+2 Mana/turno! Fragile (4 PV): se distrutto infligge 2 danni al Comandante alleato."
+  },
+  {
+    "name": "Strillone delle Strade",
+    "type": "unit",
+    "desc": "Alla morte rivela le prime 2 carte del mazzo nemico."
+  },
+  {
+    "name": "Monaco Mendicante",
+    "type": "unit",
+    "desc": "Elemosina: fa pescare 1 carta al controllore quando viene distrutto."
+  },
+  {
+    "name": "Alchimista Dissidente",
+    "type": "unit",
+    "desc": "Pozza tossica: alla morte avvelena la propria casella per 2 turni."
+  },
+  {
+    "name": "Chierico Errante",
+    "type": "unit",
+    "desc": "Quando muore cura 3 PV al Comandante alleato."
+  },
+  {
+    "name": "Saccheggio Rapido",
+    "type": "spell",
+    "desc": "Se hai distrutto una struttura nemica in questo round, incassi +2 Mana immediati."
+  },
+  {
+    "name": "Faglia d'Ossidiana",
+    "type": "altar",
+    "desc": "+2 Mana! Se distrutto, trasforma permanentemente la propria casella in Voragine."
+  },
+  {
+    "name": "Golia di Ossidiana",
+    "type": "unit",
+    "desc": "Titanico: armatura fissa -1. Quando muore si spacca in due Blocchi di Granito (4 PV ciascuno)."
+  },
+  {
+    "name": "Calderone di Pece",
+    "type": "altar",
+    "desc": "+1 Mana. Se distrutto, sparge pece bollente nelle 4 caselle attorno (2 danni a chiunque vi sosti)."
+  },
+  {
+    "name": "Larvone Infetto",
+    "type": "unit",
+    "desc": "Slancio *(può muoversi e attaccare nello stesso turno in cui entra in gioco)* (diagonale): muove in diagonale e attacca subito; alla morte avvelena la casella."
+  },
+  {
+    "name": "Scheletro di Trincea",
+    "type": "unit",
+    "desc": "Se distrutto da armi contundenti o da mischia si ricompone con 1 PV all'inizio del round dopo."
+  },
+  {
+    "name": "Guscio di Morbida",
+    "type": "unit",
+    "desc": "Detonazione Diagonale: alla morte infligge 2 danni alle 4 caselle diagonali adiacenti."
+  },
+  {
+    "name": "Colosso di Ceneri",
+    "type": "unit",
+    "desc": "Alla morte esplode infliggendo 2 danni a tutti i nemici entro 2 passi di distanza."
+  },
+  {
+    "name": "Golia di Singolarità",
+    "type": "unit",
+    "desc": "Devastazione: infligge 6 danni a muri e Altari; crea una Voragine alla distruzione della struttura."
+  },
+  {
+    "name": "Calderone di Scorie Fuso",
+    "type": "altar",
+    "desc": "+2 Mana! Se distrutto, trasforma tutte le 4 caselle ortogonali in lava dannosa (1 danno a chi passa)."
+  },
+  {
+    "name": "Rottame Esplosivo",
+    "type": "unit",
+    "desc": "Detonazione metallica: alla morte infligge 2 danni a una struttura o Altare adiacente."
+  },
+  {
+    "name": "Puntone d'Ossidiana",
+    "type": "unit",
+    "desc": "Presidio *(non compie attacchi attivi; contrattacca solo se ingaggiata in mischia)*: blocca linee; se distrutto lascia un Blocco solido da 3 PV."
+  },
+  {
+    "name": "Riciclo Istantaneo",
+    "type": "spell",
+    "desc": "Rimuovi un automa distrutto per incassare immediatamente +2 Mana spendibili subito."
+  },
+  {
+    "name": "Scoppio di Caldaia",
+    "type": "reaction",
+    "desc": "Reazione: alla distruzione di un automa, infligge 3 danni ad area a tutti i pezzi attorno."
+  },
+  {
+    "name": "Monolito della Frattura",
+    "type": "altar",
+    "desc": "+2 Mana! Fragile (5 PV): se distrutto, collassa generando una Voragine permanente."
+  },
+  {
+    "name": "Altare dei Sacrifici",
+    "type": "altar",
+    "desc": "+1 Mana. Rilascia 3 Segnalini Sangue anziché zero se viene distrutto da un proprio sortilegio."
+  },
+  {
+    "name": "Monaco Errante",
+    "type": "unit",
+    "desc": "Quando muore cura 2 PV a un alleato adiacente."
+  },
+  {
+    "name": "Monaco Eremita",
+    "type": "unit",
+    "desc": "Elemosina: fa pescare 2 carte al controllore se viene distrutto da un colosso."
+  }
+]

@@ -1,0 +1,82 @@
+[
+  {
+    "name": "Servo di Bronzo",
+    "type": "unit",
+    "desc": "Riparatore: ripristina 1 PV a un automa alleato adiacente a inizio turno."
+  },
+  {
+    "name": "Forgiatore di Scaglie",
+    "type": "unit",
+    "desc": "A inizio turno conferisce 1 Scudo temporaneo a un'unità amica adiacente."
+  },
+  {
+    "name": "Vortice Tellurico",
+    "type": "altar",
+    "desc": "+1 Mana. A fine turno trascina di 1 passo verso di sé il nemico più vicino entro 3 caselle."
+  },
+  {
+    "name": "Altare del Patto di Sangue",
+    "type": "altar",
+    "desc": "+2 Mana/turno! Subisci 1 danno a inizio turno se incassi il secondo Mana."
+  },
+  {
+    "name": "Sorgente Primordiale",
+    "type": "altar",
+    "desc": "+1 Mana. Rigenera 1 PV a inizio turno all'unità amica con meno salute adiacente."
+  },
+  {
+    "name": "Colosso di Rame",
+    "type": "unit",
+    "desc": "Monolito vivente: genera anche +1 Mana a inizio turno finché è in vita."
+  },
+  {
+    "name": "Torre degli Arpioni",
+    "type": "altar",
+    "desc": "+1 Mana. Gittata 3 ortogonale: a fine turno trascina di 1 casella verso di sé un nemico a tiro."
+  },
+  {
+    "name": "Geniere da Breccia",
+    "type": "unit",
+    "desc": "[1⚡]: piazza una Carica Esplosiva su una struttura adiacente (3 danni a fine turno)."
+  },
+  {
+    "name": "Parassita Sepolcrale",
+    "type": "unit",
+    "desc": "Se muore attaccando in mischia, si attacca al bersaglio infliggendogli 1 danno a inizio turno."
+  },
+  {
+    "name": "Biacco delle Fosse",
+    "type": "unit",
+    "desc": "Slancio *(può muoversi e attaccare nello stesso turno in cui entra in gioco)*: scatta di 2 passi diagonali; velenoso (1 danno a inizio turno al nemico ferito)."
+  },
+  {
+    "name": "Abominio Putrescente",
+    "type": "unit",
+    "desc": "Aura pestilenziale: tutte le unità adiacenti a inizio turno subiscono 1 danno velenoso."
+  },
+  {
+    "name": "Singolarità Stabile",
+    "type": "altar",
+    "desc": "+2 Mana! Drawback: a inizio turno attira di 1 passo verso di sé il pezzo alleato più vicino."
+  },
+  {
+    "name": "Deviatore di Flussi",
+    "type": "unit",
+    "desc": "Riflette il primo attacco a distanza subito in ogni round verso una casella adiacente."
+  },
+  {
+    "name": "Justiciar Minore",
+    "type": "unit",
+    "desc": "Ogni volta che contrattacca in mischia, annulla le passive del bersaglio fino a fine turno."
+  },
+  {
+    "name": "Fornace Vivente di Ignis",
+    "type": "unit",
+    "desc": "Conta sia come Colosso che come Altare (+1 Mana). A fine turno infligge 1 danno ad area attorno a sé."
+  },
+  {
+    "name": "Esploratore delle Rovine",
+    "type": "unit",
+    "desc": "Riconoscimento: rivela la prima carta del mazzo alleato a inizio turno."
+  }
+]
