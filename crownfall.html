@@ -2531,7 +2531,12 @@
     .piece.wall { border-radius: 6px; background: #2f3640; border: 2px solid #718093; color: #f5f6fa; }
     .piece.p1.wall { border-color: #74b9ff; }
     .piece.p2.wall { border-color: #ff7675; }
-    .piece.exhausted { filter: grayscale(85%) opacity(0.65); }
+    /* STATO ESAUSTO: Bordo e basetta con colore fazione saturo, desaturazione mirata dell'icona interna */
+    .piece.exhausted { opacity: 0.85; }
+    .piece.p1.exhausted { border-color: #3498db; box-shadow: 0 0 10px rgba(52, 152, 219, 0.6); background: radial-gradient(circle at 30% 30%, #1e5782, #0a1b33); }
+    .piece.p2.exhausted { border-color: #e74c3c; box-shadow: 0 0 10px rgba(231, 76, 60, 0.6); background: radial-gradient(circle at 30% 30%, #87281d, #380d09); }
+    .piece.exhausted > span { filter: grayscale(50%) opacity(0.6); }
+    .piece.exhausted .piece-badges { opacity: 0.9; }
     .piece-badges { position: absolute; bottom: -4px; display: flex; gap: 2px; font-size: 0.6rem; background: rgba(0,0,0,0.9); padding: 1px 5px; border-radius: 3px; border: 1px solid rgba(255,255,255,0.2); }
 
     /* LOBBY BROWSER & OPEN ROOMS SIDEBAR */
@@ -2841,6 +2846,92 @@
     .log-item-p1 { color: #74b9ff; }
     .log-item-p2 { color: #ff7675; }
     .log-item-sys { color: var(--gold-primary); }
+
+    /* SCHEDA COMANDANTE & ABILITA DISTINTE (PASSIVA VS ATTIVA) */
+    .commander-skills-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      width: 100%;
+      word-break: break-word;
+      overflow-wrap: break-word;
+      white-space: normal;
+    }
+    .commander-skill-block {
+      background: rgba(12, 15, 24, 0.9);
+      border: 1px solid #2e354d;
+      border-radius: 5px;
+      padding: 5px 7px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .commander-skill-block.passive {
+      border-left: 3px solid #00d2d3;
+    }
+    .commander-skill-block.active {
+      border-left: 3px solid #ff4757;
+    }
+    .skill-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+    .skill-pill {
+      font-size: 0.58rem;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      padding: 2px 6px;
+      border-radius: 3px;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+    .skill-pill.passive-pill {
+      background: rgba(0, 210, 211, 0.18);
+      color: #00d2d3;
+      border: 1px solid rgba(0, 210, 211, 0.45);
+    }
+    .skill-pill.active-pill {
+      background: rgba(255, 71, 87, 0.2);
+      color: #ff6b81;
+      border: 1px solid rgba(255, 71, 87, 0.45);
+    }
+    .skill-name {
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: var(--gold-primary);
+    }
+    .skill-body {
+      font-size: 0.65rem;
+      line-height: 1.32;
+      color: #d2d7ea;
+      word-break: break-word;
+      overflow-wrap: break-word;
+    }
+    .clash-dismiss-btn {
+      margin-top: 6px;
+      background: linear-gradient(135deg, #e5b958 0%, #c99b42 100%);
+      color: #0a0b10;
+      border: none;
+      padding: 7px 18px;
+      border-radius: 6px;
+      font-weight: 900;
+      font-size: 0.78rem;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(229, 185, 88, 0.4);
+      transition: transform 0.1s ease, filter 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .clash-dismiss-btn:hover {
+      filter: brightness(1.12);
+      transform: scale(1.02);
+    }
 
     /* HOVER PREVIEW */
     #hover-card-preview {
@@ -5514,7 +5605,7 @@
         
     <!-- OVERLAY COMBATTIMENTO DINAMICO SOVRAIMPRESSIONE -->
     <div id="combat-clash-overlay" class="combat-clash-overlay" style="display: none;" onclick="hideCombatClashOverlay()">
-      <div class="clash-modal" onclick="event.stopPropagation()">
+      <div class="clash-modal" onclick="hideCombatClashOverlay()">
         <div class="clash-header">
           <span class="clash-icon">⚔️</span>
           <span class="clash-title">SCONTRO TATTICO SULLA PLANCIA</span>
@@ -5551,7 +5642,8 @@
             <div class="clash-card-stats" id="clash-def-stats">⚔️ 2 | ❤️ 4 ➔ 1</div>
           </div>
         </div>
-        <div class="clash-footer-hint">Clicca ovunque per continuare</div>
+        <button class="clash-dismiss-btn" onclick="hideCombatClashOverlay()">Continua (Spazio / Click) ➔</button>
+        <div class="clash-footer-hint">Premi Barra Spaziatrice o clicca per chiudere</div>
       </div>
     </div>
 
@@ -5997,6 +6089,47 @@
       'interposizione': '*(i tiri a distanza nemici contro alleati adiacenti deviano su questa unità)*'
     };
 
+    function formatCommanderDesc(comm) {
+      if (!comm) return '';
+      const rawDesc = comm.rawDesc || comm.desc || comm.riteDesc || '';
+      
+      let auraText = '';
+      let riteText = '';
+
+      const auraMatch = rawDesc.match(/Aura:\s*([^.]+(?:\.[^Rito]+)?)/i);
+      const riteMatch = rawDesc.match(/Rito[^:]*:\s*(.+)/i);
+
+      if (auraMatch) auraText = auraMatch[1].trim();
+      if (riteMatch) riteText = riteMatch[1].trim();
+
+      if (!auraText && !riteText) {
+        auraText = rawDesc;
+      }
+
+      const riteCost = comm.riteCost || comm.bloodCost || 7;
+      const riteName = comm.rite || "Rito d'Armi";
+
+      return `
+        <div class="commander-skills-wrap">
+          ${auraText ? `
+          <div class="commander-skill-block passive">
+            <div class="skill-header">
+              <span class="skill-pill passive-pill">🛡️ AURA PASSIVA</span>
+            </div>
+            <div class="skill-body">${formatCardDesc(auraText)}</div>
+          </div>` : ''}
+          ${(riteText || comm.rite) ? `
+          <div class="commander-skill-block active">
+            <div class="skill-header">
+              <span class="skill-pill active-pill">⚡ RITO D'ARMI (${riteCost}🩸, 1⚡)</span>
+              <span class="skill-name">${riteName}</span>
+            </div>
+            <div class="skill-body">${formatCardDesc(riteText || comm.riteDesc || '')}</div>
+          </div>` : ''}
+        </div>
+      `;
+    }
+
     function formatCardDesc(desc) {
       if (!desc) return '';
       let res = desc;
@@ -6113,6 +6246,7 @@
         riteCost: raw.bloodCost || 3,
         bloodCost: raw.bloodCost || 3,
         riteDesc: formatCardDesc(raw.desc),
+        rawDesc: raw.desc,
         desc: formatCardDesc(raw.desc),
         set: setNum,
         rarity: 'legendary'
@@ -6682,7 +6816,11 @@
       rb.className = `rarity-badge ${r}`;
       rb.textContent = (RARITY_NAMES[r] || 'COMUNE').toUpperCase();
       
-      document.getElementById('hcp-desc').innerHTML = formatCardDesc(card.desc || card.riteDesc || '');
+      if (isComm) {
+        document.getElementById('hcp-desc').innerHTML = formatCommanderDesc(card);
+      } else {
+        document.getElementById('hcp-desc').innerHTML = formatCardDesc(card.desc || card.riteDesc || '');
+      }
 
       const setBadge = document.getElementById('hcp-set-badge');
       if (setBadge) {
@@ -7679,7 +7817,7 @@
               <span>CAMPIONE</span>
               <span class="rarity-badge ${r}">${RARITY_NAMES[r]}</span>
             </div>
-            <div class="mtg-text-box">${comm.desc}</div>
+            <div class="mtg-text-box">${formatCommanderDesc(comm)}</div>
             <div class="mtg-set-badge">${comm.set || 'α'}</div>
             <div class="mtg-pt-box">${comm.att}/${comm.hp}</div>
           `;
@@ -8164,9 +8302,7 @@
 
       overlay.style.display = 'flex';
 
-      clashOverlayTimer = setTimeout(() => {
-        hideCombatClashOverlay();
-      }, 1300);
+      clashOverlayTimer = setTimeout(() => { hideCombatClashOverlay(); }, 3500);
     }
 
     function hideCombatClashOverlay() {
@@ -9060,7 +9196,7 @@
       battleState.selectedSquare = null;
       clearHighlights();
 
-      addLog(`${player.toUpperCase()} muove ${piece.name} da ${fromIdx} a ${toIdx} (Azioni rimaste: ${battleState[player].actions - 1})`, player);
+      addLog(`[${piece.name} (${player.toUpperCase()})] -> [Movimento] -> [Cella ${fromIdx} ➔ ${toIdx}] = [Successo (Azioni rimaste: ${battleState[player].actions - 1})]`, player);
 
       glidePiece(fromIdx, toIdx, () => {
         battleState.grid[toIdx] = piece;
@@ -9141,16 +9277,46 @@
     }
 
     function drawCard(pl) {
-      if (battleState[pl].deck.length > 0 && battleState[pl].hand.length < 6) {
+      if (!battleState || !battleState[pl]) return;
+
+      // 1. REGOLE DI DECK-OUT / ESAURIMENTO MAZZO (AFFATICAMENTO)
+      if (battleState[pl].deck.length === 0) {
+        const opp = (pl === 'p1') ? 'p2' : 'p1';
+        const commIdx = battleState.grid.findIndex(c => c && c.owner === pl && c.type === 'commander');
+        if (commIdx !== -1) {
+          const comm = battleState.grid[commIdx];
+          comm.hp = Math.max(0, comm.hp - 1);
+          battleState[pl].hp = comm.hp;
+          addLog(`[${pl.toUpperCase()}] -> [Esaurimento Mazzo (Deck-Out)] -> [${comm.name} (${pl.toUpperCase()})] = [1 Danno Affaticamento (PV residui: ${comm.hp})]`, 'sys');
+          showCollisionPopup(commIdx, '💀 DECK-OUT!', '1 Danno Affaticamento');
+          if (comm.hp <= 0) {
+            handlePieceDefeated(commIdx, opp);
+          }
+        } else {
+          battleState[pl].hp = Math.max(0, battleState[pl].hp - 1);
+          addLog(`[${pl.toUpperCase()}] -> [Esaurimento Mazzo (Deck-Out)] -> [Comandante ${pl.toUpperCase()}] = [1 Danno Vitale (PV residui: ${battleState[pl].hp})]`, 'sys');
+        }
+        updateHUD();
+        renderPieces();
+        checkWin();
+        return;
+      }
+
+      // 2. PESCATA STANDARD SE IL MAZZO CONTIENE CARTE
+      if (battleState[pl].hand.length < 6) {
         const card = battleState[pl].deck.shift();
         battleState[pl].hand.push(card);
         const cardObj = CARDS_DB[card];
+        const cardName = cardObj?.name || card;
+        const rarity = RARITY_NAMES[cardObj?.rarity] || 'Comune';
         const myRole = getMyRole();
         if (pl === myRole) {
-          addLog(`${pl.toUpperCase()} pesca ${cardObj?.name || card} [${RARITY_NAMES[cardObj?.rarity] || 'Comune'}]`, pl);
+          addLog(`[${pl.toUpperCase()}] -> [Pescata] -> [Mano (${battleState[pl].hand.length}/6)] = [${cardName} (${rarity})]`, pl);
         } else {
-          addLog(`${pl.toUpperCase()} pesca 1 carta`, pl);
+          addLog(`[${pl.toUpperCase()}] -> [Pescata] -> [Mano (${battleState[pl].hand.length}/6)] = [1 Carta Pescata]`, pl);
         }
+      } else {
+        addLog(`[${pl.toUpperCase()}] -> [Pescata] -> [Mano Piena (6/6)] = [Pescata Ignorata (Limite Mano Raggiunto)]`, pl);
       }
     }
 
@@ -9469,7 +9635,7 @@
       if (!battleState[player].graveyard) battleState[player].graveyard = [];
       battleState[player].graveyard.push(cardId);
 
-      addLog(`${player.toUpperCase()} lancia Sortilegio: ${card.name} su cella ${targetIdx}`, player);
+      addLog(`[${player.toUpperCase()}] -> [Sortilegio: ${card.name}] -> [Cella ${targetIdx}] = [Lanciato]`, player);
 
       animateCardPlayed(card, () => {
         const target = battleState.grid[targetIdx];
@@ -10351,18 +10517,20 @@
       const attDesc = (att.desc || '').toLowerCase();
       const defDesc = (def.desc || '').toLowerCase();
       const isStructure = def.type === 'altar' || def.type === 'wall' || (def.desc && def.desc.includes('Muro'));
+      let flankingBonus = 0;
+      let absorbed = 0;
 
       // 1. Anti-Structure / Sfondamento
       if (isStructure) {
         if (att.name === 'Ariete da Breccia') {
           damage = 6;
-          addLog(`Ariete da Breccia applica Sfondamento: 6 danni diretti alla struttura!`, player);
+          addLog(`[Ariete da Breccia (${player.toUpperCase()})] -> [Sfondamento] -> [${def.name}] = [6 Danni Diretti a Struttura]`, player);
         } else if (att.name === 'Ariete Cataclismatico') {
           damage = 8;
-          addLog(`Ariete Cataclismatico applica Sfondamento: 8 danni diretti all'Altare!`, player);
+          addLog(`[Ariete Cataclismatico (${player.toUpperCase()})] -> [Sfondamento] -> [${def.name}] = [8 Danni Diretti ad Altare]`, player);
         } else if (attDesc.includes('sfondamento') || attDesc.includes('muri e altari')) {
           damage *= 2;
-          addLog(`Sfondamento: danni raddoppiati contro struttura (${damage} danni)!`, player);
+          addLog(`[${att.name} (${player.toUpperCase()})] -> [Sfondamento] -> [${def.name}] = [Danni Raddoppiati (${damage} Danni)]`, player);
         }
       }
 
@@ -10376,10 +10544,10 @@
           return p && p.owner === player && p.type !== 'wall';
         });
         if (hasOtherAlly) {
-          let flankingBonus = 2;
+          flankingBonus = 2;
           if (battleState[player].fendentiIncrociati) flankingBonus += 2;
           damage += flankingBonus;
-          addLog(`⚔️ AGGIRAMENTO TATTICO (FLANKING)! +${flankingBonus} danni inflitti a ${def.name}!`, player);
+          addLog(`[${att.name} (${player.toUpperCase()})] -> [Aggiramento (Flanking)] -> [${def.name}] = [+${flankingBonus} Danni Extra Flanking]`, player);
         }
       }
 
@@ -10387,10 +10555,10 @@
       if (def.hasTotalShield) {
         damage = 0;
         def.hasTotalShield = false;
-        addLog(`🛡️ SCUDO TOTALE ha assorbito completamente il colpo su ${def.name}!`, 'sys');
+        addLog(`[${def.name} (${def.owner.toUpperCase()})] -> [Scudo Totale] -> [${att.name}] = [Colpo Completamente Assorbito (0 Danni)]`, 'sys');
       } else if (def.immunePhysical) {
         damage = 0;
-        addLog(`✨ BOLLA SFASANTE rende ${def.name} immune al danno fisico!`, 'sys');
+        addLog(`[${def.name} (${def.owner.toUpperCase()})] -> [Bolla Sfasante] -> [${att.name}] = [Immune a Danni Fisici (0 Danni)]`, 'sys');
       } else {
         // 4. Armatura & Coperture
         let armor = 0;
@@ -10401,30 +10569,55 @@
         if (hasIronAltarProtection(to, def)) armor += 1;
 
         if (attDesc.includes("ignora l'armatura") || attDesc.includes('trapassano qualsiasi') || attDesc.includes('ignora la riduzione')) {
-          addLog(`${att.name} ignora le armature nemiche!`, player);
+          addLog(`[${att.name} (${player.toUpperCase()})] -> [Perforazione Armatura] -> [${def.name}] = [Armatura Ignorata]`, player);
           armor = 0;
         }
 
         if (armor > 0) {
-          const absorbed = Math.min(damage - 1, armor);
+          absorbed = Math.min(damage - 1, armor);
           if (absorbed > 0) {
             damage -= absorbed;
-            addLog(`Armatura protegge ${def.name}: -${absorbed} danno assorbito (subisce ${damage} danni)!`, 'sys');
+            addLog(`[${def.name} (${def.owner.toUpperCase()})] -> [Armatura/Riparo] -> [Assorbimento] = [-${absorbed} Danno Assorbito (${damage} Danni Effettivi)]`, 'sys');
           }
         }
       }
 
+      // Pre-calcolo contrattacco per il popup visivo e formula precisa
+      const dist = Math.max(Math.abs(Math.floor(from/8) - Math.floor(to/8)), Math.abs((from%8) - (to%8)));
+      const isRangedAttacker = (att.range && att.range > 1) && dist > 1;
+      const defCannotCounter = defDesc.includes('non può contrattaccare') || defDesc.includes('non contrattacca');
+      const defIsStructure = def.type === 'altar' || def.type === 'wall';
+      let expectedCounterDmg = 0;
+
+      if (!defCannotCounter && !defIsStructure && (!isRangedAttacker || (def.range || 1) >= dist || def.cardId === 'halberdier' || def.name === "Alabardiere d'Élite")) {
+        let rawCounter = typeof def.att === 'number' ? def.att : 0;
+        if (defDesc.includes('presidio') && rawCounter === 0) rawCounter = 2;
+        if (def.name === 'Campione del Bastione' && def.hp <= 2) rawCounter = 4;
+        if (def.name === 'Guardiano della Fucina' && getAdjs(to).some(adj => battleState.grid[adj]?.type === 'altar')) rawCounter = 4;
+        if (def.name === 'Duellante Sfregiato' && def.hp <= 2) rawCounter = 4;
+        if (getAdjs(to).some(adj => battleState.grid[adj]?.name === 'Altare della Fortezza')) rawCounter += 1;
+
+        let attArmor = (att.armor || 0) + (att.tempArmor || 0);
+        if (battleState[att.owner].muragliaScudiActive) attArmor += 1;
+        if (attDesc.includes('armatura') && !att.armor) attArmor += 1;
+        if (hasIronAltarProtection(from, att)) attArmor += 1;
+        if (attArmor > 0) rawCounter = Math.max(0, rawCounter - attArmor);
+
+        expectedCounterDmg = (isNaN(rawCounter) || rawCounter < 0) ? 0 : rawCounter;
+      }
+
       // Visualizzazione sovraimpressione dinamica scontro
-      showCombatClashOverlay(att, def, damage, (typeof counterDmg !== 'undefined' ? counterDmg : 0), {
+      showCombatClashOverlay(att, def, damage, expectedCounterDmg, {
         rawAtk: att.att,
-        flankingBonus: (typeof flankingBonus !== 'undefined' ? flankingBonus : 0),
+        flankingBonus: flankingBonus,
         isStructure: isStructure,
-        absorbed: (typeof absorbed !== 'undefined' ? absorbed : 0),
-        isRanged: (att.range && att.range > 1),
-        defCannotCounter: (typeof defCannotCounter !== 'undefined' ? defCannotCounter : false)
+        absorbed: absorbed,
+        isRanged: isRangedAttacker,
+        defCannotCounter: defCannotCounter
       });
 
-      addLog(`${att.name} attacca ${def.name} infliggendo ${damage} danni`, player);
+      const defRemHp = Math.max(0, def.hp - damage);
+      addLog(`[${att.name} (${player.toUpperCase()})] -> [Attacco] -> [${def.name} (${def.owner.toUpperCase()})] = [${damage} Danni Inflitti (PV residui: ${defRemHp})]`, player);
       def.hp -= damage;
 
       if (att.cardId === 'colossus' || att.name === 'Colosso di Basalto') {
@@ -10435,33 +10628,18 @@
         handlePieceDefeated(to, att.owner);
       } else {
         // 5. Contrattacco & Presidio
-        const dist = Math.max(Math.abs(Math.floor(from/8) - Math.floor(to/8)), Math.abs((from%8) - (to%8)));
-        const isRangedAttacker = (att.range && att.range > 1) && dist > 1;
-        const defCannotCounter = defDesc.includes('non può contrattaccare') || defDesc.includes('non contrattacca');
-
-        if (!defCannotCounter && (!isRangedAttacker || def.range >= dist || def.cardId === 'halberdier' || def.name === "Alabardiere d'Élite")) {
-          let counterDmg = def.att;
-          if (defDesc.includes('presidio') && counterDmg === 0) {
-            counterDmg = 2; // Presidio contrattacca a 2 ATT
-          }
-          if (def.name === 'Campione del Bastione' && def.hp <= 2) counterDmg = 4;
-          if (def.name === 'Guardiano della Fucina' && getAdjs(to).some(adj => battleState.grid[adj]?.type === 'altar')) counterDmg = 4;
-          if (def.name === 'Duellante Sfregiato' && def.hp <= 2) counterDmg = 4;
-          if (getAdjs(to).some(adj => battleState.grid[adj]?.name === 'Altare della Fortezza')) counterDmg += 1;
-
-          let attArmor = (att.armor || 0) + (att.tempArmor || 0);
-          if (battleState[att.owner].muragliaScudiActive) attArmor += 1;
-          if (attDesc.includes('armatura') && !att.armor) attArmor += 1;
-          if (hasIronAltarProtection(from, att)) attArmor += 1;
-          if (attArmor > 0) counterDmg = Math.max(0, counterDmg - attArmor);
-
-          att.hp -= counterDmg;
-          addLog(`${def.name} contrattacca infliggendo ${counterDmg} danni a ${att.name}`, 'sys');
+        if (expectedCounterDmg > 0) {
+          att.hp -= expectedCounterDmg;
+          const attRemHp = Math.max(0, att.hp);
+          addLog(`[${def.name} (${def.owner.toUpperCase()})] -> [Contrattacco] -> [${att.name} (${att.owner.toUpperCase()})] = [${expectedCounterDmg} Danni Contrattacco (PV residui: ${attRemHp})]`, 'sys');
+          showCollisionPopup(from, '⚔️ CONTRATTACCO!', `${def.name} infligge ${expectedCounterDmg} danni`);
           if (att.hp <= 0) {
             handlePieceDefeated(from, def.owner);
           }
-        } else {
-          addLog(`${att.name} attacca a distanza senza subire contrattacco!`, 'sys');
+        } else if (def.att > 0 && !isRangedAttacker && !defCannotCounter && !defIsStructure) {
+          addLog(`[${def.name} (${def.owner.toUpperCase()})] -> [Contrattacco] -> [${att.name} (${att.owner.toUpperCase()})] = [0 Danni (Armatura/Scudo assorbe)]`, 'sys');
+        } else if (isRangedAttacker) {
+          addLog(`[${att.name} (${player.toUpperCase()})] -> [Attacco a Distanza] -> [${def.name} (${def.owner.toUpperCase()})] = [Colpo a Distanza Senza Contrattacco]`, 'sys');
         }
       }
 
@@ -10909,7 +11087,16 @@
         }
       });
 
+      // Controllo mazzo prima della fase di pescata: se vuoto applica danno ed evita softlock
+      const isDeckEmpty = battleState[nextTurn].deck.length === 0;
       drawCard(nextTurn);
+      
+      // Se il mazzo è vuoto e la partita prosegue, salta la fase pescata e passa direttamente alla fase 2 (Azioni)
+      if (isDeckEmpty && !battleState.isGameOver) {
+        battleState.turnPhase = 2;
+        addLog(`[${nextTurn.toUpperCase()}] -> [Mazzo Vuoto] -> [Fase 2: Movimento & Azioni] = [Transizione Automatica Eseguita]`, nextTurn);
+      }
+
       updateHUD();
       updatePhaseUI();
       renderHand();
@@ -12090,10 +12277,42 @@
     }
 
     window.addEventListener('keydown', (e) => {
+      // Ignora scorciatoie se l'utente sta digitando in un campo di testo
+      const activeTag = document.activeElement ? document.activeElement.tagName : '';
+      if (['INPUT', 'TEXTAREA', 'SELECT'].includes(activeTag)) return;
+
       if (e.key === 'Escape') {
         const m = document.getElementById('battle-pile-modal');
         if (m && m.classList.contains('active')) {
           closePileModal();
+        }
+        hideCombatClashOverlay();
+      }
+
+      // BARRA SPAZIATRICE: Convalida/Chiudi Popup O Avanza Fase del Turno
+      if (e.code === 'Space' || e.key === ' ') {
+        const clashOverlay = document.getElementById('combat-clash-overlay');
+        const pileModal = document.getElementById('battle-pile-modal');
+
+        // 1. Se c'è un popup o overlay aperto, convalidalo/chiudilo immediatamente
+        if (clashOverlay && clashOverlay.style.display !== 'none') {
+          e.preventDefault();
+          hideCombatClashOverlay();
+          return;
+        }
+        if (pileModal && pileModal.classList.contains('active')) {
+          e.preventDefault();
+          closePileModal();
+          return;
+        }
+
+        // 2. In partita attiva: avanza fase del turno se è il turno del giocatore
+        if (battleState && !battleState.isGameOver && battleState.phase === 'active') {
+          const role = getMyRole();
+          if (battleState.turn === role) {
+            e.preventDefault();
+            advanceTurnPhase();
+          }
         }
       }
     });
