@@ -2548,25 +2548,29 @@
 
     .piece-name-tag {
       position: absolute;
-      top: -6px;
+      top: -8px;
+      left: 50%;
+      transform: translateX(-50%);
       font-size: 0.52rem;
       font-weight: 900;
-      background: rgba(3, 4, 8, 0.92);
+      background: rgba(4, 6, 12, 0.96);
       color: #edf0f8;
-      padding: 1px 5px;
+      padding: 1px 6px;
       border-radius: 4px;
-      max-width: 95%;
+      max-width: 90%;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      border: 1px solid rgba(255, 255, 255, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.35);
       text-transform: uppercase;
       letter-spacing: 0.3px;
       line-height: 1.1;
       pointer-events: none;
+      z-index: 20;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.9);
     }
-    .piece.p1 .piece-name-tag { border-color: rgba(116, 185, 255, 0.6); color: #9ec5fe; }
-    .piece.p2 .piece-name-tag { border-color: rgba(255, 118, 117, 0.6); color: #f5a6b0; }
+    .piece.p1 .piece-name-tag { border-color: rgba(116, 185, 255, 0.7); color: #9ec5fe; }
+    .piece.p2 .piece-name-tag { border-color: rgba(255, 118, 117, 0.7); color: #f5a6b0; }
 
     .piece-glyph-wrap {
       font-size: 1.35rem;
@@ -2577,49 +2581,82 @@
 
     .piece-badges {
       position: absolute;
-      bottom: -6px;
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
       display: flex;
       align-items: center;
       gap: 3px;
       font-size: 0.62rem;
       font-weight: 900;
-      background: rgba(4, 5, 10, 0.95);
-      padding: 1px 5px;
+      background: rgba(4, 5, 10, 0.96);
+      padding: 1px 6px;
       border-radius: 4px;
-      border: 1px solid rgba(255,255,255,0.3);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.9);
+      border: 1px solid rgba(255,255,255,0.35);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.95);
       pointer-events: none;
+      z-index: 20;
+      white-space: nowrap;
     }
     .piece-stat-atk { color: #ff9f43; display: inline-flex; align-items: center; gap: 1px; }
     .piece-stat-hp { color: #2ed573; display: inline-flex; align-items: center; gap: 1px; }
     .piece-stat-hp.damaged { color: #ff4757; }
 
+    /* RANGE BADGE (RIGHT FLANK - 3 O'CLOCK) */
     .piece-range-badge {
       position: absolute;
-      top: -3px;
-      right: -4px;
-      font-size: 0.52rem;
-      background: #d35400;
+      top: 50%;
+      right: -7px;
+      transform: translateY(-50%);
+      font-size: 0.56rem;
+      background: linear-gradient(135deg, #d35400, #b3392b);
       color: #fff;
-      padding: 1px 4px;
-      border-radius: 3px;
+      padding: 2px 4px;
+      border-radius: 4px;
       font-weight: 900;
-      border: 1px solid #e67e22;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.8);
+      border: 1.5px solid #e67e22;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.9);
       pointer-events: none;
+      z-index: 15;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      gap: 1px;
     }
 
+    /* EXHAUSTED BADGE (LEFT FLANK - 9 O'CLOCK) */
     .piece-exhausted-tag {
       position: absolute;
-      top: -3px;
-      left: -4px;
-      font-size: 0.55rem;
-      background: rgba(15, 20, 30, 0.9);
-      color: #a4b0be;
+      top: 50%;
+      left: -7px;
+      transform: translateY(-50%);
+      font-size: 0.58rem;
+      background: rgba(18, 22, 34, 0.96);
+      color: #dfe4ea;
+      padding: 2px 4px;
+      border-radius: 4px;
+      border: 1.5px solid #718093;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.9);
+      pointer-events: none;
+      z-index: 15;
+      line-height: 1;
+    }
+
+    .piece-auras-row {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      margin-left: 2px;
+    }
+    .piece-aura-badge {
+      font-size: 0.52rem;
+      font-weight: 900;
       padding: 1px 3px;
       border-radius: 3px;
-      border: 1px solid #57606f;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.8);
       pointer-events: none;
+      line-height: 1.1;
+      white-space: nowrap;
     }
 
     /* === VASSOIO CARTE ATTIVE IN CAMPO === */
@@ -4726,26 +4763,32 @@
         touch-action: manipulation;
       }
       .piece-name-tag {
-        font-size: 0.44rem;
-        top: -4px;
-        padding: 0 2px;
-        max-width: 98%;
+        font-size: 0.46rem;
+        top: -7px;
+        padding: 1px 4px;
+        max-width: 92%;
       }
       .piece-glyph-wrap {
-        font-size: 1.05rem;
+        font-size: 1.15rem;
       }
       .piece-badges {
-        font-size: 0.50rem;
-        bottom: -4px;
-        padding: 0 2px;
-        gap: 1px;
+        font-size: 0.54rem;
+        bottom: -7px;
+        padding: 1px 4px;
+        gap: 2px;
       }
-      .piece-auras-row {
-        top: -4px;
-        right: -2px;
+      .piece-range-badge {
+        font-size: 0.52rem;
+        right: -6px;
+        padding: 1px 3px;
+      }
+      .piece-exhausted-tag {
+        font-size: 0.54rem;
+        left: -6px;
+        padding: 1px 3px;
       }
       .piece-aura-badge {
-        font-size: 0.45rem;
+        font-size: 0.48rem;
         padding: 0 2px;
       }
 
@@ -12103,7 +12146,7 @@
           if (p.hasTotalShield) auraBadges.push('<span class="piece-aura-badge shield" title="Scudo Totale Attivo">✨SCUDO</span>');
           if (p.armor || p.tempArmor) auraBadges.push('<span class="piece-aura-badge armor" title="Armatura +' + (p.armor || p.tempArmor) + '">🛡️ARM</span>');
 
-          const aurasHtml = auraBadges.length > 0 ? '<div class="piece-auras-row">' + auraBadges.join('') + '</div>' : '';
+          const aurasHtml = auraBadges.length > 0 ? '<span class="piece-auras-row">' + auraBadges.join('') + '</span>' : '';
 
           const glyph = p.glyph || (p.type === 'commander' ? '👑' : (p.type === 'altar' ? '🏛️' : (p.type === 'wall' ? '🧱' : '⚔️')));
           const nameShort = p.name ? p.name.split(' ')[0] : 'Truppa';
@@ -12123,8 +12166,9 @@
             const isDamaged = (p.maxHp && p.hp < p.maxHp) || false;
             statsHtml = '<span class="piece-stat-atk">⚔️' + p.att + '</span><span class="piece-stat-hp ' + (isDamaged ? 'damaged' : '') + '">❤️' + p.hp + '</span>';
           }
+          statsHtml += aurasHtml;
 
-          el.innerHTML = aurasHtml + rangeBadge + exhaustedBadge +
+          el.innerHTML = rangeBadge + exhaustedBadge +
             '<span class="piece-name-tag" title="' + p.name + ' [' + coord + ']">' + nameShort + '</span>' +
             '<span class="piece-glyph-wrap">' + glyph + '</span>' +
             '<div class="piece-badges">' + statsHtml + '</div>';
