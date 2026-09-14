@@ -2523,21 +2523,262 @@
     .square.highlight-placement { background-color: rgba(212, 175, 55, 0.5) !important; border: 2px dashed #d4af37; cursor: pointer; }
 
     .piece {
-      width: 82%; height: 82%; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; z-index: 10; font-weight: bold; font-size: 0.7rem; border: 2px solid #fff; cursor: pointer; will-change: transform; box-shadow: 0 4px 12px rgba(0,0,0,0.8);
+      width: 88%; height: 88%; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; z-index: 10; font-weight: bold; font-size: 0.72rem; border: 2.5px solid #fff; cursor: pointer; will-change: transform; box-shadow: 0 4px 14px rgba(0,0,0,0.85); transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
     }
-    .piece.p1 { background: radial-gradient(circle at 30% 30%, #2980b9, #0c2444); border-color: #74b9ff; color: #fff; }
-    .piece.p2 { background: radial-gradient(circle at 30% 30%, #c0392b, #51110a); border-color: #ff7675; color: #fff; }
-    .piece.altar { border-radius: 6px; background: #1e272e; border-color: var(--mana-cyan); }
+    .piece.p1 { background: radial-gradient(circle at 35% 35%, #2980b9, #091d36); border-color: #74b9ff; color: #fff; box-shadow: 0 0 10px rgba(52, 152, 219, 0.4); }
+    .piece.p2 { background: radial-gradient(circle at 35% 35%, #c0392b, #440d07); border-color: #ff7675; color: #fff; box-shadow: 0 0 10px rgba(231, 76, 60, 0.4); }
+    .piece.altar { border-radius: 8px; background: radial-gradient(circle at 35% 35%, #2c3e50, #111923); border-color: var(--mana-cyan); }
     .piece.wall { border-radius: 6px; background: #2f3640; border: 2px solid #718093; color: #f5f6fa; }
     .piece.p1.wall { border-color: #74b9ff; }
     .piece.p2.wall { border-color: #ff7675; }
-    /* STATO ESAUSTO: Bordo e basetta con colore fazione saturo, desaturazione mirata dell'icona interna */
-    .piece.exhausted { opacity: 0.85; }
-    .piece.p1.exhausted { border-color: #3498db; box-shadow: 0 0 10px rgba(52, 152, 219, 0.6); background: radial-gradient(circle at 30% 30%, #1e5782, #0a1b33); }
-    .piece.p2.exhausted { border-color: #e74c3c; box-shadow: 0 0 10px rgba(231, 76, 60, 0.6); background: radial-gradient(circle at 30% 30%, #87281d, #380d09); }
-    .piece.exhausted > span { filter: grayscale(50%) opacity(0.6); }
-    .piece.exhausted .piece-badges { opacity: 0.9; }
-    .piece-badges { position: absolute; bottom: -4px; display: flex; gap: 2px; font-size: 0.6rem; background: rgba(0,0,0,0.9); padding: 1px 5px; border-radius: 3px; border: 1px solid rgba(255,255,255,0.2); }
+
+    /* STATO ESAUSTO */
+    .piece.exhausted { opacity: 0.82; }
+    .piece.p1.exhausted { border-color: #2980b9; box-shadow: none; background: radial-gradient(circle at 30% 30%, #173d5a, #071322); }
+    .piece.p2.exhausted { border-color: #962d22; box-shadow: none; background: radial-gradient(circle at 30% 30%, #571b15, #260905); }
+    .piece.exhausted .piece-glyph-wrap { filter: grayscale(50%) opacity(0.7); }
+
+    /* HIGHLIGHT BIDIREZIONALE QUANDO IN HOVER O SELEZIONATA */
+    .piece.linked-hover, .piece:hover {
+      border-color: #ffd32a !important;
+      box-shadow: 0 0 20px #e5b958, 0 0 6px #fff !important;
+      transform: scale(1.1) !important;
+      z-index: 50 !important;
+    }
+
+    .piece-name-tag {
+      position: absolute;
+      top: -6px;
+      font-size: 0.52rem;
+      font-weight: 900;
+      background: rgba(3, 4, 8, 0.92);
+      color: #edf0f8;
+      padding: 1px 5px;
+      border-radius: 4px;
+      max-width: 95%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      line-height: 1.1;
+      pointer-events: none;
+    }
+    .piece.p1 .piece-name-tag { border-color: rgba(116, 185, 255, 0.6); color: #9ec5fe; }
+    .piece.p2 .piece-name-tag { border-color: rgba(255, 118, 117, 0.6); color: #f5a6b0; }
+
+    .piece-glyph-wrap {
+      font-size: 1.35rem;
+      line-height: 1;
+      margin: 1px 0;
+      pointer-events: none;
+    }
+
+    .piece-badges {
+      position: absolute;
+      bottom: -6px;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 0.62rem;
+      font-weight: 900;
+      background: rgba(4, 5, 10, 0.95);
+      padding: 1px 5px;
+      border-radius: 4px;
+      border: 1px solid rgba(255,255,255,0.3);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.9);
+      pointer-events: none;
+    }
+    .piece-stat-atk { color: #ff9f43; display: inline-flex; align-items: center; gap: 1px; }
+    .piece-stat-hp { color: #2ed573; display: inline-flex; align-items: center; gap: 1px; }
+    .piece-stat-hp.damaged { color: #ff4757; }
+
+    .piece-range-badge {
+      position: absolute;
+      top: -3px;
+      right: -4px;
+      font-size: 0.52rem;
+      background: #d35400;
+      color: #fff;
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-weight: 900;
+      border: 1px solid #e67e22;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.8);
+      pointer-events: none;
+    }
+
+    .piece-exhausted-tag {
+      position: absolute;
+      top: -3px;
+      left: -4px;
+      font-size: 0.55rem;
+      background: rgba(15, 20, 30, 0.9);
+      color: #a4b0be;
+      padding: 1px 3px;
+      border-radius: 3px;
+      border: 1px solid #57606f;
+      pointer-events: none;
+    }
+
+    /* === VASSOIO CARTE ATTIVE IN CAMPO === */
+    .active-field-tray-wrap {
+      background: linear-gradient(180deg, #0e111a 0%, #06070a 100%);
+      border-top: 1px solid var(--border-frame);
+      padding: 4px 16px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      max-height: 84px;
+    }
+    .field-tray-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: var(--gold-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .fth-hint {
+      color: var(--text-muted);
+      font-size: 0.62rem;
+      font-weight: 500;
+      text-transform: none;
+    }
+    .active-field-cards-scroll {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 2px 0 4px 0;
+    }
+    .field-card {
+      min-width: 140px;
+      height: 52px;
+      background: #141724;
+      border: 1px solid #333a52;
+      border-radius: 6px;
+      padding: 4px 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.15s ease;
+      position: relative;
+    }
+    .field-card.p1 { border-left: 3px solid #3498db; }
+    .field-card.p2 { border-left: 3px solid #e74c3c; }
+    .field-card.exhausted { opacity: 0.65; filter: grayscale(25%); }
+    .field-card:hover, .field-card.linked-hover {
+      border-color: #ffd32a !important;
+      background: #1c2236;
+      transform: translateY(-2px);
+      box-shadow: 0 0 12px rgba(229, 185, 88, 0.45);
+    }
+    .field-card-glyph-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-width: 28px;
+    }
+    .field-card-glyph {
+      font-size: 1.3rem;
+      line-height: 1;
+    }
+    .field-card-coord {
+      font-size: 0.58rem;
+      font-weight: 900;
+      color: var(--gold-primary);
+      font-family: monospace;
+      margin-top: 1px;
+    }
+    .field-card-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      overflow: hidden;
+    }
+    .field-card-name {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .field-card-type-row {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .field-card-badge {
+      font-size: 0.52rem;
+      font-weight: 800;
+      padding: 0 4px;
+      border-radius: 3px;
+      text-transform: uppercase;
+    }
+    .field-card-badge.p1 { background: rgba(52, 152, 219, 0.2); color: #74b9ff; border: 1px solid rgba(52, 152, 219, 0.4); }
+    .field-card-badge.p2 { background: rgba(231, 76, 60, 0.2); color: #ff7675; border: 1px solid rgba(231, 76, 60, 0.4); }
+    .field-card-status { font-size: 0.65rem; }
+
+    .field-card-stats-box {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 2px;
+      font-weight: 900;
+      font-size: 0.68rem;
+    }
+    .fc-stat.atk { color: #ff9f43; }
+    .fc-stat.hp { color: #2ed573; }
+    .fc-stat.hp.damaged { color: #ff4757; }
+
+    /* === MANO CARTE PIÙ VISIBILE & IMPONENTE === */
+    .battle-hand-bar {
+      height: 124px;
+      background: #06070a;
+      border-top: 2px solid var(--border-frame);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 16px;
+      overflow-x: auto;
+      flex-shrink: 0;
+    }
+    .hand-card {
+      min-width: 102px;
+      width: 102px;
+      height: 108px;
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-frame);
+      border-radius: 8px;
+      padding: 6px 7px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.7);
+    }
+    .hand-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.85);
+      border-color: var(--border-gold);
+    }
+    .hand-card.selected {
+      border-color: var(--mana-cyan) !important;
+      transform: translateY(-8px);
+      box-shadow: 0 0 16px var(--mana-cyan) !important;
+    }
 
     /* LOBBY BROWSER & OPEN ROOMS SIDEBAR */
     .lobby-layout-wrap {
@@ -5905,6 +6146,15 @@
           </div>
           <div class="log-entries" id="log-entries"></div>
         </div>
+      </div>
+
+      <!-- VASSOIO CARTE ATTIVE IN CAMPO -->
+      <div class="active-field-tray-wrap" id="active-field-tray-wrap">
+        <div class="field-tray-header">
+          <span class="fth-title">🛡️ CARTE ATTIVE IN CAMPO (<span id="active-field-count">0</span>)</span>
+          <span class="fth-hint">Passa il cursore o clicca per individuare la pedina sulla plancia</span>
+        </div>
+        <div class="active-field-cards-scroll" id="active-field-cards"></div>
       </div>
 
       <div class="battle-hand-bar" id="battle-hand"></div>
@@ -9549,15 +9799,21 @@
           ? `<span style="font-size:0.65rem; color:#fff; font-weight:800;">${c.att}/${c.hp}</span>`
           : (c.type === 'altar' ? `<span style="font-size:0.62rem; color:var(--mana-cyan); font-weight:800;">${c.hp} PV</span>` : '');
 
+        const glyphHtml = `<span style="font-size:1.55rem; align-self:center; line-height:1; margin: 2px 0;">${c.glyph || '⚔️'}</span>`;
+        const ptBadgeHtml = c.type === 'unit'
+          ? `<span style="font-size:0.7rem; color:#fff; font-weight:900; background:rgba(0,0,0,0.6); padding:1px 4px; border-radius:3px; border:1px solid rgba(255,255,255,0.25);">⚔️${c.att} ❤️${c.hp}</span>`
+          : (c.type === 'altar' ? `<span style="font-size:0.65rem; color:var(--mana-cyan); font-weight:900; background:rgba(0,0,0,0.6); padding:1px 4px; border-radius:3px; border:1px solid rgba(0,229,255,0.3);">🏛️ ${c.hp} PV</span>` : '');
+
         cardEl.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <div style="font-size:0.75rem; font-weight:bold;">${costHtml}</div>
-            <span class="rarity-badge ${r}" style="font-size:0.5rem; padding:0 3px;">${(RARITY_NAMES[r] || 'COM').slice(0,3)}</span>
+            <div style="font-size:0.78rem; font-weight:900;">${costHtml}</div>
+            <span class="rarity-badge ${r}" style="font-size:0.52rem; padding:1px 4px; font-weight:800;">${(RARITY_NAMES[r] || 'COM').slice(0,3)}</span>
           </div>
-          <div style="font-size:0.75rem; font-weight:bold; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${c.name}">${c.name}</div>
+          ${glyphHtml}
+          <div style="font-size:0.72rem; font-weight:800; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-align:center;" title="${c.name}">${c.name}</div>
           <div style="display:flex; justify-content:space-between; align-items:center; margin-top:auto;">
             <span style="font-family:'Cinzel',serif; font-size:0.72rem; font-weight:900; color:var(--gold-primary); text-transform:none;">${c.set || 'α'}</span>
-            ${ptHtml}
+            ${ptBadgeHtml}
           </div>
         `;
         handList.appendChild(cardEl);
@@ -10828,20 +11084,125 @@
       }, e);
     }
 
+    function renderActiveFieldCards() {
+      const container = document.getElementById('active-field-cards');
+      const countEl = document.getElementById('active-field-count');
+      if (!container || !battleState) return;
+
+      container.innerHTML = '';
+      const myRole = getMyRole();
+      const pieces = [];
+
+      for (let i = 0; i < 64; i++) {
+        const p = battleState.grid[i];
+        if (p) {
+          pieces.push({ idx: i, piece: p });
+        }
+      }
+
+      // Ordina: prima le truppe del giocatore, poi quelle avversarie; comandanti prima, poi altari, poi truppe
+      pieces.sort((a, b) => {
+        if (a.piece.owner === myRole && b.piece.owner !== myRole) return -1;
+        if (a.piece.owner !== myRole && b.piece.owner === myRole) return 1;
+        const typeOrder = { 'commander': 1, 'altar': 2, 'unit': 3, 'wall': 4 };
+        return (typeOrder[a.piece.type] || 5) - (typeOrder[b.piece.type] || 5);
+      });
+
+      if (countEl) countEl.textContent = pieces.length;
+
+      if (pieces.length === 0) {
+        container.innerHTML = '<div style="font-size:0.72rem; color:#8b93b0; font-style:italic; padding:4px;">Nessuna truppa schierata sulla plancia.</div>';
+        return;
+      }
+
+      pieces.forEach(item => {
+        const p = item.piece;
+        const idx = item.idx;
+        const isMine = (p.owner === myRole);
+        const col = String.fromCharCode(65 + (idx % 8));
+        const row = 8 - Math.floor(idx / 8);
+        const coordStr = col + row;
+
+        const card = document.createElement('div');
+        card.className = 'field-card ' + p.owner + ' ' + (p.exhausted ? 'exhausted' : '') + ' ' + (isMine ? 'mine' : 'enemy');
+        card.setAttribute('data-index', idx);
+        card.id = 'field-card-' + idx;
+
+        const isDamaged = (p.maxHp && p.hp < p.maxHp) || false;
+        const hpClass = isDamaged ? 'damaged' : '';
+        const statusIcon = p.exhausted ? '💤' : '⚡';
+        const statusTitle = p.exhausted ? 'Esausta (ha già agito questo turno)' : 'Pronta ad agire';
+
+        const glyph = p.glyph || (p.type === 'commander' ? '👑' : (p.type === 'altar' ? '🏛️' : (p.type === 'wall' ? '🧱' : '⚔️')));
+
+        card.innerHTML = `
+          <div class="field-card-glyph-box">
+            <span class="field-card-glyph">${glyph}</span>
+            <span class="field-card-coord">${coordStr}</span>
+          </div>
+          <div class="field-card-info">
+            <div class="field-card-name" title="${p.name}">${p.name}</div>
+            <div class="field-card-type-row">
+              <span class="field-card-badge ${p.owner}">${isMine ? 'ALLEATO' : 'NEMICO'}</span>
+              <span class="field-card-status" title="${statusTitle}">${statusIcon}</span>
+            </div>
+          </div>
+          <div class="field-card-stats-box">
+            ${p.type !== 'altar' && p.type !== 'wall' ? '<span class="fc-stat atk" title="Attacco: ' + p.att + '">⚔️' + p.att + '</span>' : ''}
+            <span class="fc-stat hp ' + hpClass + '" title="Punti Vita: ' + p.hp + '">❤️' + p.hp + '</span>
+          </div>
+        `;
+
+        // Interazione bidirezionale: hover evidenzia pedina sulla scacchiera, click seleziona casella
+        card.onmouseenter = (e) => {
+          card.classList.add('linked-hover');
+          const pieceEl = document.querySelector('.square[data-index="' + idx + '"] .piece');
+          if (pieceEl) pieceEl.classList.add('linked-hover');
+          const sqEl = document.querySelector('.square[data-index="' + idx + '"]');
+          if (sqEl) sqEl.classList.add('highlight-placement');
+        };
+
+        card.onmouseleave = () => {
+          card.classList.remove('linked-hover');
+          const pieceEl = document.querySelector('.square[data-index="' + idx + '"] .piece');
+          if (pieceEl) pieceEl.classList.remove('linked-hover');
+          const sqEl = document.querySelector('.square[data-index="' + idx + '"]');
+          if (sqEl) sqEl.classList.remove('highlight-placement');
+        };
+
+        card.onclick = () => {
+          const sqEl = document.querySelector('.square[data-index="' + idx + '"]');
+          if (sqEl) sqEl.click();
+        };
+
+        container.appendChild(card);
+      });
+    }
+
     function renderPieces() {
       for (let i = 0; i < 64; i++) {
-        const sq = document.querySelector(`.square[data-index="${i}"]`);
+        const sq = document.querySelector('.square[data-index="' + i + '"]');
         if (!sq) continue;
         sq.innerHTML = '';
         const p = battleState.grid[i];
         if (p) {
           const isBoosted = hasResonantBonus(i, p);
           const el = document.createElement('div');
-          el.className = `piece ${p.owner} ${p.type} ${p.exhausted ? 'exhausted' : ''} ${isBoosted ? 'resonant-boosted' : ''}`;
+          el.className = 'piece ' + p.owner + ' ' + p.type + ' ' + (p.exhausted ? 'exhausted' : '') + ' ' + (isBoosted ? 'resonant-boosted' : '');
+          el.setAttribute('data-index', i);
+          el.id = 'piece-token-' + i;
 
+          // Interazione bidirezionale hover
           el.onmouseenter = (e) => {
+            el.classList.add('linked-hover');
+            const fieldCard = document.getElementById('field-card-' + i);
+            if (fieldCard) {
+              fieldCard.classList.add('linked-hover');
+              fieldCard.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            }
+
             const commData = (p.type === 'commander') ? (p.owner === 'p1' ? battleState.p1.commander : battleState.p2.commander) : null;
-            const descText = p.desc || (commData ? `👑 Leader (${commData.archetype || 'Campione'})\nPasso: ${commData.move}\n🩸 Rito d'Armi (${commData.riteCost}🩸):\n${commData.riteDesc}` : '');
+            const descText = p.desc || (commData ? '👑 Leader (' + (commData.archetype || 'Campione') + ')\nPasso: ' + commData.move + '\n🩸 Rito d\'Armi (' + commData.riteCost + '🩸):\n' + commData.riteDesc : '');
             showHoverCard({
               name: p.name,
               cost: p.type === 'commander' ? '👑' : (p.type === 'altar' ? 0 : 1),
@@ -10853,8 +11214,14 @@
               rarity: p.rarity || 'common'
             }, e);
           };
+
           el.onmousemove = (e) => updateHoverCardPos(e);
-          el.onmouseleave = () => hideHoverCard();
+          el.onmouseleave = () => {
+            el.classList.remove('linked-hover');
+            const fieldCard = document.getElementById('field-card-' + i);
+            if (fieldCard) fieldCard.classList.remove('linked-hover');
+            hideHoverCard();
+          };
 
           const hasIronProt = hasIronAltarProtection(i, p);
           const hasFortressBuff = getAdjs(i).some(adj => battleState.grid[adj]?.name === 'Altare della Fortezza' && battleState.grid[adj]?.owner === p.owner);
@@ -10862,14 +11229,40 @@
           if (hasIronProt) auraBadges.push('<span class="piece-aura-badge def" title="Protetto da Altare/Bastione di Ferro (-1 Danno)">🛡️-1</span>');
           if (hasFortressBuff) auraBadges.push('<span class="piece-aura-badge atk" title="Bonus Altare della Fortezza (+1 ATT Contrattacco)">+1⚔️</span>');
           if (p.hasTotalShield) auraBadges.push('<span class="piece-aura-badge shield" title="Scudo Totale Attivo">✨SCUDO</span>');
-          if (p.armor || p.tempArmor) auraBadges.push(`<span class="piece-aura-badge armor" title="Armatura +${p.armor || p.tempArmor}">🛡️ARM</span>`);
+          if (p.armor || p.tempArmor) auraBadges.push('<span class="piece-aura-badge armor" title="Armatura +' + (p.armor || p.tempArmor) + '">🛡️ARM</span>');
 
-          const aurasHtml = auraBadges.length > 0 ? `<div class="piece-auras-row">${auraBadges.join('')}</div>` : '';
+          const aurasHtml = auraBadges.length > 0 ? '<div class="piece-auras-row">' + auraBadges.join('') + '</div>' : '';
 
-          el.innerHTML = `${aurasHtml}<span>${p.type === 'commander' ? '👑' : p.type === 'altar' ? '🏛️' : (p.type === 'wall' ? (p.glyph || '🧱') : '⚔️')}</span><div class="piece-badges">${p.att}/${p.hp}</div>`;
+          const glyph = p.glyph || (p.type === 'commander' ? '👑' : (p.type === 'altar' ? '🏛️' : (p.type === 'wall' ? '🧱' : '⚔️')));
+          const nameShort = p.name ? p.name.split(' ')[0] : 'Truppa';
+          const col = String.fromCharCode(65 + (i % 8));
+          const row = 8 - Math.floor(i / 8);
+          const coord = col + row;
+
+          const rangeBadge = (p.range && p.range > 1) ? '<span class="piece-range-badge" title="Gittata: ' + p.range + '">🏹' + p.range + '</span>' : '';
+          const exhaustedBadge = p.exhausted ? '<span class="piece-exhausted-tag" title="Esausta">💤</span>' : '';
+
+          let statsHtml = '';
+          if (p.type === 'altar') {
+            statsHtml = '<span class="piece-stat-hp">🏛️' + p.hp + '</span>';
+          } else if (p.type === 'wall') {
+            statsHtml = '<span class="piece-stat-hp">🧱' + p.hp + '</span>';
+          } else {
+            const isDamaged = (p.maxHp && p.hp < p.maxHp) || false;
+            statsHtml = '<span class="piece-stat-atk">⚔️' + p.att + '</span><span class="piece-stat-hp ' + (isDamaged ? 'damaged' : '') + '">❤️' + p.hp + '</span>';
+          }
+
+          el.innerHTML = aurasHtml + rangeBadge + exhaustedBadge +
+            '<span class="piece-name-tag" title="' + p.name + ' [' + coord + ']">' + nameShort + '</span>' +
+            '<span class="piece-glyph-wrap">' + glyph + '</span>' +
+            '<div class="piece-badges">' + statsHtml + '</div>';
+
           sq.appendChild(el);
         }
       }
+
+      // Aggiorna sempre anche il vassoio delle carte attive in campo
+      renderActiveFieldCards();
     }
 
     function updateHUD() {
