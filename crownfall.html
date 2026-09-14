@@ -2948,10 +2948,50 @@
     .hcp-desc { flex: 1; padding: 8px 10px; font-size: 0.74rem; color: #cfd4e8; line-height: 1.35; background: #0f1118; overflow-y: auto; white-space: pre-line; }
     .hcp-pt { background: #1c2232; border: 1px solid var(--gold-primary); border-radius: 4px; align-self: flex-end; margin: 0 8px 8px 0; padding: 2px 7px; font-size: 0.8rem; font-weight: 900; color: #fff; }
 
+    /* === CARD SUMMON OVERLAY === */
     #card-summon-overlay {
-      position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(0,0,0,0.7); backdrop-filter: blur(6px); z-index: 99999; pointer-events: none; opacity: 0; transition: opacity 0.25s ease;
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(3, 4, 8, 0.88);
+      backdrop-filter: blur(8px);
+      z-index: 10001;
+      padding: 16px;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.2s ease;
     }
-    #card-summon-overlay.active { display: flex; opacity: 1; }
+    #card-summon-overlay.active {
+      display: flex;
+      opacity: 1;
+    }
+    .summon-modal {
+      background: linear-gradient(135deg, #131722 0%, #0a0c14 100%);
+      border: 2px solid var(--border-gold);
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: 0 0 35px rgba(229, 185, 88, 0.4), 0 10px 40px rgba(0, 0, 0, 0.95);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      animation: clashImpact 0.28s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+      max-width: 320px;
+      width: 100%;
+      cursor: default;
+    }
+    .summon-header-title {
+      font-size: 0.95rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+      color: var(--gold-primary);
+      text-shadow: 0 0 12px var(--gold-glow);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
     /* MERCATO BOX */
     .pack-shop-container { max-width: 1200px; width: 100%; margin: 24px auto 40px auto; display: flex; flex-direction: column; gap: 20px; padding: 0 16px; text-align: center; }
@@ -5603,49 +5643,7 @@
               </div>
             </div>
         
-    <!-- OVERLAY COMBATTIMENTO DINAMICO SOVRAIMPRESSIONE -->
-    <div id="combat-clash-overlay" class="combat-clash-overlay" style="display: none;" onclick="hideCombatClashOverlay()">
-      <div class="clash-modal" onclick="hideCombatClashOverlay()">
-        <div class="clash-header">
-          <span class="clash-icon">⚔️</span>
-          <span class="clash-title">SCONTRO TATTICO SULLA PLANCIA</span>
-          <span class="clash-icon">⚔️</span>
-        </div>
-        <div class="clash-fighters-row">
-          <!-- CARTA ATTACCANTE -->
-          <div class="clash-card attacker" id="clash-card-att">
-            <div class="clash-card-badge">ATTACCANTE</div>
-            <div class="clash-card-glyph" id="clash-att-glyph">⚔️</div>
-            <div class="clash-card-name" id="clash-att-name">Attaccante</div>
-            <div class="clash-card-stats" id="clash-att-stats">⚔️ 3 | ❤️ 5</div>
-          </div>
 
-          <!-- CENTRO: CALCOLO COMBATTIMENTO -->
-          <div class="clash-vs-box">
-            <div class="clash-vs-icon">💥</div>
-            <div class="clash-formula" id="clash-formula-box">
-              <!-- Righe di calcolo dinamiche -->
-            </div>
-            <div class="clash-damage-banner" id="clash-damage-banner">
-              💥 3 DANNI INFLITTI
-            </div>
-            <div class="clash-counter-banner" id="clash-counter-banner">
-              🛡️ Contrattacco: 2 Danni
-            </div>
-          </div>
-
-          <!-- CARTA DIFENSORE -->
-          <div class="clash-card defender" id="clash-card-def">
-            <div class="clash-card-badge def">DIFENSORE</div>
-            <div class="clash-card-glyph" id="clash-def-glyph">🛡️</div>
-            <div class="clash-card-name" id="clash-def-name">Difensore</div>
-            <div class="clash-card-stats" id="clash-def-stats">⚔️ 2 | ❤️ 4 ➔ 1</div>
-          </div>
-        </div>
-        <button class="clash-dismiss-btn" onclick="hideCombatClashOverlay()">Continua (Spazio / Click) ➔</button>
-        <div class="clash-footer-hint">Premi Barra Spaziatrice o clicca per chiudere</div>
-      </div>
-    </div>
 
   </main>
         </div>
@@ -6013,24 +6011,78 @@
     </div>
   </div>
 
-  <div id="card-summon-overlay">
-    <div style="width:260px; height:380px; background:#111319; border:3px solid var(--gold-primary); border-radius:12px; display:flex; flex-direction:column; overflow:hidden;">
-      <div class="hcp-header">
-        <span class="hcp-title" id="sc-title">Carta</span>
-        <div id="sc-cost-wrap" class="mtg-cost-pips-wrap">
-          <span class="hcp-cost" id="sc-cost">0</span>
+  <!-- SOVRAIMPRESSIONE EVOCAZIONE CARTA -->
+  <div id="card-summon-overlay" class="combat-clash-overlay" style="display: none;" onclick="hideCardSummonOverlay()">
+    <div class="summon-modal" onclick="event.stopPropagation()">
+      <div class="summon-header-title">
+        <span>✨</span>
+        <span id="sc-header-text">CARTA EVOCATA</span>
+        <span>✨</span>
+      </div>
+      <div style="width:240px; height:340px; background:#111319; border:2px solid var(--border-gold); border-radius:10px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 8px 24px rgba(0,0,0,0.8);">
+        <div class="hcp-header">
+          <span class="hcp-title" id="sc-title">Carta</span>
+          <div id="sc-cost-wrap" class="mtg-cost-pips-wrap">
+            <span class="hcp-cost" id="sc-cost">0</span>
+          </div>
+        </div>
+        <div class="hcp-art" id="sc-art" style="font-size:3.2rem; height:120px;">⚔️</div>
+        <div class="hcp-type" id="sc-type" style="padding: 4px 10px; font-size: 0.65rem; font-weight: 800; color: var(--gold-primary); border-bottom: 1px solid #2d3248; display: flex; justify-content: space-between;">
+          <span id="sc-type-text">TRUPPA</span>
+          <span class="rarity-badge common" id="sc-rarity-badge">COMUNE</span>
+        </div>
+        <div class="hcp-desc" id="sc-desc" style="font-size:0.75rem; padding:8px 10px; color:#cfd4e8; flex:1; overflow-y:auto;">Descrizione.</div>
+        <div class="hcp-footer">
+          <div class="hcp-set-badge" id="sc-set-badge">α</div>
+          <div class="hcp-pt" id="sc-pt" style="margin: 0; align-self: center;">0/0</div>
         </div>
       </div>
-      <div class="hcp-art" id="sc-art" style="font-size:3.5rem; height:150px;">⚔️</div>
-      <div class="hcp-type" id="sc-type" style="padding: 4px 10px; font-size: 0.65rem; font-weight: 800; color: var(--gold-primary); border-bottom: 1px solid #2d3248; display: flex; justify-content: space-between;">
-        <span id="sc-type-text">TRUPPA</span>
-        <span class="rarity-badge common" id="sc-rarity-badge">COMUNE</span>
+      <button class="clash-dismiss-btn" onclick="hideCardSummonOverlay()">Continua (Spazio / Click) ➔</button>
+      <div class="clash-footer-hint">Premi Barra Spaziatrice o clicca ovunque per chiudere</div>
+    </div>
+  </div>
+
+  <!-- SOVRAIMPRESSIONE COMBATTIMENTO & SCONTRO FIRE EMBLEM -->
+  <div id="combat-clash-overlay" class="combat-clash-overlay" style="display: none;" onclick="hideCombatClashOverlay()">
+    <div class="clash-modal" onclick="event.stopPropagation()">
+      <div class="clash-header">
+        <span class="clash-icon">⚔️</span>
+        <span class="clash-title">SCONTRO TATTICO SULLA PLANCIA</span>
+        <span class="clash-icon">⚔️</span>
       </div>
-      <div class="hcp-desc" id="sc-desc" style="font-size:0.8rem; padding:10px; color:#cfd4e8;">Descrizione.</div>
-      <div class="hcp-footer">
-        <div class="hcp-set-badge" id="sc-set-badge">α</div>
-        <div class="hcp-pt" id="sc-pt" style="margin: 0; align-self: center;">0/0</div>
+      <div class="clash-fighters-row">
+        <!-- CARTA ATTACCANTE -->
+        <div class="clash-card attacker" id="clash-card-att">
+          <div class="clash-card-badge" id="clash-att-badge">ATTACCANTE</div>
+          <div class="clash-card-glyph" id="clash-att-glyph">⚔️</div>
+          <div class="clash-card-name" id="clash-att-name">Attaccante</div>
+          <div class="clash-card-stats" id="clash-att-stats">⚔️ 3 | ❤️ 5</div>
+        </div>
+
+        <!-- CENTRO: CALCOLO COMBATTIMENTO -->
+        <div class="clash-vs-box">
+          <div class="clash-vs-icon">💥</div>
+          <div class="clash-formula" id="clash-formula-box">
+            <!-- Righe di calcolo dinamiche -->
+          </div>
+          <div class="clash-damage-banner" id="clash-damage-banner">
+            💥 3 DANNI INFLITTI
+          </div>
+          <div class="clash-counter-banner" id="clash-counter-banner">
+            🛡️ Contrattacco: 2 Danni
+          </div>
+        </div>
+
+        <!-- CARTA DIFENSORE -->
+        <div class="clash-card defender" id="clash-card-def">
+          <div class="clash-card-badge def" id="clash-def-badge">DIFENSORE</div>
+          <div class="clash-card-glyph" id="clash-def-glyph">🛡️</div>
+          <div class="clash-card-name" id="clash-def-name">Difensore</div>
+          <div class="clash-card-stats" id="clash-def-stats">⚔️ 2 | ❤️ 4 ➔ 1</div>
+        </div>
       </div>
+      <button class="clash-dismiss-btn" onclick="hideCombatClashOverlay()">Continua (Spazio / Click) ➔</button>
+      <div class="clash-footer-hint">Premi Barra Spaziatrice o clicca ovunque per chiudere</div>
     </div>
   </div>
 
@@ -6861,14 +6913,25 @@
       if (el) el.classList.remove('active');
     }
 
+    let currentSummonOnComplete = null;
     function animateCardPlayed(card, onComplete) {
       const overlay = document.getElementById('card-summon-overlay');
       if (!overlay) {
         if (onComplete) onComplete();
         return;
       }
+
+      currentSummonOnComplete = onComplete || null;
+
+      const headerText = document.getElementById('sc-header-text');
+      if (headerText) {
+        if (card.type === 'spell') headerText.textContent = 'SORTILEGIO LANCIATO';
+        else if (card.type === 'altar') headerText.textContent = 'ALTARE CONSACRATO';
+        else if (card.riteDesc) headerText.textContent = 'RITO DI COMANDO';
+        else headerText.textContent = 'TRUPPA SCHIERATA';
+      }
       
-      document.getElementById('sc-title').textContent = card.name;
+      document.getElementById('sc-title').textContent = card.name || 'Carta';
       
       const costWrap = document.getElementById('sc-cost-wrap');
       if (costWrap) {
@@ -6910,12 +6973,21 @@
         }
       }
       
+      overlay.style.display = 'flex';
       overlay.classList.add('active');
-      
-      setTimeout(() => {
+    }
+
+    function hideCardSummonOverlay() {
+      const overlay = document.getElementById('card-summon-overlay');
+      if (overlay) {
         overlay.classList.remove('active');
-        if (onComplete) onComplete();
-      }, 1000);
+        overlay.style.display = 'none';
+      }
+      if (typeof currentSummonOnComplete === 'function') {
+        const cb = currentSummonOnComplete;
+        currentSummonOnComplete = null;
+        cb();
+      }
     }
 
     function onArenaFilterChanged() {
@@ -8255,13 +8327,19 @@
       }
 
       // Attacker data
+      const attInitialHp = attPiece.hp;
+      const attResultHp = Math.max(0, attPiece.hp - (counterDmg || 0));
       document.getElementById('clash-att-glyph').textContent = attPiece.glyph || (attPiece.type === 'commander' ? '👑' : '⚔️');
       document.getElementById('clash-att-name').textContent = attPiece.name || 'Attaccante';
-      document.getElementById('clash-att-stats').textContent = `⚔️ ${attPiece.att} ATT  •  ❤️ ${attPiece.hp} PV`;
+      if (counterDmg > 0) {
+        document.getElementById('clash-att-stats').textContent = `⚔️ ${attPiece.att} ATT  •  ❤️ ${attInitialHp} ➔ ${attResultHp <= 0 ? '💀 CADUTO' : attResultHp + ' PV'}`;
+      } else {
+        document.getElementById('clash-att-stats').textContent = `⚔️ ${attPiece.att} ATT  •  ❤️ ${attPiece.hp} PV`;
+      }
 
       // Defender data
-      const defInitialHp = defPiece.hp + damage;
-      const defResultHp = Math.max(0, defPiece.hp);
+      const defInitialHp = defPiece.hp;
+      const defResultHp = Math.max(0, defPiece.hp - damage);
       document.getElementById('clash-def-glyph').textContent = defPiece.glyph || (defPiece.type === 'altar' ? '🏛️' : (defPiece.type === 'commander' ? '👑' : '🛡️'));
       document.getElementById('clash-def-name').textContent = defPiece.name || 'Difensore';
       document.getElementById('clash-def-stats').textContent = `❤️ ${defInitialHp} ➔ ${defResultHp <= 0 ? '💀 CADUTO' : defResultHp + ' PV'}`;
@@ -8301,13 +8379,15 @@
       }
 
       overlay.style.display = 'flex';
-
-      clashOverlayTimer = setTimeout(() => { hideCombatClashOverlay(); }, 3500);
+      overlay.classList.add('active');
     }
 
     function hideCombatClashOverlay() {
       const overlay = document.getElementById('combat-clash-overlay');
-      if (overlay) overlay.style.display = 'none';
+      if (overlay) {
+        overlay.classList.remove('active');
+        overlay.style.display = 'none';
+      }
       if (clashOverlayTimer) {
         clearTimeout(clashOverlayTimer);
         clashOverlayTimer = null;
@@ -12282,36 +12362,53 @@
       if (['INPUT', 'TEXTAREA', 'SELECT'].includes(activeTag)) return;
 
       if (e.key === 'Escape') {
+        const summonOverlay = document.getElementById('card-summon-overlay');
+        if (summonOverlay && (summonOverlay.classList.contains('active') || summonOverlay.style.display !== 'none')) {
+          hideCardSummonOverlay();
+          return;
+        }
+        const clashOverlay = document.getElementById('combat-clash-overlay');
+        if (clashOverlay && (clashOverlay.classList.contains('active') || clashOverlay.style.display !== 'none')) {
+          hideCombatClashOverlay();
+          return;
+        }
         const m = document.getElementById('battle-pile-modal');
         if (m && m.classList.contains('active')) {
           closePileModal();
         }
-        hideCombatClashOverlay();
       }
 
-      // BARRA SPAZIATRICE: Convalida/Chiudi Popup O Avanza Fase del Turno
-      if (e.code === 'Space' || e.key === ' ') {
-        const clashOverlay = document.getElementById('combat-clash-overlay');
-        const pileModal = document.getElementById('battle-pile-modal');
+      // BARRA SPAZIATRICE / INVIO: Convalida/Chiudi Popup O Avanza Fase del Turno
+      if (e.code === 'Space' || e.key === ' ' || e.key === 'Enter') {
+        const summonOverlay = document.getElementById('card-summon-overlay');
+        if (summonOverlay && (summonOverlay.classList.contains('active') || summonOverlay.style.display !== 'none')) {
+          e.preventDefault();
+          hideCardSummonOverlay();
+          return;
+        }
 
-        // 1. Se c'è un popup o overlay aperto, convalidalo/chiudilo immediatamente
-        if (clashOverlay && clashOverlay.style.display !== 'none') {
+        const clashOverlay = document.getElementById('combat-clash-overlay');
+        if (clashOverlay && (clashOverlay.classList.contains('active') || clashOverlay.style.display !== 'none')) {
           e.preventDefault();
           hideCombatClashOverlay();
           return;
         }
+
+        const pileModal = document.getElementById('battle-pile-modal');
         if (pileModal && pileModal.classList.contains('active')) {
           e.preventDefault();
           closePileModal();
           return;
         }
 
-        // 2. In partita attiva: avanza fase del turno se è il turno del giocatore
-        if (battleState && !battleState.isGameOver && battleState.phase === 'active') {
-          const role = getMyRole();
-          if (battleState.turn === role) {
-            e.preventDefault();
-            advanceTurnPhase();
+        // 2. In partita attiva: avanza fase del turno se è il turno del giocatore (solo con barra spaziatrice)
+        if (e.code === 'Space' || e.key === ' ') {
+          if (battleState && !battleState.isGameOver && battleState.phase === 'active') {
+            const role = getMyRole();
+            if (battleState.turn === role) {
+              e.preventDefault();
+              advanceTurnPhase();
+            }
           }
         }
       }
