@@ -2935,7 +2935,7 @@
 
     /* HOVER PREVIEW */
     #hover-card-preview {
-      position: fixed; width: 240px; height: 350px; background: #111319; border: 3px solid var(--gold-primary); border-radius: 10px; box-shadow: 0 16px 36px rgba(0,0,0,0.95); display: none; flex-direction: column; overflow: hidden; z-index: 999999; pointer-events: none;
+      position: fixed; width: 240px; height: 350px; background: #111319; border: 3px solid var(--gold-primary); border-radius: 10px; box-shadow: 0 16px 36px rgba(0,0,0,0.95); display: none; flex-direction: column; overflow: hidden; z-index: 9990; pointer-events: none;
     }
     #hover-card-preview.active { display: flex; }
     .hcp-header { background: linear-gradient(180deg, #2b3042 0%, #1a1c26 100%); padding: 6px 10px; border-bottom: 2px solid #3d435c; display: flex; justify-content: space-between; align-items: center; }
@@ -6832,6 +6832,11 @@
     }
 
     function showHoverCard(card, e) {
+      const clashOverlay = document.getElementById('combat-clash-overlay');
+      if (clashOverlay && (clashOverlay.classList.contains('active') || (clashOverlay.style.display && clashOverlay.style.display !== 'none'))) return;
+      const summonOverlay = document.getElementById('card-summon-overlay');
+      if (summonOverlay && (summonOverlay.classList.contains('active') || (summonOverlay.style.display && summonOverlay.style.display !== 'none'))) return;
+
       const el = document.getElementById('hover-card-preview');
       if(!el) return;
       document.getElementById('hcp-title').textContent = card.name;
@@ -6913,8 +6918,22 @@
       if (el) el.classList.remove('active');
     }
 
+    let unplayableCardDeselectTimer = null;
+    function deselectHandCard() {
+      if (unplayableCardDeselectTimer) {
+        clearTimeout(unplayableCardDeselectTimer);
+        unplayableCardDeselectTimer = null;
+      }
+      if (battleState && battleState.selectedHandIndex !== null) {
+        battleState.selectedHandIndex = null;
+        clearHighlights();
+        renderHand();
+      }
+    }
+
     let currentSummonOnComplete = null;
     function animateCardPlayed(card, onComplete) {
+      hideHoverCard();
       const overlay = document.getElementById('card-summon-overlay');
       if (!overlay) {
         if (onComplete) onComplete();
@@ -8318,6 +8337,7 @@
 
     let clashOverlayTimer = null;
     function showCombatClashOverlay(attPiece, defPiece, damage, counterDmg, details = {}) {
+      hideHoverCard();
       const overlay = document.getElementById('combat-clash-overlay');
       if (!overlay) return;
 
@@ -9452,13 +9472,68 @@
         cardEl.onmouseleave = () => hideHoverCard();
 
         cardEl.onclick = () => {
-          if (battleState.turn !== role) return showToast("Non è il tuo turno!");
-          const phase = battleState.turnPhase || 1;
-          if (c.type !== 'spell' && c.type !== 'reaction' && phase === 2) {
-            showToast("🏰 Lo schieramento truppe/altari avviene in Fase Mantenimento (Fase 1 o 3)!");
+          if (unplayableCardDeselectTimer) {
+            clearTimeout(unplayableCardDeselectTimer);
+            unplayableCardDeselectTimer = null;
+          }
+
+          if (battleState.turn !== role) {
+            showToast("⏳ Non è il tuo turno!");
+            battleState.selectedHandIndex = i;
+            renderHand();
+            unplayableCardDeselectTimer = setTimeout(deselectHandCard, 1400);
             return;
           }
-          battleState.selectedHandIndex = battleState.selectedHandIndex === i ? null : i;
+
+          const phase = battleState.turnPhase || 1;
+          if (c.type !== 'spell' && c.type !== 'reaction' && phase === 2) {
+            showToast("🏰 Schieramento truppe/altari disponibile solo in Fase 1 o 3!");
+            battleState.selectedHandIndex = i;
+            renderHand();
+            unplayableCardDeselectTimer = setTimeout(deselectHandCard, 1400);
+            return;
+          }
+
+          const myMana = battleState[role].mana !== undefined ? battleState[role].mana : 0;
+          const cardManaCost = c.cost !== undefined ? c.cost : 0;
+          if (myMana < cardManaCost) {
+            showToast(`⚠️ Mana insufficiente! (Richiede ${cardManaCost} Mana, hai ${myMana} Mana)`);
+            battleState.selectedHandIndex = i;
+            renderHand();
+            unplayableCardDeselectTimer = setTimeout(deselectHandCard, 1400);
+            return;
+          }
+
+          const myBlood = battleState[role].blood !== undefined ? battleState[role].blood : 0;
+          const cardBloodCost = c.bloodCost || 0;
+          if (myBlood < cardBloodCost) {
+            showToast(`⚠️ Sangue insufficiente! (Richiede ${cardBloodCost}🩸, hai ${myBlood}🩸)`);
+            battleState.selectedHandIndex = i;
+            renderHand();
+            unplayableCardDeselectTimer = setTimeout(deselectHandCard, 1400);
+            return;
+          }
+
+          if (c.type === 'altar') {
+            const altarsCount = battleState.grid.filter(p => p && p.owner === role && p.type === 'altar').length;
+            if (altarsCount >= 4) {
+              showToast("⚠️ Limite raggiunto: massimo 4 Altari contemporanei sulla plancia!");
+              battleState.selectedHandIndex = i;
+              renderHand();
+              unplayableCardDeselectTimer = setTimeout(deselectHandCard, 1400);
+              return;
+            }
+            if (battleState[role].altarDeployedThisTurn) {
+              showToast("⚠️ Puoi schierare al massimo 1 Altare per turno!");
+              battleState.selectedHandIndex = i;
+              renderHand();
+              unplayableCardDeselectTimer = setTimeout(deselectHandCard, 1400);
+              return;
+            }
+          }
+
+          // Se la carta è pienamente giocabile, seleziona normalmente
+          battleState.selectedHandIndex = (battleState.selectedHandIndex === i) ? null : i;
           renderHand();
           clearHighlights();
           if (battleState.selectedHandIndex !== null) {
