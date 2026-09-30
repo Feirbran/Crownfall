@@ -25,28 +25,38 @@ console.log('Extracted JavaScript length:', jsCode.length, 'characters.');
 const domMock = {
   document: {
     querySelector: () => ({
-      classList: {
-        add: () => {},
-        remove: () => {},
-        contains: () => true
-      },
+      classList: { add: () => {}, remove: () => {}, contains: () => true },
       style: {},
       appendChild: () => {},
-      innerHTML: ''
+      innerHTML: '',
+      textContent: '',
+      dataset: {},
+      setAttribute: () => {},
+      removeAttribute: () => {},
+      querySelector: () => ({ classList: { add: () => {}, remove: () => {}, contains: () => true }, style: {}, setAttribute: () => {} })
     }),
     querySelectorAll: () => [],
     getElementById: () => ({
       style: {},
       innerHTML: '',
+      textContent: '',
+      dataset: {},
       addEventListener: () => {},
       appendChild: () => {},
-      classList: { add: () => {}, remove: () => {}, contains: () => true }
+      setAttribute: () => {},
+      removeAttribute: () => {},
+      classList: { add: () => {}, remove: () => {}, contains: () => true },
+      querySelector: () => ({ classList: { add: () => {}, remove: () => {}, contains: () => true }, style: {}, setAttribute: () => {} })
     }),
     createElement: () => ({
-      classList: { add: () => {} },
+      classList: { add: () => {}, remove: () => {}, contains: () => true },
       appendChild: () => {},
       innerHTML: '',
-      style: {}
+      textContent: '',
+      style: {},
+      dataset: {},
+      setAttribute: () => {},
+      removeAttribute: () => {}
     })
   },
   window: { addEventListener: () => {}, location: { hash: '', search: '', href: '' } },
@@ -160,7 +170,12 @@ const spellExecTests = vm.runInContext(`
     battleState.p1.hp = 8;
     battleState.p1.hand = ['Rito di Comunione'];
     battleState.selectedHandIndex = 0;
-    executeSpellAction(27, 'Rito di Comunione', 'p1', false);
+    try {
+      executeSpellAction(27, 'Rito di Comunione', 'p1', false);
+    } catch(e) {
+      console.error('EXCEPTION in executeSpellAction:', e);
+    }
+    console.log('p1 hand:', battleState.p1.hand);
     results.push({ name: 'Rito di Comunione (Draw 3 when wounded)', pass: battleState.p1.hand.length === 3 });
 
     // Giuramento Ancestrale (draw 3 + heal 4)

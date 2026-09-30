@@ -4967,6 +4967,299 @@
         pointer-events: none !important;
       }
     }
+
+    /* === MODERN GAMEPLAY "JUICE" & VISUAL POLISH === */
+    .floating-combat-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      font-family: 'Cinzel', serif;
+      font-weight: 900;
+      font-size: 1.25rem;
+      z-index: 1000;
+      white-space: nowrap;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.95), 0 0 14px rgba(255, 0, 0, 0.8);
+      animation: floatCombatAnim 0.85s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
+    }
+    .floating-combat-text.normal {
+      color: #ff4757;
+    }
+    .floating-combat-text.crit {
+      color: #ffd32a;
+      font-size: 1.45rem;
+      text-shadow: 0 0 18px rgba(255, 211, 42, 0.95);
+    }
+    .floating-combat-text.counter {
+      color: #ff6b81;
+      font-size: 1.05rem;
+    }
+    .floating-combat-text.shield {
+      color: #70a1ff;
+      font-size: 1.15rem;
+      text-shadow: 0 0 14px rgba(112, 161, 255, 0.9);
+    }
+    .floating-combat-text.heal {
+      color: #2ed573;
+      font-size: 1.2rem;
+      text-shadow: 0 0 14px rgba(46, 213, 115, 0.9);
+    }
+
+    @keyframes floatCombatAnim {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -10%) scale(0.6);
+      }
+      20% {
+        opacity: 1;
+        transform: translate(-50%, -60%) scale(1.3);
+      }
+      75% {
+        opacity: 1;
+        transform: translate(-50%, -100%) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -135%) scale(0.8);
+      }
+    }
+
+    /* SCREEN SHAKE */
+    .chessboard-container.shake-light {
+      animation: boardShakeLight 0.25s ease-out;
+    }
+    .chessboard-container.shake-heavy {
+      animation: boardShakeHeavy 0.35s ease-out;
+    }
+    @keyframes boardShakeLight {
+      0%, 100% { transform: translate(0, 0); }
+      25% { transform: translate(-3px, 2px); }
+      50% { transform: translate(3px, -2px); }
+      75% { transform: translate(-1px, 1px); }
+    }
+    @keyframes boardShakeHeavy {
+      0%, 100% { transform: translate(0, 0); }
+      20% { transform: translate(-6px, 4px) rotate(-0.5deg); }
+      40% { transform: translate(6px, -4px) rotate(0.5deg); }
+      60% { transform: translate(-3px, 3px); }
+      80% { transform: translate(3px, -1px); }
+    }
+
+    /* CARD PLAYED FLOATING BANNER (NON-BLOCKING) */
+    .card-played-banner {
+      position: absolute;
+      top: 8px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-40px);
+      background: linear-gradient(135deg, rgba(20, 24, 38, 0.96), rgba(10, 11, 16, 0.98));
+      border: 1px solid var(--border-gold);
+      border-radius: 8px;
+      padding: 7px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.85), 0 0 16px var(--gold-glow);
+      pointer-events: none;
+      z-index: 500;
+      opacity: 0;
+      transition: all 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .card-played-banner.active {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    .cpb-glyph {
+      font-size: 1.6rem;
+      filter: drop-shadow(0 0 6px rgba(255,215,0,0.6));
+    }
+    .cpb-info {
+      display: flex;
+      flex-direction: column;
+    }
+    .cpb-title {
+      font-family: 'Cinzel', serif;
+      font-weight: 800;
+      font-size: 0.88rem;
+      color: var(--gold-primary);
+      letter-spacing: 0.5px;
+    }
+    .cpb-type {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    /* VICTORY & DEFEAT OVERLAY */
+    .battle-end-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(3, 4, 8, 0.92);
+      backdrop-filter: blur(8px);
+      z-index: 10000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      animation: clashFadeIn 0.3s ease-out;
+    }
+    .battle-end-overlay.active {
+      display: flex !important;
+    }
+    .battle-end-modal {
+      background: linear-gradient(180deg, #181c2b 0%, #0d0f17 100%);
+      border: 2px solid var(--border-gold);
+      border-radius: 14px;
+      padding: 32px 28px;
+      max-width: 480px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 16px 50px rgba(0,0,0,0.9), 0 0 30px var(--gold-glow);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+    .bem-icon {
+      font-size: 3.5rem;
+      filter: drop-shadow(0 0 18px rgba(255,215,0,0.7));
+    }
+    .bem-title {
+      font-family: 'Cinzel', serif;
+      font-size: 2rem;
+      font-weight: 900;
+      letter-spacing: 3px;
+      color: var(--gold-primary);
+      text-shadow: 0 0 16px var(--gold-glow);
+    }
+    .bem-title.defeat {
+      color: #ff7675;
+      text-shadow: 0 0 16px rgba(255, 118, 117, 0.6);
+    }
+    .bem-desc {
+      font-size: 0.95rem;
+      color: #c8d1e8;
+      line-height: 1.5;
+    }
+    .bem-reward-badge {
+      background: rgba(229, 185, 88, 0.15);
+      border: 1px solid var(--border-gold);
+      color: #ffd700;
+      font-weight: 900;
+      font-size: 1.1rem;
+      padding: 8px 18px;
+      border-radius: 8px;
+      letter-spacing: 1px;
+    }
+    .bem-actions {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    /* HOME HERO CTA */
+    .home-hero-cta {
+      background: radial-gradient(ellipse at 50% 0%, rgba(229, 185, 88, 0.22) 0%, rgba(14, 16, 25, 0.98) 75%),
+                  linear-gradient(180deg, #1c2133 0%, #0e1019 100%);
+      border: 2px solid var(--gold-primary);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 10px 35px rgba(0,0,0,0.8), 0 0 25px rgba(229, 185, 88, 0.25);
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      text-align: left;
+      position: relative;
+      overflow: hidden;
+    }
+    .home-hero-cta::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -20%;
+      width: 250px;
+      height: 250px;
+      background: radial-gradient(circle, rgba(229, 185, 88, 0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hh-tag {
+      font-family: 'Cinzel', serif;
+      font-size: 0.72rem;
+      font-weight: 900;
+      color: #ffd700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .hh-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.65rem;
+      font-weight: 900;
+      color: #ffffff;
+      letter-spacing: 1.5px;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.9);
+    }
+    .hh-desc {
+      font-size: 0.88rem;
+      color: #b0b9d4;
+      line-height: 1.5;
+      max-width: 650px;
+    }
+    .hh-buttons-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      margin-top: 6px;
+    }
+    .btn-hero-primary {
+      background: linear-gradient(135deg, #f5c767 0%, #c99b42 100%);
+      color: #0b0c10;
+      font-family: 'Cinzel', serif;
+      font-weight: 900;
+      font-size: 1.05rem;
+      padding: 14px 28px;
+      border-radius: 8px;
+      border: 1px solid #ffd700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 6px 20px rgba(229, 185, 88, 0.45);
+      transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    .btn-hero-primary:hover {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 8px 25px rgba(229, 185, 88, 0.65);
+    }
+    .btn-hero-secondary {
+      background: rgba(29, 33, 48, 0.8);
+      border: 1px solid var(--border-gold);
+      color: var(--gold-primary);
+      font-weight: 800;
+      font-size: 0.88rem;
+      padding: 12px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    .btn-hero-secondary:hover {
+      background: rgba(229, 185, 88, 0.15);
+      color: #ffd700;
+      border-color: #ffd700;
+      transform: translateY(-2px);
+    }
+
   </style>
 </head>
 <body>
@@ -5021,7 +5314,8 @@
 
           <button type="button" class="btn-gothic-action" id="auth-submit-btn" onclick="handleAuthSubmit()">ACCEDI AL REGNO CLOUD</button>
           
-          <button type="button" class="btn" style="width: 100%; margin-top: 4px; border-color: var(--border-frame);" onclick="playOffline()">🛡️ GIOCA SUBITO (MODALITÀ OFFLINE)</button>
+          <button type="button" class="btn btn-gold" style="width: 100%; margin-top: 6px; padding: 12px; font-weight: 800; font-size: 0.92rem;" onclick="playOffline()">⚔️ GIOCA SUBITO (ACCESSO OSPITE IMMEDIATO)</button>
+          <button type="button" class="btn" style="width: 100%; margin-top: 6px; border-color: var(--border-frame);" onclick="showPaneDirect('home')">🏛️ Torna al Menu Principale</button>
           
           <div class="auth-links">
             <a href="javascript:void(0)" onclick="showPaneDirect('lore')">📖 Leggi la Lore</a>
@@ -6608,91 +6902,90 @@
           <p class="home-subtitle">Lo Skirmish Tattico di Miniature, Grimori e Altari di Veridia</p>
         </header>
 
-        <div class="home-layout">
-          <!-- COLONNA SINISTRA: LORE & PILASTRI FONDAMENTALI -->
-          <aside class="home-sidebar-lore">
-            <div class="home-lore-box">
-              <div class="home-lore-header">
-                <span class="hl-badge">CRONACHE DI VERIDIA</span>
-                <h3>📖 Il Conflitto dei Frammenti</h3>
-              </div>
-              <p class="home-lore-text">
-                Dopo la <em>Sottrazione dell'Assoluto</em>, la Corona Primordiale si è spezzata in cinque frammenti di potere. 
-                I cinque Ordini dominanti si sfidano sui campi scacchistici per la sovranità suprema: 
-                <strong>Bastione di Ferro</strong>, <strong>Ceneri del Giudizio</strong>, <strong>Marea Abissale</strong>, 
-                <strong>Silenzio Eterno</strong> e <strong>Forgia del Magma</strong>.
-              </p>
-            </div>
+        <!-- HERO BANNER PRIMARIO CON AVVIO ISTANTANEO 1-CLICK -->
+        <div class="home-hero-cta">
+          <div class="hh-tag">⚡ SKIRMISH TATTICO DARK FANTASY</div>
+          <h2 class="hh-title">Entra sul Campo di Battaglia di Veridia</h2>
+          <p class="hh-desc">
+            Schiera Altari per canalizzare Mana, muovi le tue miniature con precisione scacchistica e scatena i devastanti Riti d'Arma del tuo Comandante per frantumare la corona avversaria.
+          </p>
+          <div class="hh-buttons-row">
+            <button class="btn-hero-primary" onclick="quickBattleAI()">
+              <span>⚔️</span>
+              <span>BATTAGLIA RAPIDA VS IA (+100 🪙)</span>
+            </button>
+            <button class="btn-hero-secondary" onclick="showPane('battle-lobby')">
+              <span>🌐</span>
+              <span>Lobby & Duello P2P (+200 🪙)</span>
+            </button>
+            <button class="btn-hero-secondary" onclick="showPaneDirect('tutorial')">
+              <span>🎓</span>
+              <span>Accademia Tattica</span>
+            </button>
+          </div>
+        </div>
 
+        <div class="home-layout">
+          <!-- COLONNA SINISTRA: LORE & GUIDA RAPIDA -->
+          <aside class="home-sidebar-lore">
             <div class="home-pillars-box">
-              <h4 class="pillars-title">⚖️ PILASTRI DI GIOCO</h4>
+              <h4 class="pillars-title">🎯 COME SI GIOCA IN 3 PASSI</h4>
               
               <div class="pillar-item">
                 <span class="p-icon">🏛️</span>
                 <div class="p-content">
-                  <strong>Altari & Mana 💧</strong>
-                  <p>Controlla gli Altari per espandere il territorio e generare fino a 4 Mana per turno.</p>
+                  <strong>1. Altari & Mana 💧</strong>
+                  <p>Consacra Altari accanto al tuo Comandante per espandere il territorio e generare fino a 4 Mana per turno.</p>
                 </div>
               </div>
 
               <div class="pillar-item">
-                <span class="p-icon">🩸</span>
+                <span class="p-icon">⚔️</span>
                 <div class="p-content">
-                  <strong>Riserva Sangue & Riti d'Arma</strong>
-                  <p>I caduti alimentano il Sangue. Scatena il devastante Rito d'Arma del tuo Comandante (max 1 volta per turno!).</p>
+                  <strong>2. Miniature & Aggiramento ⚡</strong>
+                  <p>Spendi 2 Azioni a turno per muovere e colpire. Accerchia i nemici con due alleati per attivare il Flanking (+2 Danni!).</p>
                 </div>
               </div>
 
               <div class="pillar-item">
-                <span class="p-icon">⏳</span>
+                <span class="p-icon">👑</span>
                 <div class="p-content">
-                  <strong>4 Fasi del Turno</strong>
-                  <p>Mantenimento I ➔ Movimento & Azioni (2⚡) ➔ Mantenimento II ➔ Fine Turno.</p>
+                  <strong>3. Vittoria & Sangue 🩸</strong>
+                  <p>Ogni unità caduta alimenta il Sangue per i Riti d'Arma. Abbatti il Comandante nemico per trionfare!</p>
                 </div>
               </div>
+            </div>
 
-              <!-- SEZIONE SBUSTA FONDAMENTALE -->
-              <div class="pillar-item highlight-packs">
-                <span class="p-icon">📦</span>
-                <div class="p-content">
-                  <strong>SBUSTA PER VINCERE! (Fondamentale)</strong>
-                  <p>Apri i Box di Espansione nel Mercato! Sbustare nuove carte Rare, Epiche e Mitiche è FONDAMENTALE per ampliare la tua collezione e forgiare mazzi vincenti.</p>
-                </div>
+            <div class="home-lore-box" style="margin-top: 14px;">
+              <div class="home-lore-header">
+                <span class="hl-badge">CRONACHE DI VERIDIA</span>
+                <h3>📖 I Cinque Ordini</h3>
               </div>
+              <p class="home-lore-text">
+                Dopo la <em>Sottrazione dell'Assoluto</em>, la Corona Primordiale si è spezzata. I cinque Ordini dominanti si sfidano: 
+                <strong>Bastione di Ferro</strong>, <strong>Ceneri del Giudizio</strong>, <strong>Marea Abissale</strong>, 
+                <strong>Silenzio Eterno</strong> e <strong>Forgia del Magma</strong>.
+              </p>
             </div>
           </aside>
 
-          <!-- COLONNA DESTRA: AZIONI PRINCIPALI E MODALITÀ -->
+          <!-- COLONNA DESTRA: MODALITA DI GIOCO & PROGRESSIONE -->
           <main class="home-actions-main">
-            <h4 class="actions-title">⚔️ AZIONI & MODALITÀ DI GIOCO</h4>
-
-            <div class="home-action-card pack-shop-action" onclick="showPane('packs')">
-              <div class="action-card-left">
-                <div class="action-icon">📦</div>
-                <div class="action-info">
-                  <div class="action-title-row">
-                    <span class="action-title">MERCATO BOX & SBUSTA BUSTINE</span>
-                    <span class="action-badge pulse-gold">FONDAMENTALE</span>
-                  </div>
-                  <p class="action-desc">Apri box con le monete d'oro vinte, sblocca truppe leggendarie e amplia la tua collezione!</p>
-                </div>
-              </div>
-              <button class="btn btn-gold action-btn" onclick="event.stopPropagation(); showPane('packs')">SBUSTA ORA (100 🪙)</button>
-            </div>
+            <h4 class="actions-title">⚔️ ARENA & ARMERIA</h4>
 
             <div class="home-action-card battle-arena-action" onclick="showPane('battle-lobby')">
               <div class="action-card-left">
                 <div class="action-icon">👑</div>
                 <div class="action-info">
                   <div class="action-title-row">
-                    <span class="action-title">ARENA DI BATTAGLIA</span>
+                    <span class="action-title">LOBBY DI BATTAGLIA & STANZE LIVE</span>
                     <span class="action-reward-pill">🤖 IA: +100 🪙</span>
                     <span class="action-reward-pill p2p">🌐 P2P: +200 🪙</span>
                   </div>
-                  <p class="action-desc">Sfida l'Intelligenza Artificiale tattica (+100 Oro) oppure combatti online in Multigiocatore P2P (+200 Oro)!</p>
+                  <p class="action-desc">Scegli il Comandante avversario, configura match personalizzati o duella online contro altri giocatori in stanze P2P!</p>
                 </div>
               </div>
-              <button class="btn btn-crimson action-btn" onclick="event.stopPropagation(); showPane('battle-lobby')">ENTRA IN BATTAGLIA</button>
+              <button class="btn btn-crimson action-btn" onclick="event.stopPropagation(); showPane('battle-lobby')">APRI LOBBY</button>
             </div>
 
             <div class="home-action-card deck-action" onclick="openDeckBuilder()">
@@ -6707,6 +7000,20 @@
                 </div>
               </div>
               <button class="btn action-btn" onclick="event.stopPropagation(); openDeckBuilder()">COMPONI MAZZO</button>
+            </div>
+
+            <div class="home-action-card pack-shop-action" onclick="showPane('packs')">
+              <div class="action-card-left">
+                <div class="action-icon">📦</div>
+                <div class="action-info">
+                  <div class="action-title-row">
+                    <span class="action-title">MERCATO BOX & SBUSTA BUSTINE</span>
+                    <span class="action-badge pulse-gold">RICOMPENSE</span>
+                  </div>
+                  <p class="action-desc">Spendi le monete d'oro vinte nelle battaglie per aprire box d'espansione e sbloccare carte Rare e Mitiche!</p>
+                </div>
+              </div>
+              <button class="btn btn-gold action-btn" onclick="event.stopPropagation(); showPane('packs')">SBUSTA (100 🪙)</button>
             </div>
 
             <div class="home-subgrid">
@@ -6726,12 +7033,8 @@
                 </div>
               </div>
             </div>
-        
-
-
-  </main>
+          </main>
         </div>
-
       </div>
     </div>
 
@@ -7211,6 +7514,283 @@
   <div id="app-toast">Notifica</div>
 
   <script>
+
+    /* ==========================================================================
+       SOUND ENGINE (PROCEDURAL WEB AUDIO API - ZERO NETWORK DEPENDENCIES)
+       ========================================================================== */
+    const SoundEngine = (function() {
+      let ctx = null;
+      let isMuted = localStorage.getItem('crownfall_sound_muted') === 'true';
+
+      function initCtx() {
+        if (!ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (AudioCtx) ctx = new AudioCtx();
+        }
+        if (ctx && ctx.state === 'suspended') {
+          ctx.resume();
+        }
+        return ctx;
+      }
+
+      // Resume context on user click/interaction
+      if (typeof window !== 'undefined') {
+        window.addEventListener('click', () => { initCtx(); }, { once: true });
+        window.addEventListener('keydown', () => { initCtx(); }, { once: true });
+      }
+
+      function playTone(freq, duration, type = 'sine', gainVal = 0.15) {
+        if (isMuted) return;
+        try {
+          const c = initCtx();
+          if (!c) return;
+          const osc = c.createOscillator();
+          const gain = c.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, c.currentTime);
+          gain.gain.setValueAtTime(gainVal, c.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + duration);
+          osc.connect(gain);
+          gain.connect(c.destination);
+          osc.start();
+          osc.stop(c.currentTime + duration);
+        } catch(e) {}
+      }
+
+      return {
+        toggleMute() {
+          isMuted = !isMuted;
+          localStorage.setItem('crownfall_sound_muted', isMuted);
+          const btn = document.getElementById('btn-audio-toggle');
+          if (btn) {
+            btn.textContent = isMuted ? '🔇 Muto' : '🔊 Audio';
+            btn.style.color = isMuted ? 'var(--text-muted)' : 'var(--gold-primary)';
+          }
+          if (!isMuted) playTone(440, 0.08, 'triangle', 0.15);
+          return !isMuted;
+        },
+        isMuted() {
+          return isMuted;
+        },
+        play(soundName) {
+          if (isMuted) return;
+          try {
+            const c = initCtx();
+            if (!c) return;
+            const t = c.currentTime;
+
+            if (soundName === 'card' || soundName === 'deploy') {
+              const osc = c.createOscillator();
+              const gain = c.createGain();
+              osc.type = 'triangle';
+              osc.frequency.setValueAtTime(340, t);
+              osc.frequency.exponentialRampToValueAtTime(80, t + 0.12);
+              gain.gain.setValueAtTime(0.24, t);
+              gain.gain.exponentialRampToValueAtTime(0.001, t + 0.14);
+              osc.connect(gain);
+              gain.connect(c.destination);
+              osc.start(t);
+              osc.stop(t + 0.15);
+            } else if (soundName === 'attack') {
+              const osc = c.createOscillator();
+              const gain = c.createGain();
+              osc.type = 'sawtooth';
+              osc.frequency.setValueAtTime(560, t);
+              osc.frequency.exponentialRampToValueAtTime(120, t + 0.15);
+              gain.gain.setValueAtTime(0.2, t);
+              gain.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
+              osc.connect(gain);
+              gain.connect(c.destination);
+              osc.start(t);
+              osc.stop(t + 0.16);
+            } else if (soundName === 'damage') {
+              const osc1 = c.createOscillator();
+              const osc2 = c.createOscillator();
+              const gain = c.createGain();
+              osc1.type = 'sawtooth';
+              osc2.type = 'sine';
+              osc1.frequency.setValueAtTime(180, t);
+              osc1.frequency.exponentialRampToValueAtTime(45, t + 0.22);
+              osc2.frequency.setValueAtTime(95, t);
+              osc2.frequency.exponentialRampToValueAtTime(30, t + 0.22);
+              gain.gain.setValueAtTime(0.28, t);
+              gain.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+              osc1.connect(gain);
+              osc2.connect(gain);
+              gain.connect(c.destination);
+              osc1.start(t);
+              osc2.start(t);
+              osc1.stop(t + 0.23);
+              osc2.stop(t + 0.23);
+            } else if (soundName === 'shield') {
+              [580, 870, 1160].forEach((f, idx) => {
+                const osc = c.createOscillator();
+                const gain = c.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(f, t);
+                gain.gain.setValueAtTime(0.18 / (idx + 1), t);
+                gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.35);
+                osc.connect(gain);
+                gain.connect(c.destination);
+                osc.start(t);
+                osc.stop(t + 0.36);
+              });
+            } else if (soundName === 'spell') {
+              [440, 554, 659, 880].forEach((f, idx) => {
+                const osc = c.createOscillator();
+                const gain = c.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(f, t + idx * 0.04);
+                gain.gain.setValueAtTime(0.12, t + idx * 0.04);
+                gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.45 + idx * 0.04);
+                osc.connect(gain);
+                gain.connect(c.destination);
+                osc.start(t + idx * 0.04);
+                osc.stop(t + 0.5 + idx * 0.04);
+              });
+            } else if (soundName === 'altar') {
+              const osc = c.createOscillator();
+              const gain = c.createGain();
+              osc.type = 'sine';
+              osc.frequency.setValueAtTime(140, t);
+              osc.frequency.exponentialRampToValueAtTime(40, t + 0.35);
+              gain.gain.setValueAtTime(0.35, t);
+              gain.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+              osc.connect(gain);
+              gain.connect(c.destination);
+              osc.start(t);
+              osc.stop(t + 0.36);
+            } else if (soundName === 'rite') {
+              const osc = c.createOscillator();
+              const gain = c.createGain();
+              osc.type = 'sawtooth';
+              osc.frequency.setValueAtTime(110, t);
+              osc.frequency.exponentialRampToValueAtTime(440, t + 0.28);
+              gain.gain.setValueAtTime(0.25, t);
+              gain.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+              osc.connect(gain);
+              gain.connect(c.destination);
+              osc.start(t);
+              osc.stop(t + 0.36);
+            } else if (soundName === 'turn') {
+              [220, 277, 330].forEach((f) => {
+                const osc = c.createOscillator();
+                const gain = c.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(f, t);
+                gain.gain.setValueAtTime(0.15, t);
+                gain.gain.exponentialRampToValueAtTime(0.001, t + 0.38);
+                osc.connect(gain);
+                gain.connect(c.destination);
+                osc.start(t);
+                osc.stop(t + 0.4);
+              });
+            } else if (soundName === 'victory') {
+              const notes = [261.63, 329.63, 392.00, 523.25, 659.25];
+              notes.forEach((f, i) => {
+                const osc = c.createOscillator();
+                const gain = c.createGain();
+                osc.type = 'triangle';
+                const startT = t + i * 0.1;
+                osc.frequency.setValueAtTime(f, startT);
+                gain.gain.setValueAtTime(0.18, startT);
+                gain.gain.exponentialRampToValueAtTime(0.0001, startT + 0.6);
+                osc.connect(gain);
+                gain.connect(c.destination);
+                osc.start(startT);
+                osc.stop(startT + 0.65);
+              });
+            } else if (soundName === 'defeat') {
+              [130.81, 155.56, 185.00].forEach(f => {
+                const osc = c.createOscillator();
+                const gain = c.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(f, t);
+                gain.gain.setValueAtTime(0.2, t);
+                gain.gain.exponentialRampToValueAtTime(0.0001, t + 1.2);
+                osc.connect(gain);
+                gain.connect(c.destination);
+                osc.start(t);
+                osc.stop(t + 1.25);
+              });
+            } else if (soundName === 'click') {
+              playTone(600, 0.04, 'sine', 0.08);
+            }
+          } catch(e) {}
+        }
+      };
+    })();
+
+    function playSfx(name) {
+      SoundEngine.play(name);
+    }
+
+    function toggleAudioMute() {
+      SoundEngine.toggleMute();
+    }
+
+    /* FLOATING COMBAT TEXT & SCREEN SHAKE */
+    function showFloatingCombatText(idx, text, type = 'normal') {
+      const sq = document.querySelector(`.square[data-index="${idx}"]`);
+      if (!sq) return;
+      const fct = document.createElement('div');
+      fct.className = `floating-combat-text ${type}`;
+      fct.textContent = text;
+      sq.appendChild(fct);
+      setTimeout(() => {
+        if (fct.parentNode) fct.remove();
+      }, 850);
+    }
+
+    function triggerScreenShake(type = 'light') {
+      const board = document.getElementById('chessboard');
+      if (!board) return;
+      board.classList.remove('shake-light', 'shake-heavy');
+      void board.offsetWidth;
+      board.classList.add(type === 'heavy' ? 'shake-heavy' : 'shake-light');
+      setTimeout(() => {
+        board.classList.remove('shake-light', 'shake-heavy');
+      }, 350);
+    }
+
+    let cpbTimeout = null;
+    function showCardPlayedBanner(card) {
+      const banner = document.getElementById('card-played-banner');
+      if (!banner) return;
+      const glyphEl = document.getElementById('cpb-glyph');
+      const titleEl = document.getElementById('cpb-title');
+      const typeEl = document.getElementById('cpb-type');
+      if (glyphEl) glyphEl.textContent = card.glyph || '⚔️';
+      if (titleEl) titleEl.textContent = card.name || 'Carta';
+      if (typeEl) {
+        const typeLabels = { 'unit': 'MINIATURA SCHIERATA', 'altar': 'ALTARE CONSACRATO', 'spell': 'SORTILEGIO LANCIATO', 'reaction': 'REAZIONE' };
+        typeEl.textContent = typeLabels[card.type] || (card.type || '').toUpperCase();
+      }
+      banner.classList.add('active');
+      if (cpbTimeout) clearTimeout(cpbTimeout);
+      cpbTimeout = setTimeout(() => {
+        banner.classList.remove('active');
+      }, 1200);
+    }
+
+    /* 1-CLICK INSTANT QUICK PLAY */
+    function quickBattleAI() {
+      playSfx('turn');
+      closeBattleEndOverlay();
+      showPaneDirect('battle-lobby');
+      startBattle('ai');
+    }
+
+    function closeBattleEndAndGo(pane) {
+      closeBattleEndOverlay();
+      showPaneDirect(pane);
+    }
+
+    function closeBattleEndOverlay() {
+      const el = document.getElementById('battle-end-overlay');
+      if (el) el.classList.remove('active');
+    }
+
     // --- 1. CONFIGURAZIONE SUPABASE DIRETTA (SENZA CONFLITTO VARIABILI) ---
     const SUPABASE_URL = "https://bvdsmwylswfxfdzobscn.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ2ZHNtd3lsc3dmeGZkem9ic2NuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NDIyMjEsImV4cCI6MjEwNDQxODIyMX0.3NrfBzGJfeJAi7k_sonRdH0EqOICbJL4AddQGf1CzMw";
@@ -8064,66 +8644,10 @@
     let currentSummonOnComplete = null;
     function animateCardPlayed(card, onComplete) {
       hideHoverCard();
-      const overlay = document.getElementById('card-summon-overlay');
-      if (!overlay) {
-        if (onComplete) onComplete();
-        return;
-      }
-
-      currentSummonOnComplete = onComplete || null;
-
-      const headerText = document.getElementById('sc-header-text');
-      if (headerText) {
-        if (card.type === 'spell') headerText.textContent = 'SORTILEGIO LANCIATO';
-        else if (card.type === 'altar') headerText.textContent = 'ALTARE CONSACRATO';
-        else if (card.riteDesc) headerText.textContent = 'RITO DI COMANDO';
-        else headerText.textContent = 'TRUPPA SCHIERATA';
-      }
-      
-      document.getElementById('sc-title').textContent = card.name || 'Carta';
-      
-      const costWrap = document.getElementById('sc-cost-wrap');
-      if (costWrap) {
-        costWrap.innerHTML = '';
-        if (card.cost > 0 || (!card.bloodCost && card.cost === 0)) {
-          costWrap.innerHTML += `<span class="mtg-cost-pip mana" style="min-width:24px; height:24px; font-size:0.8rem;">${card.cost !== undefined ? card.cost : 0}</span>`;
-        }
-        if (card.bloodCost && card.bloodCost > 0) {
-          costWrap.innerHTML += `<span class="mtg-cost-pip blood" style="min-width:27px; height:24px; font-size:0.75rem;">${card.bloodCost}🩸</span>`;
-        }
-      }
-
-      document.getElementById('sc-art').textContent = card.glyph || '⚔️';
-      
-      const typeLabels = { 'unit': 'MINIATURA', 'altar': 'ALTARE', 'spell': 'MAGIA', 'reaction': 'REAZIONE' };
-      const isComm = !!card.riteDesc;
-      document.getElementById('sc-type-text').textContent = isComm ? 'CAMPIONE' : (typeLabels[card.type] || (card.type || '').toUpperCase());
-      
-      const rb = document.getElementById('sc-rarity-badge');
-      const r = card.rarity || 'common';
-      rb.className = `rarity-badge ${r}`;
-      rb.textContent = (RARITY_NAMES[r] || 'COMUNE').toUpperCase();
-      
-      document.getElementById('sc-desc').innerHTML = formatCardDesc(card.desc || '');
-      
-      const setBadge = document.getElementById('sc-set-badge');
-      if (setBadge) setBadge.textContent = card.set || 'α';
-
-      const pt = document.getElementById('sc-pt');
-      if (pt) {
-        if (card.type === 'unit' || isComm) {
-          pt.style.display = 'block';
-          pt.textContent = `${card.att !== undefined ? card.att : 0}/${card.hp !== undefined ? card.hp : 1}`;
-        } else if (card.type === 'altar') {
-          pt.style.display = 'block';
-          pt.textContent = `${card.att ? card.att + '/' : ''}${card.hp || 5} PV`;
-        } else {
-          pt.style.display = 'none';
-        }
-      }
-      
-      overlay.style.display = 'flex';
-      overlay.classList.add('active');
+      const soundType = card.type === 'altar' ? 'altar' : (card.type === 'spell' || card.type === 'reaction' ? 'spell' : 'card');
+      playSfx(soundType);
+      showCardPlayedBanner(card);
+      if (typeof onComplete === 'function') onComplete();
     }
 
     function hideCardSummonOverlay() {
@@ -13076,6 +13600,38 @@
 
       onComplete();
     }
+    
+    function showVictoryModal(isVictory, goldReward = 100) {
+      const overlay = document.getElementById('battle-end-overlay');
+      if (!overlay) return;
+      const iconEl = document.getElementById('bem-icon');
+      const titleEl = document.getElementById('bem-title');
+      const descEl = document.getElementById('bem-desc');
+      const rewardEl = document.getElementById('bem-reward');
+
+      if (isVictory) {
+        if (iconEl) iconEl.textContent = '👑';
+        if (titleEl) {
+          titleEl.textContent = 'VITTORIA TRIONFALE';
+          titleEl.className = 'bem-title';
+        }
+        if (descEl) descEl.textContent = 'Il Comandante nemico è caduto! Hai conquistato il Frammento della Corona.';
+        if (rewardEl) {
+          rewardEl.style.display = 'block';
+          rewardEl.textContent = `+${goldReward} 🪙 Monete d'Oro Guadagnate!`;
+        }
+      } else {
+        if (iconEl) iconEl.textContent = '💀';
+        if (titleEl) {
+          titleEl.textContent = 'SCONFITTA';
+          titleEl.className = 'bem-title defeat';
+        }
+        if (descEl) descEl.textContent = 'Il tuo Comandante è caduto. Riorganizza il tuo grimorio e torna a combattere!';
+        if (rewardEl) rewardEl.style.display = 'none';
+      }
+      overlay.classList.add('active');
+    }
+
     function checkWin() {
       if (!battleState || battleState.isGameOver) return;
 
@@ -13799,5 +14355,21 @@
     });
 
 </script>
+
+  <!-- OVERLAY VITTORIA / SCONFITTA EPICO -->
+  <div id="battle-end-overlay" class="battle-end-overlay">
+    <div class="battle-end-modal">
+      <div class="bem-icon" id="bem-icon">👑</div>
+      <h2 class="bem-title" id="bem-title">VITTORIA TRIONFALE</h2>
+      <p class="bem-desc" id="bem-desc">Il Comandante nemico è stato annientato sul campo di Veridia!</p>
+      <div class="bem-reward-badge" id="bem-reward">+100 🪙 Monete d'Oro</div>
+      <div class="bem-actions">
+        <button class="btn btn-gold" style="padding: 12px; font-weight: 800; font-size: 0.95rem;" onclick="quickBattleAI()">⚔️ GIOCA ANCORA (BATTAGLIA RAPIDA)</button>
+        <button class="btn" style="padding: 10px; border-color: var(--border-gold); color: var(--gold-primary); font-weight: 700;" onclick="closeBattleEndAndGo('packs')">📦 Apri Box nel Mercato</button>
+        <button class="btn" style="padding: 10px; border-color: var(--border-frame);" onclick="closeBattleEndAndGo('home')">🏛️ Torna al Menu Principale</button>
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>
