@@ -1,127 +1,160 @@
 # 👑 CROWNFALL — Tactical Commander Skirmish
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Status-Playable_Live-gold?style=for-the-badge" alt="Status">
-  <img src="https://img.shields.io/badge/Tech-Vanilla_HTML5_%2F_CSS3_%2F_JS-blue?style=for-the-badge" alt="Tech Stack">
-  <img src="https://img.shields.io/badge/Audio-Procedural_Web_Audio_API-crimson?style=for-the-badge" alt="Audio Engine">
-  <img src="https://img.shields.io/badge/Network-PeerJS_P2P_%2B_Supabase-green?style=for-the-badge" alt="Multiplayer">
+  <a href="https://feirbran.github.io/Crownfall/">
+    <img src="https://img.shields.io/badge/PLAY_NOW_ONLINE-GitHub_Pages-gold?style=for-the-badge&logo=googlechrome&logoColor=black" alt="Play Live">
+  </a>
+  <img src="https://img.shields.io/badge/Status-Digital_Alpha-crimson?style=for-the-badge" alt="Status">
+  <img src="https://img.shields.io/badge/Vision-Future_Physical_Board_Game-blueviolet?style=for-the-badge" alt="Physical Vision">
+  <img src="https://img.shields.io/badge/Audio-Procedural_Web_Audio_API-darkred?style=for-the-badge" alt="Audio">
+  <img src="https://img.shields.io/badge/Multiplayer-PeerJS_P2P_%2B_Supabase-green?style=for-the-badge" alt="Multiplayer">
+</p>
+
+<p align="center">
+  <b>No downloads. No installations. No registration required.</b><br>
+  👉 <a href="https://feirbran.github.io/Crownfall/"><b>https://feirbran.github.io/Crownfall/</b></a> 👈
 </p>
 
 ---
 
-## ⚔️ Cos'è Crownfall?
+## 🎲 The Vision: A Future Physical Tabletop Skirmish Game
 
-**Crownfall** è uno skirmish tattico *dark fantasy* a turni che fonde la profondità posizionale degli **scacchi d'assedio**, l'adrenalina del **deckbuilding di carte collezionabili** e la gestione delle risorse sul campo.
-
-Due Condottieri si affrontano su una scacchiera 8x8 per contendersi i Frammenti della Corona Primordiale. L'obiettivo è assoluto: consacrare Altari, mobilitare truppe, manovrare con il *Flanking* (aggiramento tattico) ed **eliminare il Comandante avversario**.
+> [!NOTE]
+> **This web application is an open digital Alpha prototype.**
+> Our ultimate goal is to bring **Crownfall** to life as a **physical tabletop skirmish board game** featuring high-detail miniature figures, illustrated tarot-sized grimorie cards, modular tectonic grid tiles, and physical Altars and Blood tokens. 
+> 
+> This browser build serves as an active, living testbed for rules refinement, competitive balance, card mechanics, and community playtesting. Your feedback directly shapes the development of the physical game!
 
 ---
 
-## 🌌 Ambientazione: Gli Annali di Veridia
+## ⚔️ What is Crownfall?
 
-Dopo la **Sottrazione dell'Assoluto**, la Corona Primordiale si è spezzata in cinque frammenti di potere incommensurabile. Il piano di Veridia si è cristallizzato in una faglia tettonica dove i cinque Ordini Dominanti si scontrano senza pietà:
+**Crownfall** is a turn-based dark fantasy tactical skirmish game that merges the rigorous spatial depth of **siege chess**, the strategic variety of **collectible card deckbuilding**, and battlefield resource management.
 
-| Fazione | Simbolo | Filosofia & Dottrina | Comandanti Notabili |
+Two Warlords clash across an 8×8 tectonic battlefield to claim the shattered shards of the Primordial Crown. Your objective is decisive: consecrate sacred Altars to harvest Mana, deploy lethal troops, coordinate flanking maneuvers, unleash Commander Weapon Rites, and **execute the enemy Commander**.
+
+---
+
+## 🌌 Lore: The Chronicles of Veridia
+
+### The Subtraction of the Absolute
+Centuries ago, the cataclysm known as the **Subtraction of the Absolute** (*La Sottrazione dell'Assoluto*) severed the divine thread of the cosmos. The celestial Primordial Crown was shattered into five shards of incomprehensible power, embedding themselves into the tectonic flesh of Veridia. The earth crystallized into rigid vectors—a scarred arena of orthogonal, diagonal, and perpendicular impact lines.
+
+Five dominant martial and philosophical Orders rose from the ruins, each worshipping a shard and vying for absolute sovereignty:
+
+| Order / Faction | Emblem | Combat Doctrine & Philosophy | Iconic Commanders |
 | :--- | :---: | :--- | :--- |
-| **Bastione di Ferro** | 🛡️ | Difesa d'acciaio impenetrabile, formazioni a testuggine, muri difensivi e armature pesanti. | *Valeria del Bastione*, *Garek lo Spezzatore* |
-| **Ceneri del Giudizio** | 💀 | Sciacallaggio, necromanzia, cimiteri di passaggio e sacrificio di creature per alimentare il Sangue. | *Malakor del Rogo*, *Morbida la Nutrice* |
-| **Marea Abissale** | 🌊 | Controllo cinetico, trascinamento nemico, aperture di voragini e manipolazione dello spazio. | *Vespera delle Maree*, *Kaelen Occhio del Vortice* |
-| **Silenzio Eterno** | ⚖️ | Inquisizione dogmatica, soppressione delle magie, confisca del mana e castigo per chi spreca risorse. | *Aurelius il Giusto*, *Justiciar Kael* |
-| **Forgia del Magma** | ⚒️ | Fonderie di scorie, animazione di automi meccanici e conversione di altari in truppe da guerra. | *Vulkan il Fabbro*, *Ignis la Forgia Vivente* |
+| **Iron Bastion**<br>*(Bastione di Ferro)* | 🛡️ | **Impenetrable Defense & Retaliation.** Heavy plate armor, testudo shield walls, stone barriers, and brutal counterattacks. They do not break; they outlast. | **Valeria of the Bastion**<br>*Garek the Breaker* |
+| **Ashes of Judgment**<br>*(Ceneri del Giudizio)* | 💀 | **Scavenging, Sacrifice & Necromancy.** Death is fuel. Fallen allies become hazard graveyards, minions are sacrificed for Blood, and corpses rise again. | **Malakor of the Pyre**<br>*Morbida the Wetnurse* |
+| **Abyssal Tide**<br>*(Marea Abissale)* | 🌊 | **Kinetic Control & Void Manipulation.** Fluid diagonal strikes, gravitational vortexes dragging foes out of position, and opening bottomless chasms. | **Vespera of the Tides**<br>*Kaelen, Vortex Eye* |
+| **Eternal Silence**<br>*(Silenzio Eterno)* | ⚖️ | **Dogmatic Inquisition & Denial.** Anti-magic sanctions, mana taxation, passive suppression, and harsh punishment for opponents who hoard resources. | **Aurelius the Just**<br>*Justiciar Kael* |
+| **Magma Forge**<br>*(Forgia del Magma)* | ⚒️ | **Constructs, Slag & Transmutation.** Automated war machines, slag deposits, and the sacrificial transmutation of friendly Altars into frontline siege monsters. | **Vulkan the Smith**<br>*Ignis, the Living Forge* |
 
 ---
 
-## 🎯 I Pilastri del Gameplay
+## 📜 How to Play: Core Rules & Gameplay Pillars
 
-### 1. 🏛️ Altari & Economia del Mana
-* All'inizio della partita disponi di 1 Mana.
-* Per ampliare il Mana massimo (fino a 4 💧), devi consacrare **Altari** ortogonalmente adiacenti al tuo Comandante o ad altri Altari alleati.
-* Se un Altare viene raso al suolo, la riserva di Mana massimo si riduce istantaneamente!
+Crownfall plays on an **8×8 chessboard grid**. Each player commands an army comprising 1 Commander, a deck of 40 cards (Structures, Units, Spells, Reactions), and starts with 1 Mana.
 
-### 2. ⚡ Azioni & Movimento Scacchistico
-* Ogni turno ti concede **2 Azioni Tattiche (⚡)**.
-* Le miniature possiedono vettori di movimento unici:
-  * **Ortogonale (Torre)**: truppe di fanteria e fortificazioni.
-  * **Diagonale (Alfiere)**: assassini, spie e dominatori delle maree.
-  * **Omnidirezionale (Re)**: schermagliatori e campioni veloci.
-  * **Balzo a L (Cavallo)**: cavalieri, esploratori e abominazioni che scavalcano gli ostacoli.
-
-### 3. ⚔️ Flanking (Aggiramento Tattico)
-* Posizionare due miniature alleate adiacenti allo stesso bersaglio nemico attiva il **Flanking**: conferisce **+2 Danni addizionali** diretti, perforando gran parte delle armature.
-
-### 4. 🩸 Riserva Sangue & Riti d'Arma
-* La morte alimenta la guerra: ogni unità sconfitta rilascia token **Sangue (🩸)**.
-* Accumulando Sangue puoi scatenare il devastante **Rito d'Arma** del tuo Comandante (es. *Schianto Sismico* di Valeria, *Vincolo di Carne* di Malakor, *Faglia Gravitazionale* di Kaelen).
-
-### 5. 👑 Condizione di Vittoria
-* Abbattere il Comandante nemico ponendo i suoi PV a 0 decreta la vittoria immediata della battaglia.
-
----
-
-## ✨ Funzionalità Principali
-
-* **⚡ Onboarding Istantaneo (Zero-Barrier)**: Nessun form di registrazione o login obbligatorio! Il gioco si avvia all'istante con un profilo Ospite (`Condottiero_XXX`), 100 monete e mazzo iniziale già pronto.
-* **⚔️ Partita Rapida in 1-Click**: Clicca su *"Battaglia Rapida vs IA"* nella Home per essere catapultato subito sulla plancia senza menu intermedi.
-* **🤖 IA Tattica Offensiva**: Intelligenza Artificiale euristica che schiera altari, lancia magie contestuali, accerchia le tue truppe e usa i Riti d'Arma.
-* **🌐 Multiplayer Online P2P**: Crea o entra in stanze online in tempo reale con connessione WebRTC PeerJS a latenza ultra-bassa e matchmaking su cloud Supabase.
-* **🔊 Sound Engine Procedurale Integrato**: Motore audio sintetico nativo basato su **Web Audio API** (0 KB di download esterni, zero lag) con suoni dedicati per attacchi con lama, armature, sortilegi, evocazioni e fanfare. Include pulsante di silenziamento rapido `🔊 / 🔇`.
-* **💥 Floating Combat Text & Screen Shake**: Niente finestre popup invasive durante il combattimento. Numeri di danno dinamici (`-3 💥`, `PARATO 🛡️`, `CONTRATTACCO!`) fluttuano sulle pedine con scuotimento fisico della scacchiera.
-* **📜 Deckbuilder Professionale**: Costruisci grimori da 40 carte con filtri per costo di mana, fazione, rarità, istogramma della curva di mana e **Autocompletamento Strategico IA**.
-* **📦 Mercato Box & Collezione**: Oltre **500+ carte uniche** (Set α e Set β) con rarità da Comune a Mitica da sbustare spendendo l'oro conquistato in battaglia.
-* **☁️ Sincronizzazione Cloud Opzionale**: Possibilità di collegare un account Supabase per salvare la collezione e i mazzi su qualsiasi dispositivo.
-
----
-
-## 🛠️ Stack Tecnologico
-
-* **Frontend**: HTML5 Semantico, CSS3 Moderno (Glassmorphism, CSS Grid, Custom Properties).
-* **Motore Logico**: JavaScript Vanilla (ES6+) modulare e autonomo.
-* **Audio**: Web Audio API (oscillatori, filtri passa-basso e curve di inviluppo esponenziali procedurali).
-* **Multiplayer & Networking**: 
-  * [PeerJS](https://peerjs.com/) (WebRTC Peer-to-Peer diretto).
-  * [Supabase](https://supabase.com/) (Database profili, autenticazione e Realtime Presence Channel per le stanze).
-* **Typography**: Google Fonts (*Cinzel*, *Crimson Pro*, *Inter*).
-
----
-
-## 🚀 Come Avviare il Gioco
-
-### Metodo 1: Avvio Rapido (Senza installazione)
-Fai doppio click su `index.html` (o `crownfall.html`) per aprirlo in qualsiasi browser moderno (Chrome, Edge, Firefox, Safari).
-
-### Metodo 2: Server Locale (Consigliato per Multiplayer P2P)
-Avvia un server statico locale nella cartella del progetto:
-
-```bash
-# Con Node.js
-npx serve .
-
-# Oppure con Python 3
-python -m http.server 8080
+```
+       [ PLAYER 2 / ENEMY TERRITORY ] (Rows 7–8)
+  ·   ·   ·   ·   ·   ·   ·   ·
+  ·   ·   ·   ·   ·   ·   ·   ·
+  ·   ·   ·   ·   ·   ·   ·   ·
+  ·   ·   ·   ·   ·   ·   ·   ·   <-- No-Man's Land (Flanking & Chasm Hazards)
+  ·   ·   ·   ·   ·   ·   ·   ·
+  ·   ·   ·   ·   ·   ·   ·   ·
+       [ PLAYER 1 / ALLIED TERRITORY ] (Rows 1–2)
 ```
 
-Apri quindi il browser su `http://localhost:8080`.
+---
+
+### 1. 🏛️ The Mana Economy: Altars & Territory
+* You begin the duel with a maximum cap of **1 Mana (💧)**.
+* To increase your maximum Mana (up to a ceiling of **4 Mana**), you must consecrate **Altars** directly onto the board.
+* **Placement Rule**: Altars must be deployed in an unoccupied square orthogonally adjacent to your Commander or another friendly Altar.
+* **Vulnerability**: Altars are impassable defensive structures. If an enemy demolishes one of your Altars, your **maximum Mana pool permanently decreases by 1**!
+
+### 2. ⚡ Turn Structure & Tactical Actions
+* Each turn you receive **2 Tactical Actions (⚡)**.
+* During your turn, you have complete fluid freedom to spend **Mana** (to play cards) and **Actions** (to move or attack) in whatever strategic order you choose:
+  * **Cast Spells & Deploy Units**: Costs Mana (as shown on the card pip). Does not consume Tactical Actions.
+  * **Move a Unit**: Costs 1 Action (⚡).
+  * **Attack an Enemy**: Costs 1 Action (⚡).
+* When you are finished, click **"END TURN ⏳"** to pass initiative.
+
+### 3. ♟️ Chess-Inspired Movement Vectors
+Units navigate the board according to strict martial vectors:
+* **Orthogonal (Rook)**: Advances horizontally and vertically (standard infantry, guardians, siege rams).
+* **Diagonal (Bishop)**: Moves across diagonals (assassins, tidal weavers, scouts).
+* **Omnidirectional (King)**: Moves 1 step in any direction (flexible skirmishers, warlords).
+* **L-Shaped Leap (Knight)**: Leaps over intervening friendly or enemy pieces in a classical 2×1 chess knight jump (cavalry, crypt shadows, heavy knights).
+
+### 4. ⚔️ Combat, Armor & Flanking
+* **Melee & Range**: Standard units attack adjacent targets (Range 1). Ranged units (archers, ballistas) strike from 2–4 tiles away without taking counter-damage.
+* **Armor (🛡️)**: Units with Armor absorb incoming physical damage (e.g., Armor 1 reduces 3 damage down to 2).
+* **Counterattack (Presidio)**: In melee combat, defending units strike back with their Attack value unless incapacitated, stunned, or killed before hitting.
+* **Flanking (Aggiramento)**: Position two allied units adjacent to the same enemy target to activate **Flanking**. Your attacks gain a devastating **+2 direct damage bonus**, tearing through armor!
+
+### 5. 🩸 Blood Reserve & Weapon Rites
+* War demands sacrifice: every unit that perishes in battle feeds the **Blood Reserve (🩸)**.
+* Commanders possess a game-altering **Weapon Rite** (e.g., *Valeria's Seismic Slam*, *Malakor's Flesh Bond*, *Kaelen's Gravity Rift*).
+* Spend accumulated Blood tokens (typically 3–4 🩸) to activate your Commander's Rite once per turn.
+
+### 6. 👑 Victory Condition
+* **Slay the Enemy Commander**: Reduce the opposing Commander's Health Points to 0 to shatter their claim and win the match!
 
 ---
 
-## 📂 Struttura del Repository
+## 🎮 Game Modes & Features
+
+| Feature | Description |
+| :--- | :--- |
+| **⚔️ 1-Click Quick Play** | Jump directly into an AI skirmish from the Home Screen with zero setup delay. |
+| **🤖 Tactical Combat AI** | An aggressive heuristic AI that consecrates Altari, flanks your positions, casts tactical spells, and activates Commander Rites. |
+| **🌐 Real-Time P2P Multiplayer** | Create or join live online rooms via WebRTC (PeerJS) and Supabase Realtime Presence Channels with zero latency. |
+| **📜 Arena Deckbuilder** | Craft 40-card grimories with visual mana curve analytics, faction synergy filters, and intelligent **1-Click AI Auto-Completion**. |
+| **📦 500+ Unique Cards** | Set α (Alpha) and Set β (Beta) expansion boxes featuring Common, Uncommon, Rare, and Mythic cards unlocked with earned gold. |
+| **🔊 Procedural Audio Engine** | Native browser **Web Audio API** sound synthesis for blade slashes, shield clangs, spell sweeps, seismic altar drops, and victory fanfares (0 KB external download). |
+| **💥 Non-Blocking Fluid Action** | Floating Combat Text (`-3 💥`, `SHIELD 🛡️`, `COUNTER!`) and dynamic screen shake directly on the board without disruptive popup modals. |
+| **☁️ Optional Cloud Sync** | Play instantly as a Guest, or sync your collection and customized decks across devices using Supabase authentication. |
+
+---
+
+## 🕹️ Live Access
+
+You do **not** need to install anything or clone this repository to play:
+
+👉 **[Launch Crownfall Live on GitHub Pages](https://feirbran.github.io/Crownfall/)**
+
+Works seamlessly on Google Chrome, Mozilla Firefox, Microsoft Edge, Safari, and modern mobile/tablet touchscreens.
+
+---
+
+## 🛠️ Repository Architecture
+
+For developers, contributors, and tabletop designers interested in the engine codebase:
 
 ```
 Crownfall/
-├── index.html                 # Applicazione principale completa (UI, motore, stili, audio)
-├── crownfall.html             # Mirror distribuibile identico (100% byte-parity)
-├── cards_alpha.js             # Database carte Set α (Alpha - 290 carte)
-├── cards_beta.js              # Database carte Set β (Beta - 270 carte)
-├── build_cards.cjs            # Script di generazione e indicizzazione carte
-├── scratch/                   # Test suite, diagnostica e verifiche del motore
-│   ├── verify_all_card_rules.js  # Master test suite (100% pass)
-│   ├── verify_html_syntax.js     # Validatore sintattico HTML e JavaScript
-│   └── test_ai_match.js          # Simulatore headless di partite IA
-└── README.md                  # Documentazione ufficiale del progetto
+├── index.html                 # Complete single-page application (UI, tactical engine, audio synthesizer)
+├── crownfall.html             # Verified identical mirror file (100% byte-parity)
+├── cards_alpha.js             # Set α database (290 unique cards & commanders)
+├── cards_beta.js              # Set β database (270 unique cards & commanders)
+├── build_cards.cjs            # Card compilation and validation script
+├── scratch/                   # Automated regression and mechanics test suites
+│   ├── verify_all_card_rules.js  # Master mechanics verification suite (100% pass)
+│   ├── verify_html_syntax.js     # Syntax & DOM validation suite
+│   └── test_ai_match.js          # Headless combat and AI turn simulator
+└── README.md                  # Project documentation & tabletop design overview
 ```
 
 ---
 
+## 🤝 Community & Feedback
+
+Crownfall is evolving actively. If you encounter card balance anomalies, tactical edge cases, or have suggestions for the physical board game adaptation, please open an [Issue on GitHub](https://github.com/Feirbran/Crownfall/issues) or submit a pull request!
+
 <p align="center">
-  Forgiato con onore e sangue per gli amanti della strategia tattica. 🛡️⚔️👑
+  <i>Forged in iron, ashes, tide, silence, and magma for the tabletop tacticians of tomorrow. 🛡️⚔️👑</i>
 </p>
