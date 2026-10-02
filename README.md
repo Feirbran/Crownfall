@@ -153,8 +153,26 @@ Crownfall/
 
 ## 🤝 Community & Feedback
 
-Crownfall is evolving actively. If you encounter card balance anomalies, tactical edge cases, or have suggestions for the physical board game adaptation, please open an [Issue on GitHub](https://github.com/Feirbran/Crownfall/issues) or submit a pull request!
+Crownfall is evolving actively. If you encounter card balance anomalies, tactical edge cases, or have suggestions for the physical board game adaptation, please open an [Issue on GitHub](https://github.com/Feirbran/Crownfall/issues) or reach out directly!
+
+---
+
+## ⚖️ Intellectual Property & Legal Notice
+
+**Copyright © 2024–2026 Feirbran (Federico Navarra). All Rights Reserved.**
+
+Crownfall is an original creative work and proprietary game system. While this digital Alpha is made publicly accessible on GitHub Pages for playtesting, evaluation, and community feedback, **all intellectual property rights, worldbuilding, game design, and commercial rights remain strictly reserved**:
+
+- **Fictional Universe & Lore:** The universe of **Veridia**, the historical narrative ("La Sottrazione dell'Assoluto"), and all related storylines.
+- **The Five Orders & Factions:** *Iron Bastion (Bastione di Ferro)*, *Ashes of Judgment (Ceneri del Giudizio)*, *Abyssal Tide (Marea Abissale)*, *Eternal Silence (Silenzio Eterno)*, and *Magma Forge (Forgia del Magma)*.
+- **Commander & Character Identities:** All names, personas, backstories, and artistic depictions (including *Valeria, Garek, Malakor, Morbida, Vespera, Kaelen, Aurelius, Justiciar Kael, Vulkan, Ignis*, and related heroes).
+- **Game Design & Tabletop Rights:** The card catalog (Sets α & β), keyword formulations, original combat-skirmish dynamics, tactical grid layout design, and all rights relating to the manufacturing, physical printing, publishing, or crowdfunding of any physical board game, card game, or tabletop adaptation.
+
+> **Notice:** Reproduction, commercial cloning, redistribution, derivative works, unauthorized physical manufacturing, or crowdfunding campaigns using the Crownfall name, lore, card designs, or source code without express prior written consent from the author are strictly prohibited under international copyright law (including the Berne Convention).
+> 
+> See the complete [LICENSE](LICENSE) file for legal terms, permitted playtesting use, and licensing inquiries.
 
 <p align="center">
   <i>Forged in iron, ashes, tide, silence, and magma for the tabletop tacticians of tomorrow. 🛡️⚔️👑</i>
 </p>
+

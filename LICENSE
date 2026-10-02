@@ -1,0 +1,51 @@
+PROPRIETARY INTELLECTUAL PROPERTY & GAME DESIGN NOTICE
+
+Copyright (c) 2024-2026 Feirbran (Federico Navarra). All Rights Reserved.
+
+================================================================================
+IMPORTANT LEGAL NOTICE — NON-FREE / PROPRIETARY SOFTWARE AND TABLETOP PROPERTY
+================================================================================
+
+This repository, including its source code, game mechanics texts, worldbuilding lore,
+narrative architecture, faction names and concepts, character designs, commander identities,
+card catalogs, numerical balancing parameters, graphical user interfaces, audio design,
+and documentation related to "CROWNFALL" and "VERIDIA", is the proprietary intellectual 
+property of Feirbran (Federico Navarra).
+
+1. PERMISSION AND SCOPE OF USE
+   - Public access to this repository and its hosted instance on GitHub Pages is granted 
+     strictly and solely for personal, non-commercial playtesting, evaluation, and demonstration 
+     purposes.
+   - Playing, testing, and reviewing the game via the authorized digital interface is permitted.
+
+2. STRICT PROHIBITIONS
+   Without prior express written permission from the copyright holder, you MAY NOT:
+   a) Copy, reproduce, clone, fork for re-distribution, sub-license, publish, or publicly display 
+      the source code, game assets, or game texts.
+   b) Manufacture, produce, publish, crowdfund, sell, or distribute any physical tabletop, 
+      board game, card game, miniature skirmish game, or printed material based on, derived from, 
+      or replicating the concepts, mechanics, lore, card designs, or characters of Crownfall.
+   c) Develop, host, market, or commercialize any digital clone, standalone game, mobile application, 
+      or derivative work utilizing the Crownfall intellectual property, ruleset texts, or universe of Veridia.
+   d) Extract, scrape, or repurpose the card database (cards_alpha, cards_beta), commander abilities, 
+      or narrative lore for commercial projects or third-party game systems.
+   e) Remove, alter, or obscure any copyright, trademark, or proprietary notices contained within 
+      this repository or the compiled application.
+
+3. INTELLECTUAL PROPERTY RIGHTS RESERVED
+   The title "CROWNFALL", the universe of "VERIDIA", the names and lore of the Five Orders 
+   (Iron Bastion / Bastione di Ferro, Ashes of Judgment / Ceneri del Giudizio, Abyssal Tide / Marea Abissale, 
+   Eternal Silence / Silenzio Eterno, Magma Forge / Forgia del Magma), the characters (including but not limited 
+   to Valeria, Garek, Malakor, Morbida, Vespera, Kaelen, Aurelius, Justiciar Kael, Vulkan, Ignis), 
+   the card names, card text formulations, and the specific design arrangement of the tactical skirmish game 
+   are protected under international copyright treaties (including the Berne Convention) and applicable 
+   intellectual property laws worldwide.
+
+4. INQUIRIES AND LICENSING
+   For licensing inquiries, tabletop publishing partnerships, commercial distribution, or press requests, 
+   please contact the copyright owner directly via GitHub:
+   https://github.com/Feirbran
+
+================================================================================
+ALL RIGHTS NOT EXPRESSLY GRANTED HEREIN ARE STRICTLY RESERVED BY THE COPYRIGHT OWNER.
+================================================================================
